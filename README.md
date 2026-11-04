@@ -50,8 +50,13 @@ Or start Python's built-in HTTP server:
 python3 -m http.server 8080
 ```
 
-Then open your browser at:  
-👉 **`http://localhost:8080`**
+Then open your browser at:
+
+👉 **`http://localhost:8080`** — hub (install, learn, FM-1 combos)
+
+👉 **`http://localhost:8080/play.html`** — browser deck, plays immediately
+
+👉 **`http://localhost:8080/web/index.html`** — the FM-1 panel, the same JavaScript as GR!MM (`web/panel.js`, `web/worklet.js`). It sounds after `web/build_web.sh` writes `web/dist/grimm.wasm`.
 
 ---
 

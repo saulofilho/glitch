@@ -12,6 +12,7 @@ import { GenerativeMatrix } from './sequencer/generative.js';
 import { MidiHandler } from './midi/midi-handler.js';
 import { AudioVisualizer } from './ui/visualizer.js';
 import { UIController } from './ui/ui-controller.js';
+import { startRain } from './ui/rain.js';
 
 class CybirmApp {
   constructor() {
@@ -58,6 +59,7 @@ class CybirmApp {
     // 4. Initialize UI Controller
     this.ui = new UIController(this);
     this.ui.init();
+    startRain(document.getElementById('city-rain'));
 
     // 5. Connect Sequencer Step callback to UI Playhead
     this.sequencer.onStepChange = (step) => {

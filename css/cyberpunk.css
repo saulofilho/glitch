@@ -1,26 +1,33 @@
 /**
- * CYB!RM - Cyberpunk / Cyberdeck Retrofuturistic Design System
+ * CYB!RM deck. Pixel faceplate, rain, and neon, in the same role as the GR!MM hub.
  */
 
-:root {
-  --bg-dark: #07090e;
-  --bg-panel: #0d121c;
-  --bg-card: #131b2a;
-  --bg-active: #1c273d;
-  
-  --neon-cyan: #00f3ff;
-  --neon-cyan-glow: rgba(0, 243, 255, 0.45);
-  --neon-magenta: #ff0055;
-  --neon-magenta-glow: rgba(255, 0, 85, 0.45);
-  --neon-amber: #ffaa00;
-  --neon-amber-glow: rgba(255, 170, 0, 0.45);
-  --neon-emerald: #00ff77;
+@font-face {
+  font-family: "Press Start";
+  src: url("../assets/fonts/PressStart2P-Regular.ttf") format("truetype");
+  font-display: swap;
+}
 
-  --border-muted: #1e283d;
-  --border-bright: #00f3ff55;
-  --text-main: #d8e4f5;
-  --text-muted: #627694;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+:root {
+  --bg-dark: #07060c;
+  --bg-panel: rgba(10, 8, 16, 0.88);
+  --bg-card: rgba(16, 14, 26, 0.92);
+  --bg-active: #1a1430;
+  
+  --neon-cyan: #14e2ff;
+  --neon-cyan-glow: rgba(20, 226, 255, 0.5);
+  --neon-magenta: #ff2bd6;
+  --neon-magenta-glow: rgba(255, 43, 214, 0.5);
+  --neon-amber: #ffb020;
+  --neon-amber-glow: rgba(255, 176, 32, 0.45);
+  --neon-emerald: #3dffb0;
+
+  --border-muted: #2c2644;
+  --border-bright: #14e2ff88;
+  --text-main: #e7f7ff;
+  --text-muted: #8d95a8;
+  --font-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  --font-pixel: "Press Start", "Courier New", monospace;
 }
 
 * {
@@ -38,50 +45,85 @@ body {
   line-height: 1.4;
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.06), transparent 70%),
-    radial-gradient(circle at 10% 90%, rgba(255, 0, 85, 0.04), transparent 60%);
+}
+
+#city-rain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* CRT Scanlines Overlay */
 .crt-overlay {
   pointer-events: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.02),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.02)
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.22) 2px 3px
   );
-  background-size: 100% 3px, 6px 100%;
-  z-index: 9999;
-  opacity: 0.75;
+  z-index: 2;
+  opacity: 0.55;
 }
 
 /* Main Cyberdeck Container */
 .cyberdeck-frame {
+  position: relative;
+  z-index: 1;
   max-width: 1440px;
-  margin: 16px auto;
-  padding: 16px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-muted);
-  border-top: 3px solid var(--neon-cyan);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 243, 255, 0.1);
-  border-radius: 4px;
+  margin: 20px auto;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(20, 226, 255, 0.08), transparent 90px),
+    var(--bg-panel);
+  border: 3px solid var(--border-muted);
+  border-top: 6px solid var(--neon-cyan);
+  box-shadow:
+    0 0 0 1px #000,
+    0 24px 60px rgba(0, 0, 0, 0.72),
+    0 0 40px rgba(20, 226, 255, 0.12);
+}
+
+.brand-line {
+  margin-top: 8px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.face-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.face-nav a {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  line-height: 1.6;
+  text-decoration: none;
+  color: var(--text-main);
+  border: 2px solid var(--border-muted);
+  padding: 8px 8px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.face-nav a[aria-current="page"],
+.face-nav a:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
 }
 
 /* Cyber Buttons */
 .cyber-btn {
   background: var(--bg-card);
   color: var(--text-main);
-  border: 1px solid var(--border-muted);
+  border: 2px solid var(--border-muted);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYB!RM - Cyberpunk Atmospheric Sound Generator & Groovebox</title>
+  <link rel="stylesheet" href="css/cyberpunk.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <canvas id="city-rain" aria-hidden="true"></canvas>
+  <div class="crt-overlay"></div>
+
+  <div class="cyberdeck-frame">
+    <header class="cyber-header">
+      <div class="brand-section">
+        <div>
+          <h1 class="brand-title">CYB<span>!</span>RM</h1>
+          <div class="brand-line">FM-1 / NEON NOIR / V2.0</div>
+        </div>
+        <nav class="face-nav" aria-label="CYB!RM">
+          <a href="index.html">HUB</a>
+          <a href="play.html" aria-current="page">DECK</a>
+          <a href="web/index.html">FM-1</a>
+          <a href="web/editor.html">EDITOR</a>
+        </nav>
+      </div>
+
+      <div class="header-controls">
+        <!-- Preset Selector -->
+        <select id="preset-select" class="cyber-select" title="Preset Cyberpunk Soundscapes"></select>
+
+        <!-- Scale & Root -->
+        <select id="scale-select" class="cyber-select" title="Cyberpunk Musical Scale"></select>
+        <select id="root-note-select" class="cyber-select" title="Root Pitch"></select>
+
+        <!-- Transport Controls -->
+        <button id="btn-play" class="cyber-btn" title="Start Sequencer">▶ PLAY</button>
+        <button id="btn-stop" class="cyber-btn" title="Stop Sequencer">■ STOP</button>
+
+        <!-- BPM & Swing -->
+        <div class="status-badge">
+          BPM <span id="bpm-display" style="color:var(--neon-cyan); font-weight:700;">84</span>
+          <input type="range" id="bpm-input" min="40" max="200" value="84" style="width: 70px; vertical-align: middle; margin-left: 6px;">
+        </div>
+        <button id="btn-tap-tempo" class="cyber-btn" title="Tap Tempo">TAP</button>
+        <div id="knob-swing" title="Sequencer Groove Swing"></div>
+
+        <!-- Generative Auto-Ambient Mode -->
+        <button id="btn-generative" class="cyber-btn" title="Autonomous Generative Dark Ambient Engine">
+          ⚡ SELF-HACK MATRIX (OFF)
+        </button>
+
+        <!-- Live Audio Recorder -->
+        <button id="btn-record" class="cyber-btn" title="Record live audio to WAV/WebM">⏺ REC SESSION</button>
+        <span id="record-timer" class="status-badge">00:00</span>
+
+        <!-- MIDI Status -->
+        <div id="midi-status" class="status-badge">⚪ NO MIDI CONNECTED (PLAY WITH KEYBOARD)</div>
+      </div>
+    </header>
+
+    <!-- Main Deck Grid (CRT Display, Track Strip, Master FX) -->
+    <main class="deck-main-grid">
+      <!-- Left Column: CRT Display & Atmospheric Freeze Matrix -->
+      <section class="cyber-panel">
+        <div class="panel-header">
+          <span class="panel-title">TELEMETRY & CRT DISPLAY</span>
+          <button id="btn-vis-mode" class="cyber-btn" style="padding: 2px 8px; font-size: 9px;">MODE: OSCILLOSCOPE</button>
+        </div>
+
+        <div class="crt-screen-container">
+          <canvas id="crt-screen-canvas"></canvas>
+        </div>
+
+        <div class="ambient-freeze-box">
+          <div class="fx-title">ATMOSPHERIC FREEZE MATRIX</div>
+          <button id="btn-granular-freeze" class="cyber-btn" title="Locks live buffer into infinite granular cloud">
+            ❄ GRANULAR FREEZE
+          </button>
+          <button id="btn-reverb-infinite" class="cyber-btn" title="Sets Megacity Reverb decay to infinite">
+            ∞ SPACE INFINITY
+          </button>
+        </div>
+      </section>
+
+      <!-- Center Column: 4-Track Channel Strip & Sound Engines -->
+      <section class="cyber-panel">
+        <div class="panel-header">
+          <span class="panel-title">CHANNEL MATRIX (4 INDEPENDENT TRACKS)</span>
+        </div>
+
+        <!-- Track Selection Tabs -->
+        <div class="track-tabs-bar">
+          <div class="track-tab active" data-track="0">
+            <span class="track-name">TRK 1</span>
+            <span class="track-engine-name">SUB / ACID</span>
+          </div>
+          <div class="track-tab" data-track="1">
+            <span class="track-name">TRK 2</span>
+            <span class="track-engine-name">NEON LEAD</span>
+          </div>
+          <div class="track-tab" data-track="2">
+            <span class="track-name">TRK 3</span>
+            <span class="track-engine-name">ANDROID CHOIR</span>
+          </div>
+          <div class="track-tab" data-track="3">
+            <span class="track-name">TRK 4</span>
+            <span class="track-engine-name">GLITCH / PERC</span>
+          </div>
+        </div>
+
+        <!-- Active Track Controls -->
+        <div class="track-detail-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:10px; color:var(--text-muted); font-weight:700;">ENGINE:</label>
+            <select id="track-engine-select" class="cyber-select"></select>
+          </div>
+          <div class="track-actions">
+            <button id="btn-track-mute" class="cyber-btn" style="padding:4px 8px; font-size:9px;">MUTE</button>
+            <button id="btn-track-solo" class="cyber-btn" style="padding:4px 8px; font-size:9px;">SOLO</button>
+          </div>
+        </div>
+
+        <!-- Track Knobs Matrix -->
+        <div class="knob-row">
+          <div id="knob-track-vol"></div>
+          <div id="knob-track-pan"></div>
+          <div id="knob-track-cutoff"></div>
+          <div id="knob-track-res"></div>
+          <div id="knob-track-send-delay"></div>
+          <div id="knob-track-send-reverb"></div>
+          <div id="knob-track-attack"></div>
+          <div id="knob-track-release"></div>
+        </div>
+      </section>
+
+      <!-- Right Column: Master Effects Rack -->
+      <section class="cyber-panel">
+        <div class="panel-header">
+          <span class="panel-title">MASTER FX RACK</span>
+          <div id="knob-master-vol" title="Master Level"></div>
+        </div>
+
+        <div class="fx-section">
+          <!-- Tape Saturation & Flutter -->
+          <div class="fx-block">
+            <div class="fx-title">TAPE & VHS SATURATION</div>
+            <div class="knob-row" style="margin-bottom:0;">
+              <div id="knob-tape-drive" title="Harmonic Overdrive"></div>
+              <div id="knob-tape-flutter" title="Wow & Flutter Drift"></div>
+            </div>
+          </div>
+
+          <!-- Modulated Delay -->
+          <div class="fx-block">
+            <div class="fx-title">CYBER TAPE ECHO</div>
+            <div class="knob-row" style="margin-bottom:0;">
+              <div id="knob-delay-time" title="Delay Milliseconds"></div>
+              <div id="knob-delay-feedback" title="Echo Repeats"></div>
+            </div>
+          </div>
+
+          <!-- Space Reverb & Bitcrusher -->
+          <div class="fx-block">
+            <div class="fx-title">SPACE REVERB & CRUSHER</div>
+            <div class="knob-row" style="margin-bottom:0;">
+              <div id="knob-reverb-decay" title="Space Cavern Decay"></div>
+              <div id="knob-bitcrush-mix" title="Digital Bitcrush Mix"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Section 1: 64-Step Sequencer Rack -->
+    <section class="cyber-panel sequencer-panel">
+      <div class="seq-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span class="panel-title">STEP SEQUENCER</span>
+          <div class="seq-pages-bar">
+            <button class="cyber-btn page-btn active" data-page="0">1-16</button>
+            <button class="cyber-btn page-btn" data-page="1">17-32</button>
+            <button class="cyber-btn page-btn" data-page="2">33-48</button>
+            <button class="cyber-btn page-btn" data-page="3">49-64</button>
+          </div>
+          <select id="step-len-select" class="cyber-select" style="font-size:10px; padding:3px 6px;">
+            <option value="16">16 STEPS</option>
+            <option value="32">32 STEPS</option>
+            <option value="64">64 STEPS</option>
+          </select>
+        </div>
+
+        <!-- Step Inspector -->
+        <div class="step-inspector">
+          <div class="inspector-group">
+            <label style="color:var(--text-muted); font-size:10px;">PITCH:</label>
+            <select id="step-pitch-select" class="cyber-select" style="font-size:10px; padding:3px 6px;"></select>
+          </div>
+          <div class="inspector-group">
+            <label style="color:var(--text-muted); font-size:10px;">RATCHET:</label>
+            <select id="step-ratchet-select" class="cyber-select" style="font-size:10px; padding:3px 6px;">
+              <option value="1">1x (Normal)</option>
+              <option value="2">2x (Roll)</option>
+              <option value="3">3x (Triplet)</option>
+              <option value="4">4x (Burst)</option>
+            </select>
+          </div>
+          <div class="inspector-group">
+            <label style="color:var(--text-muted); font-size:10px;">PROBABILITY:</label>
+            <input type="range" id="step-prob-input" min="0" max="100" value="100" style="width:70px; vertical-align:middle;">
+          </div>
+        </div>
+      </div>
+
+      <!-- 16-Step Interactive Pad Grid for Active Page -->
+      <div id="step-grid" class="step-grid"></div>
+    </section>
+
+    <!-- Bottom Section 2: One-Touch Cyber Chords Pad Bar -->
+    <section class="cyber-panel" style="margin-bottom: 0;">
+      <div class="panel-header">
+        <span class="panel-title">ONE-TOUCH CYBER CHORD PADS (BLADE RUNNER & MEGAPAD HARMONIES)</span>
+      </div>
+      <div id="chord-pads-container" class="chord-pads-container"></div>
+    </section>
+
+    <!-- Keyboard & Performance Guide -->
+    <footer class="keyboard-guide">
+      <div>
+        ⌨ <span style="color:#fff; font-weight:700;">LIVE KEYBOARD:</span>
+        White keys: <span class="kbd-badge">A</span> <span class="kbd-badge">S</span> <span class="kbd-badge">D</span> <span class="kbd-badge">F</span> <span class="kbd-badge">G</span> <span class="kbd-badge">H</span> <span class="kbd-badge">J</span> <span class="kbd-badge">K</span> |
+        Black keys: <span class="kbd-badge">W</span> <span class="kbd-badge">E</span> <span class="kbd-badge">T</span> <span class="kbd-badge">Y</span> <span class="kbd-badge">U</span>
+      </div>
+      <div>
+        <span class="kbd-badge">SPACE</span> Play/Stop |
+        <span class="kbd-badge">Z</span> / <span class="kbd-badge">X</span> Octave Shift |
+        <span class="kbd-badge">DRAG & DROP</span> custom WAV sample into browser
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
