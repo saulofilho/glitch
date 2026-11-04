@@ -110,13 +110,13 @@ export class UIController {
       onChange: (v) => this.app.masterFx.setDelayTime(v)
     });
     this.knobs.delayFeedback = new CyberKnob(document.getElementById('knob-delay-feedback'), {
-      label: 'FEEDBK', min: 0, max: 0.95, value: 0.55, unit: '%',
+      label: 'FEEDBK', min: 0, max: 0.62, value: 0.5, unit: '%',
       onChange: (v) => this.app.masterFx.setDelayFeedback(v)
     });
 
     // Space Reverb
     this.knobs.reverbDecay = new CyberKnob(document.getElementById('knob-reverb-decay'), {
-      label: 'SPACE', min: 0.2, max: 0.985, value: 0.88, unit: '%',
+      label: 'SPACE', min: 0.2, max: 0.9, value: 0.82, unit: '%',
       onChange: (v) => this.app.masterFx.setReverbDecay(v)
     });
 
@@ -128,7 +128,7 @@ export class UIController {
 
     // Master Volume
     this.knobs.masterVol = new CyberKnob(document.getElementById('knob-master-vol'), {
-      label: 'MASTER', min: 0, max: 1.2, value: 0.85, unit: '%',
+      label: 'MASTER', min: 0, max: 1.2, value: 0.72, unit: '%',
       onChange: (v) => this.app.audioMgr.setMasterVolume(v)
     });
 
@@ -141,7 +141,7 @@ export class UIController {
 
   initTrackKnobs() {
     this.knobs.trackVol = new CyberKnob(document.getElementById('knob-track-vol'), {
-      label: 'VOL', min: 0, max: 1.2, value: 0.8, unit: '%',
+      label: 'VOL', min: 0, max: 1.2, value: 0.65, unit: '%',
       onChange: (v) => this.getActiveTrack().setVolume(v)
     });
     this.knobs.trackPan = new CyberKnob(document.getElementById('knob-track-pan'), {
@@ -157,11 +157,11 @@ export class UIController {
       onChange: (v) => this.getActiveTrack().setResonance(v)
     });
     this.knobs.trackSendDelay = new CyberKnob(document.getElementById('knob-track-send-delay'), {
-      label: 'DELAY', min: 0, max: 1, value: 0.3, unit: '%',
+      label: 'DELAY', min: 0, max: 1, value: 0.22, unit: '%',
       onChange: (v) => this.getActiveTrack().setSendDelay(v)
     });
     this.knobs.trackSendReverb = new CyberKnob(document.getElementById('knob-track-send-reverb'), {
-      label: 'REVERB', min: 0, max: 1, value: 0.45, unit: '%',
+      label: 'REVERB', min: 0, max: 1, value: 0.28, unit: '%',
       onChange: (v) => this.getActiveTrack().setSendReverb(v)
     });
     this.knobs.trackAttack = new CyberKnob(document.getElementById('knob-track-attack'), {
@@ -584,8 +584,8 @@ export class UIController {
     this.knobs.tapeDrive.setValue(p.tapeDrive, true);
     this.knobs.tapeFlutter.setValue(p.tapeFlutter, true);
     this.knobs.delayTime.setValue(p.delayTime, true);
-    this.knobs.delayFeedback.setValue(p.delayFeedback, true);
-    this.knobs.reverbDecay.setValue(p.reverbDecay, true);
+    this.knobs.delayFeedback.setValue(Math.min(p.delayFeedback, 0.62), true);
+    this.knobs.reverbDecay.setValue(Math.min(p.reverbDecay, 0.9), true);
 
     // Clear and load track patterns
     this.app.sequencer.clearAll();

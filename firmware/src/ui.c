@@ -23,6 +23,10 @@
 static const uint16_t UI_ACCENTS[4] = {RGB(0x14, 0xe2, 0xff), RGB(0xd0, 0x8a, 0x1c), RGB(0x2f, 0x8f, 0x8a),
                                        RGB(0x7a, 0x4f, 0xb0)};   /* neon cyan (the default), amber, teal, violet */
 static uint16_t ui_acc = RGB(0x14, 0xe2, 0xff); /* the accent */
+#define UI_MX_D RGB(0x0c, 0x2e, 0x1c)           /* matrix rain: dark green */
+#define UI_MX_M RGB(0x18, 0xe8, 0x60)           /* mid */
+#define UI_MX_L RGB(0x9a, 0xff, 0xb8)           /* bright */
+#define UI_MX_W RGB(0xe0, 0xff, 0xec)             /* head glyph */
 #define UI_PIC_MS 40u                           /* the picture redrawn at most this often */
 #define UI_BAT_W 16                             /* the header's battery (and its tip) */
 #define UI_BOOT_MS 5600u                        /* the boot screen this long (V2: 3 s before; its pictures at half
@@ -531,211 +535,138 @@ static void ui_eye(int32_t x, int32_t y, int32_t k, int32_t dx, int32_t dy)
     }
 }
 
-/* ---- HOME's moving picture (Main), a frame every UI_ANIM_MS while it is shown and the screen lit, from the main loop:
- * what the audio ISR left in vis_pk, vis_lr (its peaks) and the notes on (their pitch). Only what changed is drawn.
- *   candles (V2): a flame only while the track sounds, as tall as its sound now after its LEVEL (as MIXER 1's meter, up
- *   to 10 rows: at once up, down over ~0.5 .. 0.8 s), out when it has faded (muted, LEVEL 0: out), the wick alone; lit,
- *   it dances (a row up or down) and flickers (three shapes, uneven)
- *   stars: the fog's pixels, a few at a time brighten to light and fade back; more of them the louder it is (as 1.0:
- *   its 46, where they were, but none on a web or the eye)
- *   webs (V2): two spider webs in the top corners, their threads' cells a few at a time brighten to light and fade
- *   back (dew catching the light); more of them the louder it is
- *   the eye: its iris goes towards the sound (left, right: the output's balance; up, down: high, low notes), a cell at
- *   a time; it blinks now and then, and at a sudden loud hit; silent ~4 s, it half-closes and drifts (dozing); the
- *   first sound wakes it with a blink */
-#define NSTAR 46u
-#define NWEB (330u + NSTAR)
-static uint8_t sk_x[NWEB], sk_y[NWEB], sk_b[NWEB], sk_ph[NWEB], sk_ok;   /* a web's cell, then a star (3 px, from y 27):
-                                                 * where, M (a ring, a bright star; else D), its sparkle's frame (0:
-                                                 * none) */
-static uint32_t sk_n, sk_nw;                    /* the cells: the webs' and the stars'; the webs' */
-#define CN_ROWS 10                              /* (V2) a flame's rows at the most (3 px each) */
-#define CN_Y 98                                 /* (V2) a candle's top: 6 px lower than it was, room for the flame under the eye */
-static uint8_t cn_h[NT], cn_s[NT], cn_n[NT];    /* a candle: its flame's rows (0: out), shape, frames to its next shape */
-static int32_t ey_k = 4, ey_dx, ey_dy, ey_tx, ey_ty, ey_bl, ey_doze;   /* the eye: lids, iris, its target, the blink's
-                                                 * frame (0: none), dozing */
-static uint32_t an_rng = 0x2545F491u, an_e[NT], an_avg, an_n, an_sound_t, an_blink_t, an_next, an_drift_t;
+/* ---- Matrix rain + CRT (HOME and boot), cyberpunk green on black */
+#define MX_N 20u
+#define CN_ROWS 10
+#define MX_BAR_Y 132
+#define MX_BAR_H 28
+static uint8_t mx_y[MX_N], mx_l[MX_N], mx_s[MX_N], mx_ok;
+static uint8_t cn_h[NT], cn_s[NT];
+static uint32_t an_rng = 0x2545F491u, an_e[NT], an_avg, an_n;
+
 static uint32_t an_rnd(uint32_t n)
 {
     an_rng ^= an_rng << 13, an_rng ^= an_rng >> 17, an_rng ^= an_rng << 5;
     return an_rng % n;
 }
-static uint16_t sk_col(uint32_t i)              /* a star's colour now: D or M; sparkling, M, L, M */
+
+static void mx_seed(void)
 {
-    uint32_t p = sk_ph[i];
-    return !p ? (sk_b[i] ? UI_M : UI_D) : p >= 4u && p <= 9u ? UI_L : UI_M;
+    uint32_t i, s;
+    if (mx_ok) return;
+    s = ui_rnd_s, ui_rnd_s = 42u;
+    for (i = 0; i < MX_N; i++) {
+        mx_y[i] = (uint8_t)ui_rnd(120);
+        mx_l[i] = (uint8_t)(4u + ui_rnd(9u));
+        mx_s[i] = (uint8_t)(1u + ui_rnd(2u));
+    }
+    ui_rnd_s = s;
+    mx_ok = 1;
 }
-static void sk_add(int32_t x, int32_t y, uint32_t ring)   /* a web's cell (once; a ring's is M), or a star (ring 2 | b:
-                                                 * none on a web's cell or the eye) */
+
+static void mx_tick(uint32_t boost)
 {
     uint32_t i;
-    if (x < 0 || x > 78 || y < 0 || y > 43) return;
-    if ((ring & 2u) && x >= 25 && x <= 54 && y >= 3 && y <= 18) return;   /* (the eye: 80 .. 160, 39 .. 79 px) */
-    for (i = 0; i < sk_n; i++)
-        if (sk_x[i] == x && sk_y[i] == y) {
-            if (!(ring & 2u)) sk_b[i] |= (uint8_t)ring;
-            return;
+    for (i = 0; i < MX_N; i++)
+        mx_y[i] = (uint8_t)((mx_y[i] + mx_s[i] + boost) % 130u);
+}
+
+static void mx_rain(int32_t y0, int32_t h, uint32_t tick, int32_t hole_x, int32_t hole_y, int32_t hole_w, int32_t hole_h)
+{
+    uint32_t i;
+    for (i = 0; i < MX_N; i++) {
+        int32_t x = 14 + (int32_t)i * 11;
+        int32_t head = ((int32_t)mx_y[i] + (int32_t)(tick / 4u) + (int32_t)i * 7) % (h + 16);
+        int32_t k, len = mx_l[i];
+        if (x + 2 > hole_x && x < hole_x + hole_w && y0 + head > hole_y - 8 && y0 < hole_y + hole_h)
+            continue;
+        for (k = 0; k < len; k++) {
+            int32_t y = y0 + head - k * 4;
+            uint16_t c = k == 0 ? UI_MX_W : k == 1 ? UI_MX_L : k < 4 ? UI_MX_M : UI_MX_D;
+            if (y >= y0 && y < y0 + h - 2) ui_rect(x, y, 3, 3, c);
         }
-    ring &= 1u;
-    if (sk_n >= NWEB) return;
-    sk_x[sk_n] = (uint8_t)x, sk_y[sk_n] = (uint8_t)y, sk_b[sk_n] = (uint8_t)ring, sk_ph[sk_n] = 0, sk_n++;
-}
-static void sk_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t ring)   /* (Bresenham) */
-{
-    int32_t dx = x1 > x0 ? x1 - x0 : x0 - x1, dy = y1 > y0 ? y0 - y1 : y1 - y0, sx = x1 > x0 ? 1 : -1, sy = y1 > y0 ? 1 : -1,
-            e = dx + dy, e2;
-    for (;;) {
-        sk_add(x0, y0, ring);
-        if (x0 == x1 && y0 == y1) return;
-        e2 = 2 * e;
-        if (e2 >= dy) e += dy, x0 += sx;
-        if (e2 <= dx) e += dx, y0 += sy;
     }
 }
-static void sk_init(void)                       /* (V2) the webs: in each top corner five threads out from it, four
-                                                 * rings across them, sagging towards the corner between threads (each web ~150 cells) */
+
+static void ui_matrix_grid(int32_t y0, int32_t h)
 {
-    static const int8_t TH[5][2] = {{18, 0}, {17, 7}, {13, 13}, {7, 17}, {0, 18}};   /* (0, 22.5 .. 90 degrees) */
-    static const int8_t WEB_R[3] = {6, 11, 16};
-    int32_t c, k, r;
-    sk_n = 0;
-    for (c = 0; c < 2; c++) {
-        int32_t ox = c ? 78 : 0, sx = c ? -1 : 1;
-        for (k = 0; k < 5; k++) sk_line(ox, 0, ox + sx * TH[k][0], TH[k][1], 0);
-        for (r = 0; r < 3; r++)
-            for (k = 0; k < 4; k++) {
-                int32_t x0 = TH[k][0] * WEB_R[r] / 18, y0 = TH[k][1] * WEB_R[r] / 18;
-                int32_t x1 = TH[k + 1][0] * WEB_R[r] / 18, y1 = TH[k + 1][1] * WEB_R[r] / 18;
-                int32_t mx = (x0 + x1) * 9 / 20, my = (y0 + y1) * 9 / 20;   /* (the sag: the middle a tenth in) */
-                sk_line(ox + sx * x0, y0, ox + sx * mx, my, 1);
-                sk_line(ox + sx * mx, my, ox + sx * x1, y1, 1);
-            }
-    }
-    sk_nw = sk_n;
-    ui_rnd_s = 7;                               /* (the stars as 1.0 had them: the concepts' random, seed 7) */
-    for (k = 0; k < (int32_t)NSTAR; k++) {
-        int32_t x = (int32_t)ui_rnd(79), y = (int32_t)ui_rnd(44);
-        sk_add(x, y, 2u | (ui_rnd(100) >= 65u));
-    }
-    sk_ok = 1;
+    int32_t x, y;
+    for (y = y0; y < y0 + h; y += 12)
+        ui_rect(12, y, 216, 1, UI_MX_D);
+    for (x = 12; x < 228; x += 12)
+        ui_rect(x, y0, 1, h, UI_MX_D);
 }
-static void ui_flame(int32_t x, int32_t y, int32_t n, uint32_t s)   /* (V2) a flame n rows tall (1 .. CN_ROWS) on the
-                                                 * wick (columns 2, 3 of 6 from x, as the flame was), its lowest row at
-                                                 * y: a drop, widest low down, its tip leaning with the shape s (0
-                                                 * straight, 1 right, 2 left); the edge the accent, the inside light */
+
+static void ui_matrix_crt(int32_t x, int32_t y, int32_t pulse)
 {
-    static const char *const W[CN_ROWS] = {"2", "12", "122", "1242", "12442", "112442", "1124442", "11224442",
-                                           "112244442", "1112244442"};   /* (each row's width, from the tip) */
-    int32_t i, c, w, c0;
-    for (i = 0; i < n; i++) {
-        w = W[n - 1][i] - '0';
-        c0 = (6 - w) / 2;
-        if (w == 1) c0 = s == 1u ? 3 + (i == 0 && n > 5) : s == 2u ? 1 : 2;   /* (the tip) */
-        for (c = 0; c < w; c++)
-            ui_rect(x + (c0 + c) * 3, y - (n - 1 - i) * 3, 3, 3,
-                    ui_col((w > 2 && c && c < w - 1) || (w == 2 && !c && i == n - 1 && n > 2) ? 'l' : 'a'));
-    }
+    int32_t r = 16 + pulse / 48;
+    ui_rect(x, y, 96, 72, UI_MX_M);
+    ui_rect(x + 2, y + 2, 92, 68, UI_K);
+    ui_rect(x, y, 14, 2, UI_MX_L);
+    ui_rect(x, y, 2, 14, UI_MX_L);
+    ui_rect(x + 94, y, 2, 14, UI_MX_L);
+    ui_rect(x + 82, y, 14, 2, UI_MX_L);
+    ui_rect(x, y + 70, 14, 2, UI_MX_L);
+    ui_rect(x, y + 58, 2, 14, UI_MX_L);
+    ui_rect(x + 48 - r, y + 36 - 2, r * 2, 4, UI_MX_M);
+    ui_rect(x + 48 - 2, y + 36 - r, 4, r * 2, UI_MX_M);
+    ui_text(x + 40, y + 28, "!", 2, UI_MX_L);
 }
-static void pic_home(void)                      /* Main: the webs, the stars, the eye, a candle a track */
+
+static void pic_home(void)                      /* Main: matrix rain, CRT hub, four track columns */
 {
-    static const char *const BODY[9] = {"...m..", ".wlll.", ".wlll.", ".llll.", ".llll.", "lllll.", ".llll.", ".llll.",
-                                        "dddddd"};
-    uint32_t i;
     int32_t t;
-    if (!sk_ok) sk_init();
-    for (i = 0; i < sk_n; i++) ui_rect(sk_x[i] * 3, 27 + sk_y[i] * 3, 3, 3, sk_col(i));
-    ui_eye(80, 39, ey_k, ey_dx, ey_dy);
-    for (t = 0; t < (int32_t)NT; t++) {         /* four candles, 27 px apart, centred */
-        int32_t x = 43 + t * 45, y = CN_Y, h = cn_h[t];
+    mx_seed();
+    ui_matrix_grid(PY0, 120);
+    mx_rain(PY0, 120, an_n, 72, 48, 96, 72);
+    ui_matrix_crt(72, 48, (int32_t)an_avg);
+    ui_text(PX0, 31, "> CYB!RM", 1, UI_MX_M);
+    for (t = 0; t < (int32_t)NT; t++) {
+        int32_t x = 43 + t * 45, h = cn_h[t], bh = h * 3;
         char lab[2] = {(char)('1' + t), 0};
-        if (!ui_in(x, y + 12 - 3 * CN_ROWS, 18, 3 * CN_ROWS + 43)) continue;
-        if (h) ui_flame(x, y + 9, h, cn_s[t] % 3u);   /* (V2: out, the wick alone) */
-        ui_sprite(x, y + 12, 3, BODY, 9);
-        ui_text(x + 5, y + 43, lab, 1, UI_M);
+        if (!ui_in(x, MX_BAR_Y - 4, 14, MX_BAR_H + 20)) continue;
+        ui_rect(x + 3, MX_BAR_Y, 8, MX_BAR_H, UI_MX_D);
+        if (bh > 0) {
+            if (bh > MX_BAR_H) bh = MX_BAR_H;
+            ui_rect(x + 3, MX_BAR_Y + MX_BAR_H - bh, 8, bh, UI_MX_L);
+        }
+        ui_text(x + 4, MX_BAR_Y + MX_BAR_H + 4, lab, 1, UI_MX_M);
     }
 }
 static void ui_pic_draw(void);
 static void ui_home_part(int32_t x, int32_t y, int32_t w, int32_t h) { ui_region(x, y, w, h, UI_K, ui_pic_draw); }
 static void ui_home_frame(int draw)             /* a frame of HOME's picture (draw: what changed, drawn) */
 {
-    static const int8_t BLINK[6] = {4, 2, 0, 0, 2, 3};   /* (a blink's lids, a frame each) */
-    uint32_t pk[NT], l = vis_lr[0], r = vis_lr[1], loud, t, i, sum = 0, n = 0, sound;
-    int32_t k, dx, dy;
+    static uint32_t prev_avg;
+    uint32_t pk[NT], l = vis_lr[0], r = vis_lr[1], loud, t, h;
     an_n++;
     for (t = 0; t < NT; t++) pk[t] = vis_pk[t], vis_pk[t] = 0;
     vis_lr[0] = vis_lr[1] = 0;
-    loud = (l > r ? l : r) >> 7;                /* (0 .. 256: the output's peak, full scale) */
+    loud = (l > r ? l : r) >> 7;
     loud = loud > 256u ? 256u : loud;
-    for (i = 0; i < nlat && i < NV; i++) sum += lat_note[i], n++;
-    sound = loud > 2u || n;
-    if (!sk_ok) sk_init();
+    mx_seed();
+    mx_tick(loud > 40u ? 1u : 0u);
 
-    for (t = 0; t < NT; t++) {                  /* the candles (V2: the track's sound after its LEVEL, as MIXER 1's) */
-        static const uint8_t ROW[CN_ROWS] = {3, 5, 8, 12, 18, 27, 40, 60, 90, 135};   /* (a row lit from: ~-38 ..
-                                                 * -5.6 dB of full) */
-        uint32_t e = pk[t] / 96u, h, s = cn_s[t];
+    for (t = 0; t < NT; t++) {
+        static const uint8_t ROW[CN_ROWS] = {3, 5, 8, 12, 18, 27, 40, 60, 90, 135};
+        uint32_t e = pk[t] / 96u, s = cn_s[t];
         e = e > 256u ? 256u : e;
         e = trk_quiet >> t & 1u ? 0u : e * (uint32_t)clamp(trk[t].level, 0, 127) / 127u;
-        an_e[t] = e >= an_e[t] ? e : an_e[t] - (an_e[t] * 67u + 255u) / 256u;   /* (up at once, down ~2.6 dB a frame:
-                                                 * from full to out ~0.8 s) */
+        an_e[t] = e >= an_e[t] ? e : an_e[t] - (an_e[t] * 67u + 255u) / 256u;
         for (h = 0; h < CN_ROWS && an_e[t] >= ROW[h]; h++)
             ;
-        if (h) {                                /* (lit: the dance; a new shape, at uneven times) */
-            if (!an_rnd(3) && h < CN_ROWS) h++;
-            else if (!an_rnd(4) && h > 1u) h--;
-            if (!cn_n[t] || !--cn_n[t]) s = (s + 1u + an_rnd(2)) % 3u, cn_n[t] = (uint8_t)(1u + an_rnd(3));
-        }
-        if (h != cn_h[t] || (s != cn_s[t] && h > 1u)) {   /* (shapes differ from 2 rows up) */
-            cn_h[t] = (uint8_t)h, cn_s[t] = (uint8_t)s;
-            if (draw) ui_home_part(43 + (int32_t)t * 45, CN_Y + 12 - 3 * CN_ROWS, 18, 3 * CN_ROWS);
+        if (h != cn_h[t]) {
+            cn_h[t] = (uint8_t)h;
+            if (draw) ui_home_part(43 + (int32_t)t * 45, MX_BAR_Y - 4, 14, MX_BAR_H + 16);
         }
         cn_s[t] = (uint8_t)s;
     }
 
-    for (i = 0; i < sk_n; i++)                  /* the webs: the sparkling cells on; new ones (louder: more) */
-        if (sk_ph[i]) {
-            uint16_t c = sk_col(i);
-            sk_ph[i] = sk_ph[i] >= 12u ? 0u : (uint8_t)(sk_ph[i] + 1u);
-            if (draw && sk_col(i) != c) ui_home_part(sk_x[i] * 3, 27 + sk_y[i] * 3, 3, 3);
-        }
-    for (t = 0; t < 1u + loud / 96u; t++)       /* (the webs, the stars each as often as 1.0's stars) */
-        for (k = 0; k < 2; k++)
-            if (an_rnd(64) < 3u + loud / 12u) {
-                i = k ? sk_nw + an_rnd(sk_n - sk_nw) : an_rnd(sk_nw);
-                if (!sk_ph[i]) sk_ph[i] = 1;
-            }
-
-    if (sound) {                                /* the eye: awake (the first sound: a blink), or dozing */
-        if (ey_doze) ey_doze = 0, ey_bl = 1;
-        an_sound_t = fm1_ms;
-    } else if (fm1_ms - an_sound_t > 4000u)
-        ey_doze = 1;
-    if (!ey_doze) {
-        ey_tx = l + r > 64u ? ((int32_t)r - (int32_t)l) * 3 / (int32_t)(l + r) : 0;   /* (the balance: -3 .. 3) */
-        ey_ty = !n ? 0 : sum / n >= 72u ? -1 : sum / n < 50u ? 1 : 0;   /* (high notes up, low down) */
-        if (loud > 48u && loud > 3u * an_avg + 24u && fm1_ms - an_blink_t > 600u) ey_bl = 1;   /* (a sudden hit) */
-    } else if (fm1_ms >= an_drift_t) {          /* (dozing: somewhere else now and then) */
-        ey_tx = (int32_t)an_rnd(5) - 2, ey_ty = (int32_t)an_rnd(2);
-        an_drift_t = fm1_ms + 1200u + an_rnd(1500);
-    }
     an_avg = (an_avg * 7u + loud) / 8u;
-    if (!ey_bl && fm1_ms >= an_next) ey_bl = 1; /* (now and then) */
-    if (ey_bl) {
-        if (ey_bl == 1) an_next = fm1_ms + 2500u + an_rnd(5000);
-        an_blink_t = fm1_ms;
-        k = ey_bl < 6 ? BLINK[ey_bl] : ey_doze ? 2 : 4;
-        ey_bl = ey_bl >= 6 ? 0 : ey_bl + 1;
-    } else
-        k = ey_doze ? (ey_k > 2 && !(an_n % 9u) ? ey_k - 1 : ey_k < 2 ? ey_k + 1 : ey_k) : ey_k < 4 ? ey_k + 1 : 4;   /* (dozing:
-                                                 * the lids down slowly) */
-    dx = ey_dx, dy = ey_dy;
-    if (!(an_n % (ey_doze ? 5u : 2u))) {        /* (the iris: a cell at a time) */
-        dx += ey_tx > dx ? 1 : ey_tx < dx ? -1 : 0;
-        dy += ey_ty > dy ? 1 : ey_ty < dy ? -1 : 0;
-    }
-    if (k != ey_k || dx != ey_dx || dy != ey_dy) {
-        ey_k = k, ey_dx = dx, ey_dy = dy;
-        if (draw) ui_home_part(80, 39, 80, 40);
+    if (draw) {
+        if ((an_n & 1u) == 0u) ui_home_part(PX0, PY0, 216, 120);
+        if ((an_avg / 16u) != (prev_avg / 16u)) ui_home_part(72, 48, 96, 72);
+        prev_avg = an_avg;
     }
 }
 static int32_t ui_oct;                          /* (the octave: SEL's keys) */
@@ -1946,153 +1877,79 @@ static uint32_t ui_pic_key(void)
 }
 
 /* ---- the screen: the boot, then the page, only what changed */
-/* Boot, UI_BOOT_MS at power-on (the project loaded before): (V2) stars twinkle round the eye, shut; a swarm of bats
- * flies past it (~0.4 .. 2.6 s, near ones big, far ones small), and the first across it startles it: it snaps wide
- * open (~0.9 s), jolts up, trembles, its pupil shrunk, its iris after the bats; when they are gone it blinks and
- * settles (~3 s; the times below are half these: bt_e). The drips run down from the bar over the whole boot; only what
- * moved drawn again, a frame every UI_ANIM_MS */
-static const int8_t DRIP[30] = {0, 3, 0, 0, 6, 0, 2, 0, 0, 0, 8, 0, 0, 1, 0, 0, 4, 0, 0, 0, 7, 0, 0, 2, 0, 0, 5, 0, 0, 0};
-static uint32_t ui_boot_t, bt_d, bt_e;          /* from when; the drips' time (0 .. UI_BOOT_MS), everything else's
-                                                 * (V2: half of it: the bats, the eye and the stars at half speed) */
-#define NBAT 10u
-static const int16_t BAT_T[NBAT] = {180, 260, 330, 380, 440, 500, 560, 620, 700, 780};   /* a bat: from when (ms), */
-static const int16_t BAT_MS[NBAT] = {520, 460, 500, 420, 480, 520, 440, 480, 460, 520};  /* across in this long, */
-static const uint8_t BAT_Y[NBAT] = {40, 60, 28, 70, 50, 22, 78, 44, 32, 64};             /* at what height, */
-static const uint8_t BAT_S[NBAT] = {2, 3, 2, 3, 3, 2, 2, 3, 2, 2};                       /* how big (px a cell), */
-#define BAT_LEFT 0x2E6u                         /* (flying left: bit i; bats 1, 2, 5, 6, 7, 9) */
-static int32_t bat_x(uint32_t i, uint32_t e)    /* bat i's left edge at e (ms), or -999 not flying */
-{
-    int32_t d = (int32_t)e - BAT_T[i], w = 9 * BAT_S[i];
-    if (d < 0 || d >= BAT_MS[i]) return -999;
-    d = d * (240 + w) / BAT_MS[i];
-    return BAT_LEFT >> i & 1u ? 240 - d : d - w;
-}
-static int32_t bat_y(uint32_t i, uint32_t e)    /* its top: bobbing 3 px up and down as it flies */
-{
-    int32_t b = ((int32_t)e - BAT_T[i]) % 220;
-    return BAT_Y[i] + (b < 110 ? b * 6 / 110 : (220 - b) * 6 / 110) - 3;
-}
-static void bat_draw(uint32_t e)                /* the bats flying at e: grey, a light body, red eyes, wings beating */
-{
-    static const char *const BAT_UP[5] = {"m.......m", "mm.....mm", ".mmm.mmm.", "..lalal..", "...lll..."};
-    static const char *const BAT_DN[5] = {"...l.l...", "..lalal..", ".mmlllmm.", "mm.....mm", "m.......m"};
-    uint32_t i;
-    for (i = 0; i < NBAT; i++) {
-        int32_t x = bat_x(i, e);
-        if (x == -999) continue;
-        ui_sprite(x, bat_y(i, e), BAT_S[i], ((int32_t)e - BAT_T[i]) / 90 % 2 ? BAT_DN : BAT_UP, 5);
-    }
-}
-/* the eye at e: its lids (k), where it is (jolted, trembling: jx, jy px), its iris (dx, dy), its pupil (startled:
- * small) */
-typedef struct { int32_t k, jx, jy, dx, dy, tiny; } bt_eye_t;
-static bt_eye_t bt_eye(uint32_t e)
-{
-    bt_eye_t y = {0, 0, 0, 0, 0, 0};
-    if (e < 450u) y.k = e >= 330u && e < 385u ? 1 : 0;   /* (shut; a flutter as the bats come) */
-    else if (e < 1000u) {                       /* (startled: wide open, jolted up, trembling; its iris after them) */
-        y.k = 4, y.tiny = 1;
-        y.jy = e < 505u ? -4 : e < 560u ? -2 : 0;
-        y.jx = e >= 560u && e < 780u ? (e / UI_ANIM_MS & 1u ? 2 : -2) : 0;
-        y.dx = e < 560u ? 0 : e < 780u ? -2 : 2;
-    } else if (e < 1350u) y.k = 4, y.dx = e < 1200u ? -1 : 0, y.dy = e < 1200u ? -1 : 0;   /* (after the last ones) */
-    else if (e < 1515u) y.k = e < 1405u || e >= 1460u ? 2 : 0;   /* (a blink) */
-    else y.k = 4;
-    return y;
-}
-static int bt_eye_same(bt_eye_t a, bt_eye_t b)
-{
-    return a.k == b.k && a.jx == b.jx && a.jy == b.jy && a.dx == b.dx && a.dy == b.dy && a.tiny == b.tiny;
-}
-/* the stars round the eye (as HOME's: 3 px, dark or mid), each now and then sparkling: mid, light, a white cross,
- * light, mid; where they are: the concepts' random, seed 13, none on the eye or within 10 px of another */
-#define NBSTAR 26u
-static uint8_t bs_x[NBSTAR], bs_y[NBSTAR], bs_p[NBSTAR], bs_o[NBSTAR];   /* where (px), its period, offset (x 8 ms) */
-static void bs_init(void)
-{
-    uint32_t s = ui_rnd_s, i, j, tries = 0;
-    ui_rnd_s = 13;
-    for (i = 0; i < NBSTAR && tries < 2000u; tries++) {
-        int32_t x = 6 + (int32_t)ui_rnd(229), y = 14 + (int32_t)ui_rnd(80);
-        if (x > 68 && x < 170 && y > 34) continue;   /* (the eye, jolted and trembling: 72 .. 166, 40 .. 92 px) */
-        for (j = 0; j < i; j++) {
-            int32_t ddx = x - bs_x[j], ddy = y - bs_y[j];
-            if (ddx > -10 && ddx < 10 && ddy > -10 && ddy < 10) break;
-        }
-        if (j < i) continue;
-        bs_x[i] = (uint8_t)x, bs_y[i] = (uint8_t)y;
-        bs_p[i] = (uint8_t)(90 + ui_rnd(110)), bs_o[i] = (uint8_t)ui_rnd(200);
-        i++;
-    }
-    ui_rnd_s = s;
-}
-static uint32_t bs_st(uint32_t i, uint32_t e)   /* star i at e: 0 at rest (dark, or mid: every third), 1 mid, 2 light,
-                                                 * 3 the cross */
-{
-    uint32_t p = (e / 8u + bs_o[i]) % bs_p[i];
-    return p < 7u ? 1u : p < 14u ? 2u : p < 28u ? 3u : p < 35u ? 2u : p < 41u ? 1u : 0u;
-}
-static void bs_draw(uint32_t e)
-{
-    uint32_t i;
-    for (i = 0; i < NBSTAR; i++) {
-        int32_t x = bs_x[i], y = bs_y[i];
-        uint32_t s = bs_st(i, e);
-        if (s == 3u) {
-            ui_rect(x - 3, y, 9, 3, UI_L), ui_rect(x, y - 3, 3, 9, UI_L);
-            ui_rect(x, y, 3, 3, UI_W);
-        } else
-            ui_rect(x, y, 3, 3, s == 2u ? UI_L : s == 1u || i % 3u == 0u ? UI_M : UI_D);
-    }
-}
+/* Boot, UI_BOOT_MS at power-on: CYB!RM grid — scan lines, four track meters, logo glitch, progress bar. */
 #define BOOT_LINE "FM-1 / NEON NOIR / V" APP_VER
 static const char *bt_note;                     /* the boot screen's last line, if not BOOT_LINE ("INSTALLING SAMPLES") */
-static int32_t bt_len(uint32_t x) { return DRIP[x] * (int32_t)bt_d / (int32_t)UI_BOOT_MS; }   /* a drip's cells now */
-static void ui_boot_draw(void)                  /* Boot: the stars, the eye, the bats, CYB!RM, the drips */
+static uint32_t ui_boot_t, bt_e;                /* from when; elapsed ms for ui_boot_draw */
+
+static int32_t bt_bar_h(uint32_t e, uint32_t t, int32_t hmax)
 {
-    int32_t x, y;
-    bt_eye_t ey = bt_eye(bt_e);
-    bs_draw(bt_e);
-    ui_eye_tiny = ey.tiny;
-    ui_eye(80 + ey.jx, 48 + ey.jy, ey.k, ey.dx, ey.dy);
-    ui_eye_tiny = 0;
-    bat_draw(bt_e);
-    ui_text(120 - 12 * ui_len(APP_NAME), 100, APP_NAME, 3, UI_L);
-    for (y = 0; y < 10; y++)
-        for (x = 0; x < 30; x++)
-            if (!y || y <= bt_len((uint32_t)x)) ui_rect(60 + x * 4, 128 + y * 4, 4, 4, y ? ui_acc : UI_M);
-    ui_text(120 - 4 * ui_len(bt_note ? bt_note : BOOT_LINE), 210, bt_note ? bt_note : BOOT_LINE, 1, bt_note ? ui_acc : UI_M);
+    uint32_t start = 800u + t * 110u, end = start + 850u;
+    if (e < start) return 0;
+    if (e >= end) return hmax;
+    return (int32_t)((e - start) * (uint32_t)hmax / (end - start));
 }
+
+static void ui_boot_draw(void)
+{
+    uint32_t e = bt_e;
+    int32_t i, lx;
+    const int32_t bar_x[4] = {54, 90, 126, 162};
+    const int32_t bar_hmax[4] = {72, 96, 56, 88};
+    const char *foot = bt_note ? bt_note : BOOT_LINE;
+
+    ui_matrix_grid(20, 200);
+    mx_rain(20, 200, e, e >= 900u ? 72 : -999, e >= 900u ? 44 : -999, e >= 900u ? 96 : 0, e >= 900u ? 76 : 0);
+    if (e >= 900u) ui_matrix_crt(72, 44, (int32_t)(e / 25u));
+
+    if (e >= 700u)
+        for (i = 0; i < 4; i++) {
+            int32_t h = bt_bar_h(e, (uint32_t)i, bar_hmax[i]);
+            if (h > 0) ui_rect(bar_x[i], 200 - h, 10, h, i & 1u ? UI_MX_M : UI_MX_L);
+        }
+
+    if (e >= 1800u) {
+        int32_t gx = 0;
+        lx = 120 - 12 * ui_len(APP_NAME);
+        if (e >= 2000u && e < 2300u && (e / UI_ANIM_MS) & 1u)
+            gx = ((e / UI_ANIM_MS) & 2u) ? 3 : -3;
+        if (gx) {
+            ui_text(lx + gx, 124, APP_NAME, 3, UI_MX_M);
+            ui_text(lx - gx, 126, APP_NAME, 3, UI_MX_D);
+        }
+        ui_text(lx, 124, APP_NAME, 3, e >= 2200u ? UI_MX_W : UI_MX_L);
+    } else if (e >= 1200u)
+        ui_text(48, 124, "> BOOT", 2, UI_MX_M);
+
+    ui_rect(60, 196, 120, 3, UI_MX_D);
+    if (e >= 3500u) {
+        uint32_t prog = e >= UI_BOOT_MS ? 120u : (e - 3500u) * 120u / (UI_BOOT_MS - 3500u);
+        ui_rect(60, 196, (int32_t)prog, 3, UI_MX_L);
+    }
+    if (e >= 3200u)
+        ui_text(120 - 4 * ui_len(foot), 210, foot, 1, bt_note ? UI_MX_L : UI_MX_M);
+}
+
 static void ui_boot(void)
 {
-    ui_boot_t = fm1_ms, bt_d = bt_e = 0;
-    bs_init();
+    ui_boot_t = fm1_ms;
+    bt_e = 0;
+    mx_seed();
     ui_region(0, 0, 240, 240, UI_K, ui_boot_draw);
 }
+
 static void ui_boot_frame(void)
 {
-    static uint32_t t;
-    uint32_t e = fm1_ms - ui_boot_t, e0 = bt_e, x, i, was = 0, now = 0;   /* (e0: the time last drawn) */
+    static uint32_t t, shown;
+    uint32_t e = fm1_ms - ui_boot_t;
     if (fm1_ms - t < UI_ANIM_MS) return;
     t = fm1_ms;
-    bt_e = e / 2u;                              /* (what each region shows: as at e; V2: at half speed) */
-    if (!bt_eye_same(bt_eye(e0), bt_eye(e)))
-        ui_region(72, 40, 96, 52, UI_K, ui_boot_draw);   /* (the eye, wherever it jolts and trembles) */
-    for (i = 0; i < NBAT; i++) {                /* the bats: where each was and is now drawn again */
-        int32_t a = bat_x(i, e0), b = bat_x(i, e), w = 9 * BAT_S[i], x0, x1, y0;
-        if (a == -999 && b == -999) continue;
-        if (a == -999) a = b;
-        if (b == -999) b = a;
-        x0 = a < b ? a : b, x1 = (a < b ? b : a) + w;   /* (where it was and is: on the screen only) */
-        x0 = x0 < 0 ? 0 : x0, x1 = x1 > 240 ? 240 : x1, y0 = BAT_Y[i] - 3;
-        if (x1 > x0) ui_region(x0, y0, x1 - x0, 5 * BAT_S[i] + 7, UI_K, ui_boot_draw);
+    mx_tick(1u);
+    bt_e = e;
+    if (e != shown) {
+        shown = e;
+        ui_region(0, 0, 240, 240, UI_K, ui_boot_draw);
     }
-    for (i = 0; i < NBSTAR; i++)                /* the stars that changed */
-        if (bs_st(i, e0) != bs_st(i, e)) ui_region(bs_x[i] - 3, bs_y[i] - 3, 9, 9, UI_K, ui_boot_draw);
-    for (x = 0; x < 30u; x++) was += (uint32_t)bt_len(x);
-    bt_d = e;
-    for (x = 0; x < 30u; x++) now += (uint32_t)bt_len(x);
-    if (now != was) ui_region(60, 132, 120, 36, UI_K, ui_boot_draw);   /* (a drip a cell longer) */
 }
 
 static void ui_update(int32_t oct)

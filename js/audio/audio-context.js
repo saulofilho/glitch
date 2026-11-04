@@ -31,26 +31,28 @@ export class AudioManager {
       sampleRate: 44100
     });
 
-    // Master Gain
+    // Master gain: GR!MM 2.0 keeps ~6 dB headroom below the top of MASTER; default ≈ 75 %.
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0.85, this.ctx.currentTime);
+    this.masterGain.gain.setValueAtTime(0.72, this.ctx.currentTime);
 
-    // Master Limiter / Compressor to avoid any harsh digital clipping
+    // Brick-wall style limiter at the output (manual: nothing clips at LEVEL 100 + FX).
     this.limiter = this.ctx.createDynamicsCompressor();
-    this.limiter.threshold.setValueAtTime(-1.0, this.ctx.currentTime);
-    this.limiter.knee.setValueAtTime(4.0, this.ctx.currentTime);
-    this.limiter.ratio.setValueAtTime(12.0, this.ctx.currentTime);
-    this.limiter.attack.setValueAtTime(0.003, this.ctx.currentTime);
-    this.limiter.release.setValueAtTime(0.15, this.ctx.currentTime);
+    this.limiter.threshold.setValueAtTime(-9.0, this.ctx.currentTime);
+    this.limiter.knee.setValueAtTime(6.0, this.ctx.currentTime);
+    this.limiter.ratio.setValueAtTime(10.0, this.ctx.currentTime);
+    this.limiter.attack.setValueAtTime(0.004, this.ctx.currentTime);
+    this.limiter.release.setValueAtTime(0.12, this.ctx.currentTime);
 
     // Spectrum & Oscilloscope Analyser
     this.analyser = this.ctx.createAnalyser();
     this.analyser.fftSize = 2048;
     this.analyser.smoothingTimeConstant = 0.82;
 
-    // Send buses for global FX
+    // Send buses: GR!MM 2.0 feeds DELAY/SPACE 6 dB lower than the dry path.
     this.delaySendBus = this.ctx.createGain();
     this.reverbSendBus = this.ctx.createGain();
+    this.delaySendBus.gain.setValueAtTime(0.5, this.ctx.currentTime);
+    this.reverbSendBus.gain.setValueAtTime(0.5, this.ctx.currentTime);
 
     // Routing Graph:
     // masterGain -> limiter -> analyser -> destination

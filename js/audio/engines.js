@@ -104,8 +104,8 @@ export class SoundEngines {
     const release = Math.max(0.05, (params.release || 0.4));
 
     amp.gain.setValueAtTime(0.0001, time);
-    amp.gain.linearRampToValueAtTime(vel * 0.35, time + attack);
-    amp.gain.setValueAtTime(vel * 0.35, time + dur);
+    amp.gain.linearRampToValueAtTime(vel * 0.26, time + attack);
+    amp.gain.setValueAtTime(vel * 0.26, time + dur);
     amp.gain.exponentialRampToValueAtTime(0.0001, time + dur + release);
 
     osc1.connect(filter);
@@ -153,7 +153,7 @@ export class SoundEngines {
     const release = Math.max(0.08, params.release || 0.6);
 
     amp.gain.setValueAtTime(0.0001, time);
-    amp.gain.linearRampToValueAtTime(vel * 0.45, time + attack);
+    amp.gain.linearRampToValueAtTime(vel * 0.32, time + attack);
     amp.gain.exponentialRampToValueAtTime(0.0001, time + dur + release);
 
     carrier.connect(amp);
@@ -177,7 +177,7 @@ export class SoundEngines {
     delay.delayTime.setValueAtTime(delayPeriod, time);
 
     const feedback = ctx.createGain();
-    const decay = params.resonatorDecay !== undefined ? params.resonatorDecay : 0.982;
+    const decay = params.resonatorDecay !== undefined ? params.resonatorDecay : 0.968;
     feedback.gain.setValueAtTime(decay, time);
 
     // Damping lowpass filter in feedback loop
@@ -200,7 +200,7 @@ export class SoundEngines {
     noise.buffer = noiseBuf;
 
     const amp = ctx.createGain();
-    amp.gain.setValueAtTime(vel * 0.6, time);
+    amp.gain.setValueAtTime(vel * 0.42, time);
     amp.gain.exponentialRampToValueAtTime(0.0001, time + dur * 1.5 + 0.5);
 
     noise.connect(delay);
@@ -265,8 +265,8 @@ export class SoundEngines {
     const release = Math.max(0.2, params.release || 0.8);
 
     amp.gain.setValueAtTime(0.0001, time);
-    amp.gain.linearRampToValueAtTime(vel * 0.4, time + attack);
-    amp.gain.setValueAtTime(vel * 0.4, time + dur);
+    amp.gain.linearRampToValueAtTime(vel * 0.3, time + attack);
+    amp.gain.setValueAtTime(vel * 0.3, time + dur);
     amp.gain.exponentialRampToValueAtTime(0.0001, time + dur + release);
 
     formantSum.connect(amp);
@@ -290,7 +290,7 @@ export class SoundEngines {
       src.playbackRate.setValueAtTime(Math.max(0.1, Math.min(4.0, rate)), time);
 
       const amp = ctx.createGain();
-      amp.gain.setValueAtTime(vel * 0.7, time);
+      amp.gain.setValueAtTime(vel * 0.52, time);
       amp.gain.exponentialRampToValueAtTime(0.0001, time + dur + 0.2);
 
       src.connect(amp);
@@ -320,8 +320,8 @@ export class SoundEngines {
 
     const amp = ctx.createGain();
     amp.gain.setValueAtTime(0.0001, time);
-    amp.gain.linearRampToValueAtTime(vel * 0.5, time + 0.03);
-    amp.gain.setValueAtTime(vel * 0.5, time + dur);
+    amp.gain.linearRampToValueAtTime(vel * 0.36, time + 0.03);
+    amp.gain.setValueAtTime(vel * 0.36, time + dur);
     amp.gain.exponentialRampToValueAtTime(0.0001, time + dur + 0.3);
 
     noiseSrc.connect(filter);
@@ -347,7 +347,7 @@ export class SoundEngines {
     f2.type = 'lowpass';
 
     const baseCutoff = params.cutoff !== undefined ? params.cutoff : 600;
-    const peakCutoff = Math.min(11000, baseCutoff + 4000 * vel);
+    const peakCutoff = Math.min(9000, baseCutoff + 2800 * vel);
     const res = Math.min(22, (params.resonance !== undefined ? params.resonance : 14));
 
     f1.Q.setValueAtTime(res * 0.5, time);
@@ -370,8 +370,8 @@ export class SoundEngines {
 
     const amp = ctx.createGain();
     amp.gain.setValueAtTime(0.0001, time);
-    amp.gain.linearRampToValueAtTime(vel * 0.4, time + 0.005);
-    amp.gain.setValueAtTime(vel * 0.4, time + dur);
+    amp.gain.linearRampToValueAtTime(vel * 0.28, time + 0.005);
+    amp.gain.setValueAtTime(vel * 0.28, time + dur);
     amp.gain.exponentialRampToValueAtTime(0.0001, time + dur + 0.15);
 
     osc.connect(f1);

@@ -16,8 +16,8 @@ export const PRESETS = [
     tapeDrive: 0.42,
     tapeFlutter: 0.35,
     delayTime: 0.45,
-    delayFeedback: 0.6,
-    reverbDecay: 0.94,
+    delayFeedback: 0.52,
+    reverbDecay: 0.86,
     tracks: [
       {
         engine: ENGINE_TYPES.CYBER_ANALOG,
@@ -50,7 +50,7 @@ export const PRESETS = [
         cutoff: 2200,
         resonance: 3,
         sendDelay: 0.35,
-        sendReverb: 0.85,
+        sendReverb: 0.62,
         steps: [
           { step: 0, note: 48, active: true, vel: 0.8 },
           { step: 8, note: 49, active: true, vel: 0.75 }
@@ -62,7 +62,7 @@ export const PRESETS = [
         cutoff: 4000,
         resonance: 2,
         sendDelay: 0.4,
-        sendReverb: 0.5,
+        sendReverb: 0.38,
         steps: [
           { step: 0, note: 60, active: true, vel: 0.6 },
           { step: 2, note: 60, active: true, vel: 0.4 },
@@ -82,14 +82,14 @@ export const PRESETS = [
     tapeDrive: 0.55,
     tapeFlutter: 0.2,
     delayTime: 0.312,
-    delayFeedback: 0.65,
-    reverbDecay: 0.86,
+    delayFeedback: 0.55,
+    reverbDecay: 0.82,
     tracks: [
       {
         engine: ENGINE_TYPES.ACID_303,
-        volume: 0.85,
+        volume: 0.72,
         cutoff: 1200,
-        resonance: 14,
+        resonance: 12,
         sendDelay: 0.35,
         sendReverb: 0.3,
         steps: [
@@ -152,8 +152,8 @@ export const PRESETS = [
     tapeDrive: 0.65,
     tapeFlutter: 0.4,
     delayTime: 0.365,
-    delayFeedback: 0.7,
-    reverbDecay: 0.9,
+    delayFeedback: 0.58,
+    reverbDecay: 0.84,
     tracks: [
       {
         engine: ENGINE_TYPES.CYBER_ANALOG,
@@ -187,7 +187,7 @@ export const PRESETS = [
         cutoff: 1800,
         resonance: 4,
         sendDelay: 0.4,
-        sendReverb: 0.88,
+        sendReverb: 0.65,
         steps: [
           { step: 0, note: 48, active: true, vel: 0.75 },
           { step: 8, note: 49, active: true, vel: 0.8 }
@@ -199,7 +199,7 @@ export const PRESETS = [
         cutoff: 5000,
         resonance: 3,
         sendDelay: 0.45,
-        sendReverb: 0.4,
+        sendReverb: 0.32,
         steps: [
           { step: 2, note: 60, active: true, vel: 0.5 },
           { step: 6, note: 60, active: true, vel: 0.75, ratchet: 2 },
@@ -218,8 +218,8 @@ export const PRESETS = [
     tapeDrive: 0.3,
     tapeFlutter: 0.45,
     delayTime: 0.52,
-    delayFeedback: 0.75,
-    reverbDecay: 0.98,
+    delayFeedback: 0.58,
+    reverbDecay: 0.88,
     tracks: [
       {
         engine: ENGINE_TYPES.DRONE_MEGAPAD,
@@ -227,7 +227,7 @@ export const PRESETS = [
         cutoff: 1400,
         resonance: 3,
         sendDelay: 0.4,
-        sendReverb: 0.92,
+        sendReverb: 0.72,
         steps: [
           { step: 0, note: 33, active: true, vel: 0.85 },
           { step: 8, note: 40, active: true, vel: 0.8 }
@@ -251,7 +251,7 @@ export const PRESETS = [
         cutoff: 2000,
         resonance: 4,
         sendDelay: 0.5,
-        sendReverb: 0.95,
+        sendReverb: 0.68,
         steps: [
           { step: 0, note: 45, active: true, vel: 0.8 },
           { step: 8, note: 48, active: true, vel: 0.75 }

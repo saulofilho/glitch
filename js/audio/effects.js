@@ -45,7 +45,7 @@ export class MasterEffects {
     // 4. Megacity Space Reverb
     this.reverbReturnGain = null;
     this.isReverbFrozen = false;
-    this.reverbDecayTime = 0.88;
+    this.reverbDecayTime = 0.82;
     this.reverbCombFilters = [];
     this.reverbAllpassFilters = [];
 
@@ -60,7 +60,9 @@ export class MasterEffects {
     this.ctx = this.audioMgr.ctx;
 
     this.inputGain = this.ctx.createGain();
+    this.inputGain.gain.setValueAtTime(0.58, this.ctx.currentTime);
     this.outputGain = this.ctx.createGain();
+    this.outputGain.gain.setValueAtTime(0.78, this.ctx.currentTime);
 
     this.initTapeSaturation();
     this.initCyberDelay();
@@ -139,7 +141,7 @@ export class MasterEffects {
     for (let i = 0; i < n_samples; ++i) {
       const x = (i * 2) / n_samples - 1;
       // Asymmetric soft-clipping for tape saturation (adds even and odd harmonics)
-      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x)) + 0.05 * Math.sin(x * Math.PI);
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x)) + 0.02 * Math.sin(x * Math.PI);
     }
     this.tapeShaper.curve = curve;
   }
@@ -277,7 +279,7 @@ export class MasterEffects {
     delayHp.frequency.setValueAtTime(180, this.ctx.currentTime);
 
     this.delayReturnGain = this.ctx.createGain();
-    this.delayReturnGain.gain.setValueAtTime(0.7, this.ctx.currentTime);
+    this.delayReturnGain.gain.setValueAtTime(0.44, this.ctx.currentTime);
 
     // Delay Graph:
     // delayFilter -> delayHp -> DelayL & DelayR -> Feedback -> delayFilter
@@ -312,7 +314,7 @@ export class MasterEffects {
   }
 
   setDelayFeedback(val) {
-    const clamped = Math.max(0, Math.min(0.72, val));
+    const clamped = Math.max(0, Math.min(0.62, val));
     this.delayFeedback = clamped;
     if (this._tailsHalted) return;
     this.delayFeedbackGain.gain.setTargetAtTime(clamped, this.ctx.currentTime, 0.05);
@@ -326,8 +328,9 @@ export class MasterEffects {
   /* ================= 4. MEGACITY SPACE REVERB ================= */
   initSpaceReverb() {
     this.reverbInputGain = this.ctx.createGain();
+    this.reverbInputGain.gain.setValueAtTime(0.88, this.ctx.currentTime);
     this.reverbReturnGain = this.ctx.createGain();
-    this.reverbReturnGain.gain.setValueAtTime(0.85, this.ctx.currentTime);
+    this.reverbReturnGain.gain.setValueAtTime(0.4, this.ctx.currentTime);
 
     // Highpass to eliminate low-end rumble in huge reverb
     const reverbHp = this.ctx.createBiquadFilter();
@@ -344,7 +347,7 @@ export class MasterEffects {
     const combDelays = [0.0297, 0.0371, 0.0411, 0.0437, 0.0493, 0.0531];
     const combGains = [];
     const combSum = this.ctx.createGain();
-    combSum.gain.setValueAtTime(0.16, this.ctx.currentTime);
+    combSum.gain.setValueAtTime(0.11, this.ctx.currentTime);
 
     const combClipCurve = new Float32Array(256);
     for (let i = 0; i < combClipCurve.length; i++) {
@@ -412,14 +415,14 @@ export class MasterEffects {
     const shimmerFilter = this.ctx.createBiquadFilter();
     shimmerFilter.type = 'highshelf';
     shimmerFilter.frequency.setValueAtTime(3200, this.ctx.currentTime);
-    shimmerFilter.gain.setValueAtTime(4.0, this.ctx.currentTime);
+    shimmerFilter.gain.setValueAtTime(0.8, this.ctx.currentTime);
 
     prevNode.connect(shimmerFilter);
     shimmerFilter.connect(this.reverbReturnGain);
   }
 
   setReverbDecay(val) {
-    this.reverbDecayTime = Math.max(0.2, Math.min(0.985, val));
+    this.reverbDecayTime = Math.max(0.2, Math.min(0.9, val));
     if (!this.isReverbFrozen && !this._tailsHalted) {
       const now = this.ctx.currentTime;
       this.reverbCombFilters.forEach(({ feedback }) => {
@@ -533,13 +536,13 @@ export class MasterEffects {
     this.delayFeedbackGain.gain.setValueAtTime(0, now);
     this.delayFeedbackGain.gain.setValueAtTime(fb, now + 0.55);
     this.delayReturnGain.gain.setValueAtTime(0, now);
-    this.delayReturnGain.gain.setValueAtTime(0.7, now + 0.55);
+    this.delayReturnGain.gain.setValueAtTime(0.44, now + 0.55);
     const decay = this.isReverbFrozen ? 0.999 : this.reverbDecayTime;
     this.reverbCombFilters.forEach(({ feedback }) => {
       feedback.gain.setValueAtTime(0, now);
       feedback.gain.setValueAtTime(decay, now + 0.12);
     });
     this.reverbReturnGain.gain.setValueAtTime(0, now);
-    this.reverbReturnGain.gain.setValueAtTime(0.85, now + 0.2);
+    this.reverbReturnGain.gain.setValueAtTime(0.4, now + 0.2);
   }
 }

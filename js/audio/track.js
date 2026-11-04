@@ -20,10 +20,10 @@ export class Track {
     this.soloed = false;
 
     // Track Parameters
-    this.volume = 0.8;
+    this.volume = 0.65;
     this.pan = 0.0;
-    this.sendDelay = 0.3;
-    this.sendReverb = 0.45;
+    this.sendDelay = 0.22;
+    this.sendReverb = 0.28;
     this.cutoff = 3000;
     this.resonance = 6;
     this.attack = 0.02;
