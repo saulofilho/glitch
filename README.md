@@ -11,6 +11,8 @@
 
 It is built as a zero-dependency, high-performance web synthesizer using the **Web Audio API**, **Canvas CRT visuals**, and **WebMIDI**, ready to run directly in any modern browser without complex build setups or toolchains.
 
+The FM-1 firmware lives in this repository, not in a GR!MM checkout. `firmware/src/` is the GPL-3.0 engine (the same feature logic: 4 tracks, 7 sources, sequencer, tape, grain, delay, space). The boot screen says **CYB!RM**, the default accent is neon cyan, and the factory sounds and scales are the neon-noir set. Build it from this directory with `./build.sh` once the JieLi toolchain is installed (`tools/get_toolchain.sh`). The package is `build/grimm.fwsc` (the installer name; the program on the device is CYB!RM). Install with `python3 tools/fm1_install.py build/grimm.fwsc` while the FM-1 is connected.
+
 ---
 
 ## 🎛️ Architecture Comparison: GR!MM vs CYB!RM

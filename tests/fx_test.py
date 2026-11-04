@@ -213,13 +213,13 @@ _, pl, _ = run("links2", [(1200, "midi 0xB0 23 127")], 1500, dict(os.environ, GR
 check("MIDI LEARN: a link to the TAPE send (x 5)", " tp 127,0,0,0" in pl, pl.split(" tp ")[1][:16])
 # (V2) VOICE's TYPE (SOURCE, KNOB 3): the four choirs load theirs; a choir another sound than SOLO, in range; saved
 # beside SHIFT (one byte), loaded; a GR!MM 1.0 project: SOLO
-want = {36: "GREGORIAN 1", 37: "PLAINCHANT 1", 38: "CATHEDRAL_CHOIR 3", 39: "NUNS 2"}
+want = {36: "ANDROID 1", 37: "GHOST_LINE 1", 38: "MEGACITY_CHOIR 3", 39: "CHOIR_GHOST 2"}
 got = {k: run(f"vt{k}", [(300, f"enc 6 {k}"), (500, "probe")], 600)[1].split(" sname ")[1].split(" vsh ")[0].replace(" vty", "")
        for k in want}
-check("the four choir sounds load their TYPEs (GREGORIAN, GREGORIAN, CATHEDRAL, NUNS)", got == want, got)
+check("the four choir sounds load their TYPEs (ANDROID, ANDROID, MEGACITY, GHOST)", got == want, got)
 SRC = [(300, "enc 6 31"), (400, "btn 6"), (450, "btn 6")]   # (CHOIR OF GHOSTS: VOICE, SOLO; EDIT: SOURCE)
 _, ps, solo_b = run("vt_solo", SRC + [(600, "probe")])
-for ty, name in ((1, "GREGORIAN"), (2, "NUNS"), (3, "CATHEDRAL")):
+for ty, name in ((1, "ANDROID"), (2, "GHOST"), (3, "MEGACITY")):
     w, pv, ch_b = run(f"vt_{ty}", SRC + [(500, f"enc 4 {ty}"), (600, "probe")])
     r, h, lo_, pk = measure(w)
     check(f"TYPE {name}: a choir, another sound than SOLO's, in range", f" vty {ty} " in pv and ch_b != solo_b and

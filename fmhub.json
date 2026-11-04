@@ -1,9 +1,6 @@
 {
-  "what": "Dark ambient, dungeon synth and deathdream firmware: 4 tracks, 7 sound sources, real recorded choirs, tracks that play by themselves, and long tape, granular and reverb effects.",
-  "author": "GR!MM",
+  "what": "Neon-noir firmware for the M-VAVE FM-1: the same 4 tracks, 7 sources and effects as GR!MM, with cyberpunk scales (Insen, Hirajoshi, Iwato, whole tone) and Blade Runner factory sounds.",
+  "author": "CYB!RM",
   "kinds": ["groove"],
-  "play": "https://grimmbient.github.io/grimm/",
-  "editor": "https://grimmbient.github.io/grimm/editor.html",
-  "cheat": "https://grimmbient.github.io/grimm/GRIMM-V2.0-manual.pdf",
   "image": "docs/card.png"
 }

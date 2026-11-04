@@ -13,7 +13,7 @@ Version 2.0 · for the M-VAVE FM-1
 - **MIDI:** the **TRS jack is a MIDI input** now; **MIDI clock** in (USB or TRS) and out (USB): SYSTEM 2's **CLOCK**; MIDI CHANNEL **CH n > SEL** plays the selected track from one channel. See [System](#11-system-hold-home).
 - **Faster playing:** **hold SEL + OCT+** switches the track's LATCH; **hold REC** (~1 s) clears the track's pattern; SYSTEM 3's **LATCH** decides whether a sound you load brings its own LATCH or always starts unlatched; SYSTEM 3's **VELOCITY** lets MIDI notes play as loud as they were played; SOURCE's **GLIDE** slides each note from the one before.
 - **PHASE's LINE 2:** a new page after SOURCE on PHASE tracks gives the second line its own **WAVE** and **DCW**, **RING** (line 1 × line 2) and **NOISE**, as on a Casio CZ; the **PHASE ENV** page after it adds a DCW envelope and a pitch envelope to every note. See [Sounds](#3-sounds-edit).
-- **VOICE choirs from real singers:** the VOICE source has a **TYPE** (SOURCE page, KNOB 3): SOLO (one voice, as in 1.0), or a choir of six singers on every note, made from recordings of real singers: GREGORIAN, NUNS or CATHEDRAL. Four choir sounds use them: GREGORIAN (set to FIFTH chords: switch chord mode on to hear parallel fifths), PLAINCHANT, CATHEDRAL CHOIR and NUNS. See [Sounds](#3-sounds-edit).
+- **VOICE choirs from real singers:** the VOICE source has a **TYPE** (SOURCE page, KNOB 3): SOLO (one voice, as in 1.0), or a choir of six singers on every note, made from recordings of real singers: ANDROID, GHOST or MEGACITY. Four choir sounds use them: ANDROID (set to FIFTH chords: switch chord mode on to hear parallel fifths), GHOST LINE, MEGACITY CHOIR and CHOIR GHOST. See [Sounds](#3-sounds-edit).
 - **GENERATE:** hold FX and tap a black key to let a track play random notes of the scale by itself, in three moods (DRIFT, PULSE, STORM), each track with its own mode, octave and range, shown on the PERFORM screen. See [Performance](#10-performance-hold-fx).
 - **MIXER 1 as six tiles:** LEVEL with a live meter, the DELAY, REVERB and GRAIN sends, and two new per-track sends, **TAPE** and **DRIVE**. TAPE now works per track: only the tracks whose TAPE tile is up go through the tape (0 = untouched), and its **WOW** is random tape slips instead of a steady wobble. See [HOME](#2-home).
 - **Warnings:** HOME shows a red **CUT** under a track whose filter is closed and **DRY** under a track whose FX is at 0; SYSTEM 2 counts **USB REC DROPS**; the header says **CPU FULL: NOTE DROPPED** when the FM-1 has too much to play. See [HOME](#2-home) and [System](#11-system-hold-home).
@@ -98,7 +98,7 @@ Press **HOME** again for the mixer pages:
 
 | KNOB 1 | KNOB 2 | KNOB 3 | KNOB 4 |
 |---|---|---|---|
-| SOURCE: VA, FM, SAMPLE, VOICE, WHEEL, PHYS, PHASE | LATCH: OFF / ON | TYPE (VOICE only): SOLO, GREGORIAN, NUNS, CATHEDRAL | GLIDE: OFF, 10 MS – 2.5 S |
+| SOURCE: VA, FM, SAMPLE, VOICE, WHEEL, PHYS, PHASE | LATCH: OFF / ON | TYPE (VOICE only): SOLO, ANDROID, GHOST, MEGACITY | GLIDE: OFF, 10 MS – 2.5 S |
 
 - **LATCH OFF:** a note sounds while you hold the key, like a normal keyboard.
 - **LATCH ON:** press once to start a note, press again to stop it. For drones. A note latched from MIDI (a DAW, a keyboard) stops with its key on the FM-1 too, and switching LATCH off stops every note of the track, wherever it came from. (After a DAW's STOP, notes it latched stay on: with LATCH ON a note-off doesn't end a note, as in GR!MM 1.0.)
@@ -127,9 +127,9 @@ On PHYS, STRUCTURE and BOW change meaning with the model; the screen shows the c
 | TYPE | Who sings each note |
 |---|---|
 | SOLO | One synthesized voice, as in GR!MM 1.0 (the default; every sound made before 2.0 is SOLO) |
-| GREGORIAN | Six men (three singers, two parts each), almost no vibrato |
-| NUNS | Six women (three singers, two parts each), a gentle vibrato |
-| CATHEDRAL | Three men and three women an octave above them, a gentle vibrato |
+| ANDROID | Six men (three singers, two parts each), almost no vibrato |
+| GHOST | Six women (three singers, two parts each), a gentle vibrato |
+| MEGACITY | Three men and three women an octave above them, a gentle vibrato |
 
 On a choir, the knobs do this:
 
@@ -234,7 +234,7 @@ The screen draws how the six operators are wired: carriers (the ones you hear) o
 | SCALE | ROOT (C–B) | SCALE |
 | CHORD | CHORD TYPE | VOICING |
 
-- **SCALE** (shared by all tracks): OFF, NATURAL MINOR, MAJOR, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, LOCRIAN, HARMONIC MINOR, PHRYGIAN DOMINANT, HUNGARIAN MINOR, DOUBLE HARMONIC, MINOR PENTATONIC, MAJOR PENTATONIC. With a scale set, every key snaps to the nearest note in it.
+- **SCALE** (shared by all tracks): OFF, AEOLIAN, MAJOR, CYBER DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, LOCRIAN, HARMONIC MINOR, PHRYGIAN DOMINANT, IWATO, WHOLE TONE, NOIR PENTATONIC, MAJOR PENTATONIC, INSEN, HIRAJOSHI. With a scale set, every key snaps to the nearest note in it. Aeolian is natural minor. Cyber Dorian is dorian.
 - **CHORD TYPE** (per track): SCALE (the scale's own chord on that note, always in key), MIN, MAJ, SUS2, SUS4, FIFTH, MIN7, MAJ7, DIM, ADD9, CLUSTER
 - **VOICING:** CLOSE, OPEN, SPREAD, +OCT, DROP
 
@@ -488,7 +488,7 @@ Turn **PRESETS** to step through them by category, then your own.
 - **Your sounds, slots A–D, settings and samples survive firmware updates.**
 - **CPU FULL: NOTE DROPPED:** the FM-1 has too much to play at once. It lets go of fading and generated notes first and keeps the notes you hold and the latched ones.
 - **After an unexpected restart** the header says why for a moment at power-on: `WATCHDOG RESET` (the FM-1 froze and restarted itself) or `LOW VOLTAGE RESET` (the power supply dipped).
-- **Factory sounds never switch chord mode on** when you load them. GREGORIAN, CATHEDRAL CHOIR and NUNS have their chord type set (GREGORIAN: FIFTH), so hold SEL to hear them as chords.
+- **Factory sounds never switch chord mode on** when you load them. ANDROID, MEGACITY CHOIR and CHOIR GHOST have their chord type set (ANDROID: FIFTH), so hold SEL to hear them as chords.
 - **Loudness:** GR!MM 2.0 keeps 6 dB of headroom: up to three quarters of MASTER everything plays 6 dB quieter than in 1.0 (sounds and projects are unchanged, only the output), and the last quarter of MASTER brings it back up to 1.0's level. A limiter at the very end means the output never clips, whatever LEVEL, chords or DRIVE do; at the top of MASTER the loudest chords are limited a little.
 - **MIDI IN:** over USB, and on the **TRS jack** (3.5 mm, MIDI IN only) with a TRS-to-DIN MIDI adapter. (TRS adapters come in different wirings; which one the FM-1's jack needs is still being tested, and this manual will say once it's confirmed.) Notes and CCs from the jack go exactly where USB's do (MIDI CHANNEL, MIDI LEARN); SysEx from the jack is ignored.
 - **Samples:** load your own WAV files into the four slots with the [editor](#15-the-editor) (or, optionally, `tools/fm1_sample_upload.py`, see the README). SYSTEM 2's SAMPLES brings the factory samples back.

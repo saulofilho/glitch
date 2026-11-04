@@ -39,14 +39,14 @@ def voice(name, alg, ops, fb=0, lfs=35, lpmd=0, lfw=4, lpms=0, trnsp=24):
 # algorithm 5: three pairs (OP1 <- OP2, OP3 <- OP4, OP5 <- OP6, the feedback on OP6); 32: six carriers (feedback on
 # OP6); 1: OP1 <- OP2 and OP3 <- OP4 <- OP5 <- OP6 (the feedback on OP6)
 PATCHES = [
-    voice("BELL", 5, [                             # inharmonic pairs: 1 by 4.5, 2 by 5.6, a hum (0.5) by 1.41
+    voice("DX BELL", 5, [                          # inharmonic pairs: 1 by 4.5, 2 by 5.6, a hum (0.5) by 1.41
         op(99, r=(99, 28, 20, 35), l=(99, 88, 82, 0)),
         op(74, fc=3, ff=50, r=(99, 30, 22, 35), l=(99, 72, 58, 0)),
         op(90, fc=2, det=9, r=(99, 24, 18, 35), l=(99, 86, 78, 0)),
         op(64, fc=5, ff=12, r=(99, 34, 24, 35), l=(99, 66, 50, 0)),
         op(84, fc=0, det=6, r=(99, 20, 15, 35), l=(99, 90, 86, 0)),
         op(52, fc=1, ff=41, r=(99, 40, 30, 35), l=(99, 60, 44, 0))]),
-    voice("ORGAN", 32, [                           # drawbars: 0.5 1 2 3 4, and a 1 with feedback for the bite
+    voice("FM ORGAN", 32, [                        # drawbars: 0.5 1 2 3 4, and a 1 with feedback for the bite
         op(78, fc=0),
         op(84),
         op(76, fc=2),
@@ -54,7 +54,7 @@ PATCHES = [
         op(62, fc=4),
         op(58)],
         fb=4, lfs=34, lpmd=6, lpms=2),
-    voice("SOFT PAD", 5, [                         # gently modulated, detuned carriers; the modulators swell in
+    voice("ICE PAD", 5, [                          # gently modulated, detuned carriers; the modulators swell in
         op(88, det=6, r=(60, 50, 99, 50)),
         op(62, r=(40, 30, 99, 50), l=(99, 85, 85, 0)),
         op(84, det=10, r=(60, 50, 99, 50)),
@@ -62,7 +62,7 @@ PATCHES = [
         op(74, fc=2, det=4, r=(60, 50, 99, 50)),
         op(48, r=(30, 30, 99, 50), l=(99, 80, 80, 0))],
         fb=2, lfs=20, lpmd=4, lpms=2),
-    voice("REED", 1, [                             # a buzzy stack: OP3 by 3 by 1 by 1 with feedback, beside 1 by 1
+    voice("DATA REED", 1, [                        # a buzzy stack: OP3 by 3 by 1 by 1 with feedback, beside 1 by 1
         op(90),
         op(70),
         op(78, det=9),

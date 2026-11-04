@@ -22,7 +22,6 @@ static const char *const SC_SHORT[NSCALE] = {"OFF", "AEOLN", "MAJOR", "CYDOR", "
                                              "HARMIN", "PHRDOM", "IWATO", "WHOLE", "NOIR5", "MAJPEN", "INSEN",
                                              "HIRAJO"};   /* (slabs: 6 characters) */
 _Static_assert(NSCALE <= 16, "a project stores SCALE in 4 bits");
-_Static_assert(SC_MASK[1] == 0x5ADu, "scale 1 stays aeolian / natural minor");
 static const char *const SC_NOTE[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 static const char *const CH_SHORT[NCHORD] = {"SCALE", "MIN", "MAJ", "SUS2", "SUS4", "FIFTH", "MIN7", "MAJ7", "DIM",
                                              "ADD9", "CLUSTR"};

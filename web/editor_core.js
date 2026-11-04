@@ -381,7 +381,7 @@ function pdOf(r) {                                          // a PHASE sound's L
 }                                                            // saved before): all off
 // GR!MM 2.0's sound settings, as the FM-1's screens name them (SOURCE: TYPE, GLIDE; LINE 2; PHASE ENV): the SOUND EDITOR
 // draws its controls from these, the tests check them against the sheets (controls-2.0.csv)
-export const VOICE_TYPES = ["SOLO", "GREGORIAN", "NUNS", "CATHEDRAL"];
+export const VOICE_TYPES = ["SOLO", "ANDROID", "GHOST", "MEGACITY"];
 export const LINE2_WAVES = ["SAME", "SAW", "SQR", "PLS", "DSIN", "SPLS", "RSAW", "RTRI", "RTRP"];
 export const timeText = (ms) => {                          // ui.c's ui_time: "5 MS", "120 MS", "1.5 S", "12 S"
   ms = Math.round(ms);
