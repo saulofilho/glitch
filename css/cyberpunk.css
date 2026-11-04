@@ -1,0 +1,250 @@
+/**
+ * CYB!RM - Cyberpunk / Cyberdeck Retrofuturistic Design System
+ */
+
+:root {
+  --bg-dark: #07090e;
+  --bg-panel: #0d121c;
+  --bg-card: #131b2a;
+  --bg-active: #1c273d;
+  
+  --neon-cyan: #00f3ff;
+  --neon-cyan-glow: rgba(0, 243, 255, 0.45);
+  --neon-magenta: #ff0055;
+  --neon-magenta-glow: rgba(255, 0, 85, 0.45);
+  --neon-amber: #ffaa00;
+  --neon-amber-glow: rgba(255, 170, 0, 0.45);
+  --neon-emerald: #00ff77;
+
+  --border-muted: #1e283d;
+  --border-bright: #00f3ff55;
+  --text-main: #d8e4f5;
+  --text-muted: #627694;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.06), transparent 70%),
+    radial-gradient(circle at 10% 90%, rgba(255, 0, 85, 0.04), transparent 60%);
+}
+
+/* CRT Scanlines Overlay */
+.crt-overlay {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.02),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.02)
+  );
+  background-size: 100% 3px, 6px 100%;
+  z-index: 9999;
+  opacity: 0.75;
+}
+
+/* Main Cyberdeck Container */
+.cyberdeck-frame {
+  max-width: 1440px;
+  margin: 16px auto;
+  padding: 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-muted);
+  border-top: 3px solid var(--neon-cyan);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 243, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Cyber Buttons */
+.cyber-btn {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.cyber-btn:hover {
+  background: var(--bg-active);
+  border-color: var(--neon-cyan);
+  color: #ffffff;
+  box-shadow: 0 0 10px var(--neon-cyan-glow);
+}
+
+.cyber-btn.active {
+  background: var(--neon-cyan);
+  color: #000000;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 14px var(--neon-cyan-glow);
+}
+
+.cyber-btn.active-cyber-glow {
+  background: var(--neon-magenta);
+  color: #ffffff;
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 18px var(--neon-magenta-glow);
+  animation: pulse-glow 1.5s infinite alternate;
+}
+
+.cyber-btn.recording-pulse {
+  background: #ff2222;
+  color: #fff;
+  border-color: #ff5555;
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.8);
+  animation: pulse-glow 0.8s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from { opacity: 0.85; filter: drop-shadow(0 0 4px currentColor); }
+  to { opacity: 1.0; filter: drop-shadow(0 0 12px currentColor); }
+}
+
+/* Cyber Selects & Inputs */
+.cyber-select, .cyber-input {
+  background: var(--bg-card);
+  color: var(--neon-cyan);
+  border: 1px solid var(--border-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.cyber-select:focus, .cyber-input:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan-glow);
+}
+
+/* Cyber Rotary Knobs */
+.cyber-knob-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: ns-resize;
+  width: 58px;
+}
+
+.knob-body {
+  width: 44px;
+  height: 44px;
+  background: radial-gradient(circle at 40% 40%, #202b3d, #0b0f17 80%);
+  border-radius: 50%;
+  border: 2px solid #2a374f;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+
+.cyber-knob-container:hover .knob-body {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan-glow);
+}
+
+.knob-dial {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.knob-pointer {
+  width: 3px;
+  height: 10px;
+  background: var(--neon-cyan);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--neon-cyan);
+  margin-top: 4px;
+}
+
+.knob-val-display {
+  font-size: 10px;
+  color: var(--neon-cyan);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  height: 14px;
+}
+
+.knob-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+}
+
+/* LED Indicator lights */
+.led-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a3547;
+  display: inline-block;
+}
+
+.led-indicator.on {
+  background: var(--neon-emerald);
+  box-shadow: 0 0 8px var(--neon-emerald);
+}
+
+.led-indicator.on-cyan {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--neon-magenta);
+  display: inline-block;
+  animation: pulse-dot-anim 0.6s infinite alternate;
+}
+
+@keyframes pulse-dot-anim {
+  from { transform: scale(0.8); opacity: 0.6; }
+  to { transform: scale(1.3); opacity: 1; }
+}
