@@ -79,7 +79,6 @@ export class MasterEffects {
     this.bitcrusherNode.output.connect(this.outputGain);
 
     // Granular freeze layer is mixed in parallel
-    this.tapeDelay.connect(this.grainScriptNode);
     this.freezeGain.connect(this.outputGain);
 
     // Returns for sends
@@ -90,7 +89,13 @@ export class MasterEffects {
     this.audioMgr.delaySendBus.connect(this.delayFilter);
     this.audioMgr.reverbSendBus.connect(this.reverbInputGain);
 
-    this.outputGain.connect(this.audioMgr.masterGain);
+    // A stuck feedback loop used to leave a full-scale DC offset on the master. This highpass lets the note through and sheds that offset.
+    this.dcBlock = this.ctx.createBiquadFilter();
+    this.dcBlock.type = 'highpass';
+    this.dcBlock.frequency.setValueAtTime(18, this.ctx.currentTime);
+    this.dcBlock.Q.setValueAtTime(0.7, this.ctx.currentTime);
+    this.outputGain.connect(this.dcBlock);
+    this.dcBlock.connect(this.audioMgr.masterGain);
   }
 
   /* ================= 1. TAPE SATURATION & DRIFT ================= */
@@ -219,9 +224,11 @@ export class MasterEffects {
     this.isFrozen = !this.isFrozen;
     const now = this.ctx.currentTime;
     if (this.isFrozen) {
+      try { this.tapeDelay.connect(this.grainScriptNode); } catch (e) {}
       this.freezeGain.gain.setTargetAtTime(1.0, now, 0.05);
       this.dryThroughGain.gain.setTargetAtTime(0.4, now, 0.1);
     } else {
+      try { this.tapeDelay.disconnect(this.grainScriptNode); } catch (e) {}
       this.freezeGain.gain.setTargetAtTime(0.0, now, 0.1);
       this.dryThroughGain.gain.setTargetAtTime(1.0, now, 0.05);
     }
@@ -235,8 +242,15 @@ export class MasterEffects {
     this.delayNodeL.delayTime.setValueAtTime(this.delayTimeSec, this.ctx.currentTime);
     this.delayNodeR.delayTime.setValueAtTime(this.delayTimeSec * 1.333, this.ctx.currentTime); // Dotted feel
 
+    this.delayNodeL.channelCount = 1;
+    this.delayNodeL.channelCountMode = 'explicit';
+    this.delayNodeR.channelCount = 1;
+    this.delayNodeR.channelCountMode = 'explicit';
+
     this.delayFeedbackGain = this.ctx.createGain();
-    this.delayFeedbackGain.gain.setValueAtTime(0.55, this.ctx.currentTime);
+    this.delayFeedbackGain.channelCount = 1;
+    this.delayFeedbackGain.channelCountMode = 'explicit';
+    this.delayFeedbackGain.gain.setValueAtTime(0.45, this.ctx.currentTime);
 
     // Tape darkening lowpass filter
     this.delayFilter = this.ctx.createBiquadFilter();
@@ -260,9 +274,17 @@ export class MasterEffects {
     delayHp.connect(this.delayNodeL);
     delayHp.connect(this.delayNodeR);
 
+    // Only the left tap feeds the loop. Both taps used to add together and push the loop over unity.
+    const loopClip = this.ctx.createWaveShaper();
+    const clipCurve = new Float32Array(256);
+    for (let i = 0; i < clipCurve.length; i++) {
+      const x = (i / 128) - 1;
+      clipCurve[i] = Math.tanh(x);
+    }
+    loopClip.curve = clipCurve;
     this.delayNodeL.connect(this.delayFeedbackGain);
-    this.delayNodeR.connect(this.delayFeedbackGain);
-    this.delayFeedbackGain.connect(this.delayFilter);
+    this.delayFeedbackGain.connect(loopClip);
+    loopClip.connect(this.delayFilter);
 
     this.delayNodeL.connect(merger, 0, 0);
     this.delayNodeR.connect(merger, 0, 1);
@@ -277,7 +299,7 @@ export class MasterEffects {
   }
 
   setDelayFeedback(val) {
-    const clamped = Math.max(0, Math.min(0.95, val));
+    const clamped = Math.max(0, Math.min(0.72, val));
     this.delayFeedbackGain.gain.setTargetAtTime(clamped, this.ctx.currentTime, 0.05);
   }
 
@@ -302,6 +324,7 @@ export class MasterEffects {
     const combDelays = [0.0297, 0.0371, 0.0411, 0.0437, 0.0493, 0.0531];
     const combGains = [];
     const combSum = this.ctx.createGain();
+    combSum.gain.setValueAtTime(0.16, this.ctx.currentTime);
 
     combDelays.forEach((delayTime) => {
       const delay = this.ctx.createDelay(0.1);
@@ -330,23 +353,25 @@ export class MasterEffects {
     let prevNode = combSum;
 
     allpassDelays.forEach((apTime) => {
+      const into = this.ctx.createGain();
       const apDelay = this.ctx.createDelay(0.02);
       apDelay.delayTime.setValueAtTime(apTime, this.ctx.currentTime);
-
-      const apGain = this.ctx.createGain();
-      apGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
-
-      const apFeed = this.ctx.createGain();
-      apFeed.gain.setValueAtTime(-0.5, this.ctx.currentTime);
-
+      const feed = this.ctx.createGain();
+      feed.gain.setValueAtTime(0.5, this.ctx.currentTime);
+      const invert = this.ctx.createGain();
+      invert.gain.setValueAtTime(-0.5, this.ctx.currentTime);
+      const direct = this.ctx.createGain();
+      direct.gain.setValueAtTime(0.5, this.ctx.currentTime);
       const apSum = this.ctx.createGain();
 
-      prevNode.connect(apDelay);
-      prevNode.connect(apSum);
-      apDelay.connect(apGain);
-      apGain.connect(apSum);
-      apDelay.connect(apFeed);
-      apFeed.connect(prevNode);
+      prevNode.connect(into);
+      prevNode.connect(direct);
+      direct.connect(apSum);
+      into.connect(apDelay);
+      apDelay.connect(invert);
+      invert.connect(apSum);
+      apDelay.connect(feed);
+      feed.connect(into);
 
       prevNode = apSum;
       this.reverbAllpassFilters.push(apDelay);
@@ -418,8 +443,10 @@ export class MasterEffects {
     };
 
     input.connect(dry);
-    input.connect(crusher);
     crusher.connect(wet);
+    this.crusher = crusher;
+    this.crusherInput = input;
+    this.crusherLive = false;
 
     dry.connect(output);
     wet.connect(output);
@@ -430,6 +457,13 @@ export class MasterEffects {
   setBitcrushMix(val) {
     this.crushMix = Math.max(0, Math.min(1, val));
     const now = this.ctx.currentTime;
+    if (this.crushMix > 0.001 && !this.crusherLive) {
+      this.crusherInput.connect(this.crusher);
+      this.crusherLive = true;
+    } else if (this.crushMix <= 0.001 && this.crusherLive) {
+      try { this.crusherInput.disconnect(this.crusher); } catch (e) {}
+      this.crusherLive = false;
+    }
     this.bitcrusherNode.wet.gain.setTargetAtTime(this.crushMix, now, 0.02);
     this.bitcrusherNode.dry.gain.setTargetAtTime(1.0 - this.crushMix * 0.5, now, 0.02);
   }
