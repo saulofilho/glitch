@@ -62,7 +62,7 @@ export class AudioVisualizer {
     const ctx = this.ctx;
 
     // Dark phosphor CRT decay effect
-    ctx.fillStyle = 'rgba(10, 14, 22, 0.28)';
+    ctx.fillStyle = 'rgba(106, 90, 212, 0.2)';
     ctx.fillRect(0, 0, w, h);
 
     if (!this.audioMgr || !this.audioMgr.analyser) {
@@ -78,7 +78,7 @@ export class AudioVisualizer {
   }
 
   drawIdleGrid(ctx, w, h) {
-    ctx.strokeStyle = 'rgba(0, 243, 255, 0.1)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, h / 2);
@@ -99,9 +99,9 @@ export class AudioVisualizer {
 
     // Oscilloscope Trace
     ctx.lineWidth = 2.5 * (window.devicePixelRatio || 1);
-    ctx.strokeStyle = '#00f3ff';
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = '#00f3ff';
+    ctx.strokeStyle = '#ffffff';
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
 
     ctx.beginPath();
     const sliceWidth = w / this.timeDomainBuffer.length;
