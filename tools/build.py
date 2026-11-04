@@ -294,13 +294,13 @@ def main():
     ap.add_argument("--name", metavar="FILE.fwsc", help="the package's file name (default grimm.fwsc)")
     a = ap.parse_args()
     DEFINES.extend(a.define)
-    name = a.name or "grimm.fwsc"
+    name = a.name or "cybirm.fwsc"
     if a.release:                   # one digit each: the identity has room for two (X.Y; a .Z only in the text)
         m = re.fullmatch(r"(\d)\.(\d)(\.\d)?(-[A-Za-z0-9]+)?", a.release)
         if not m:
             raise SystemExit(f"--release {a.release}: use X.Y, X.Y.Z or X.Y-suffix, one digit each")
         VERSION = m[1] + "." + m[2] + (m[3] or "")
-        name = a.name or f"grimm-{a.release}.fwsc"
+        name = a.name or f"cybirm-{a.release}.fwsc"
     fm1pkg_make.SDK = a.sdk
     for rel, sha in SDK_SHA256.items():          # fail early without the SDK
         if hashlib.sha256(fm1pkg_make.sdk_file(rel)).hexdigest() != sha:

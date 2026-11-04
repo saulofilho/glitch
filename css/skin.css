@@ -381,3 +381,124 @@ body.shop {
 .deck input[type="range"] { accent-color: var(--violet); }
 .deck .chord-pad-btn { background: var(--white); }
 .deck .chord-desc { color: var(--muted); }
+
+.theme-toggle {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 980px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.theme-toggle:hover { border-color: var(--violet); color: var(--violet); }
+.deck .face-nav .theme-toggle {
+  font-size: 13px;
+  padding: 4px 12px;
+  margin-left: 8px;
+}
+
+/* —— Dark theme (black surface, neon accents) —— */
+html[data-theme="dark"] {
+  --ink: #f5f5f7;
+  --muted: #a1a1a6;
+  --paper: #000;
+  --line: #3a3a3c;
+  --white: #1c1c1e;
+  --violet: #8b7cf6;
+  --violet-deep: #6d5ce8;
+  --sky: #2a3350;
+  --mint: #5eead4;
+  --pink: #f0abce;
+}
+
+html[data-theme="dark"] body.shop {
+  background: #000;
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .nav {
+  background: rgba(0, 0, 0, 0.88);
+  border-bottom: 1px solid var(--line);
+}
+
+html[data-theme="dark"] .nav-cta {
+  background: var(--violet);
+  color: #fff !important;
+}
+
+html[data-theme="dark"] .features a {
+  background: var(--white);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+html[data-theme="dark"] .features a:hover {
+  box-shadow: 0 0 0 1px var(--violet);
+}
+
+html[data-theme="dark"] .stage {
+  background: linear-gradient(165deg, #1a1f33 0%, #3d3580 46%, #2a2060 100%);
+}
+
+html[data-theme="dark"] .shop footer {
+  border-top-color: var(--line);
+}
+
+html[data-theme="dark"] .theme-toggle {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] body.deck {
+  background: #000;
+}
+
+html[data-theme="dark"] .deck .cyberdeck-frame {
+  background: #0d0d0f;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="dark"] .deck .cyber-panel,
+html[data-theme="dark"] .deck .fx-block,
+html[data-theme="dark"] .deck .track-detail-header,
+html[data-theme="dark"] .deck .step-inspector,
+html[data-theme="dark"] .deck .keyboard-guide,
+html[data-theme="dark"] .deck .status-badge {
+  background: #141416;
+}
+
+html[data-theme="dark"] .deck .cyber-btn,
+html[data-theme="dark"] .deck .cyber-select,
+html[data-theme="dark"] .deck .step-button,
+html[data-theme="dark"] .deck .track-tab,
+html[data-theme="dark"] .deck .kbd-badge,
+html[data-theme="dark"] .deck .chord-pad-btn {
+  background: #1c1c1e;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .deck .cyber-btn:hover {
+  border-color: var(--violet);
+  background: #252528;
+}
+
+html[data-theme="dark"] .deck .crt-screen-container {
+  background: linear-gradient(165deg, #1a1f33 0%, #3d3580 48%, #2a2060 100%);
+}
+
+html[data-theme="dark"] .deck .knob-body {
+  background: radial-gradient(circle at 32% 28%, #4a4560 0%, #2a2540 35%, #1a1530 78%);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .deck .step-led { background: #3a3a3c; }
+
+html[data-theme="dark"] .deck .face-nav .theme-toggle {
+  background: #1c1c1e;
+  border-color: var(--line);
+  color: var(--ink);
+}

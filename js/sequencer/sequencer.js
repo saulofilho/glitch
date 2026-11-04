@@ -5,9 +5,10 @@
  */
 
 export class StepSequencer {
-  constructor(audioManager, tracks) {
+  constructor(audioManager, tracks, masterFx) {
     this.audioMgr = audioManager;
     this.tracks = tracks; // Array of 4 Track instances
+    this.masterFx = masterFx || null;
     this.ctx = audioManager.ctx;
 
     this.isPlaying = false;
@@ -67,24 +68,31 @@ export class StepSequencer {
   start() {
     if (this.isPlaying) return;
     this.ctx = this.audioMgr.ctx;
+    if (this.masterFx) this.masterFx.restoreTails();
     this.isPlaying = true;
     this.currentStep = 0;
     this.nextStepTime = this.ctx.currentTime + 0.05;
     this.scheduleLoop();
+    if (this.onTransport) this.onTransport(true);
   }
 
   stop() {
-    if (!this.isPlaying) return;
+    // Always close the effect tails, even if the clock was already stopped.
+    if (this.masterFx) this.masterFx.haltTails();
+    if (!this.isPlaying) {
+      if (this.onTransport) this.onTransport(false);
+      return;
+    }
     this.isPlaying = false;
     if (this.timerId) {
       clearTimeout(this.timerId);
       this.timerId = null;
     }
-    // Stop all active notes across all tracks
     this.tracks.forEach(track => track.stopAllNotes());
     if (this.onStepChange) {
       this.onStepChange(-1);
     }
+    if (this.onTransport) this.onTransport(false);
   }
 
   scheduleLoop() {

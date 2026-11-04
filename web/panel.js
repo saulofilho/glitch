@@ -322,6 +322,15 @@ async function midiOn() {
 }
 
 // ------------------------------------------------------------------ switching on
+async function loadWasm() {
+  // The source page lives in web/ and the built page in web/dist/. Either place is valid.
+  for (const url of ["cybirm.wasm", "dist/cybirm.wasm", "grimm.wasm", "dist/grimm.wasm"]) {
+    const r = await fetch(url);
+    if (r.ok) return r.arrayBuffer();
+  }
+  throw new Error("cybirm.wasm is not built yet");
+}
+
 async function switchOn() {
   const go = $("go"), err = $("error");
   go.disabled = true;
@@ -330,7 +339,7 @@ async function switchOn() {
   try {
     const ac = new AudioContext({ sampleRate: 44100, latencyHint: "interactive" });
     const [wasm] = await Promise.all([
-      fetch("grimm.wasm").then((r) => { if (!r.ok) throw new Error(`grimm.wasm: ${r.status}`); return r.arrayBuffer(); }),
+      loadWasm(),
       ac.audioWorklet.addModule("worklet.js")]);
     node = new AudioWorkletNode(ac, "grimm", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
     node.connect(ac.destination);
@@ -345,7 +354,7 @@ async function switchOn() {
           if (m.leds) drawLights(m.leds);
           if (m.settings && !saveSettings(m.settings) && !warned) {
             warned = true;
-            console.warn("GR!MM: this browser does not keep the settings; they last until the page closes.");
+            console.warn("CYB!RM: this browser does not keep the settings; they last until the page closes.");
           }
         }
       };
@@ -355,7 +364,7 @@ async function switchOn() {
     await ac.resume();
     $("start").hidden = true;
     if (ac.sampleRate !== 44100)
-      console.warn(`GR!MM: the browser plays at ${ac.sampleRate} Hz; the pitch is off by ${(1200 * Math.log2(ac.sampleRate / 44100)).toFixed(0)} cents.`);
+      console.warn(`CYB!RM: the browser plays at ${ac.sampleRate} Hz; the pitch is off by ${(1200 * Math.log2(ac.sampleRate / 44100)).toFixed(0)} cents.`);
     syncButtons();
     syncKeys();
     midiOn();
@@ -363,7 +372,10 @@ async function switchOn() {
     node = null;
     go.disabled = false;
     go.textContent = "Switch on";
-    err.textContent = "Could not start: " + ((e && e.message) || e) + ". A current Chrome, Edge, Firefox or Safari should work.";
+    const msg = (e && e.message) || String(e);
+    err.textContent = /404|not built/.test(msg)
+      ? "Could not start: cybirm.wasm is not built yet. From the project folder run web/build_web.sh (needs Emscripten), then reload this page."
+      : "Could not start: " + msg + ". A current Chrome, Edge, Firefox or Safari should work.";
     err.hidden = false;
   }
 }

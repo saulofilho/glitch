@@ -13,6 +13,14 @@ export function midiToFreq(midiNote) {
   return 440 * Math.pow(2, (midiNote - 69) / 12);
 }
 
+// Silence a voice immediately. A second oscillator.stop() throws (each note already
+// scheduled its own stop), and that throw used to abort the gain ramp, so STOP left
+// the note running until its original end.
+function cutGain(gain, t) {
+  try { gain.cancelScheduledValues(t); } catch (e) { /* already quiet */ }
+  try { gain.setValueAtTime(0, t); } catch (e) { /* node gone */ }
+}
+
 export const ENGINE_TYPES = {
   CYBER_ANALOG: 'CYBER_ANALOG',
   NEON_FM: 'NEON_FM',
@@ -115,15 +123,7 @@ export class SoundEngines {
     osc2.stop(stopTime);
     subOsc.stop(stopTime);
 
-    return { stop: (t) => {
-      try {
-        amp.gain.cancelScheduledValues(t);
-        amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
-        osc1.stop(t + 0.11);
-        osc2.stop(t + 0.11);
-        subOsc.stop(t + 0.11);
-      } catch (e) {}
-    }};
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 
   /* ================= 2. NEON FM (Carrier + Modulator with Index Envelope) ================= */
@@ -166,14 +166,7 @@ export class SoundEngines {
     carrier.stop(stopTime);
     modulator.stop(stopTime);
 
-    return { stop: (t) => {
-      try {
-        amp.gain.cancelScheduledValues(t);
-        amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
-        carrier.stop(t + 0.11);
-        modulator.stop(t + 0.11);
-      } catch (e) {}
-    }};
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 
   /* ================= 3. METALLIC RESONATOR (Physical Modeling) ================= */
@@ -225,12 +218,7 @@ export class SoundEngines {
       } catch (e) {}
     }, (stopTime - ctx.currentTime) * 1000 + 100);
 
-    return { stop: (t) => {
-      try {
-        amp.gain.cancelScheduledValues(t);
-        amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
-      } catch (e) {}
-    }};
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 
   /* ================= 4. ANDROID CHOIR (Formant Vocal Synthesis) ================= */
@@ -289,14 +277,7 @@ export class SoundEngines {
     osc.stop(stopTime);
     vibLfo.stop(stopTime);
 
-    return { stop: (t) => {
-      try {
-        amp.gain.cancelScheduledValues(t);
-        amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
-        osc.stop(t + 0.16);
-        vibLfo.stop(t + 0.16);
-      } catch (e) {}
-    }};
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 
   /* ================= 5. CYBER LO-FI (Rain / Telemetry / Sample) ================= */
@@ -316,7 +297,7 @@ export class SoundEngines {
       amp.connect(dest);
       src.start(time);
       src.stop(time + dur + 0.25);
-      return { stop: (t) => { try { src.stop(t); } catch (e) {} } };
+      return { stop: (t) => cutGain(amp.gain, t) };
     }
 
     // Procedural Cyberpunk Rain & Telemetry Generator
@@ -350,7 +331,7 @@ export class SoundEngines {
     noiseSrc.start(time);
     noiseSrc.stop(time + dur + 0.35);
 
-    return { stop: (t) => { try { noiseSrc.stop(t); } catch (e) {} } };
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 
   /* ================= 6. ACID 303 (Glide Lead & Resonant Filter) ================= */
@@ -403,13 +384,7 @@ export class SoundEngines {
     const stopTime = time + dur + 0.2;
     osc.stop(stopTime);
 
-    return { stop: (t) => {
-      try {
-        amp.gain.cancelScheduledValues(t);
-        amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
-        osc.stop(t + 0.09);
-      } catch (e) {}
-    }};
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 
   /* ================= 7. DRONE MEGAPAD (Quad-Oscillator Cloud) ================= */
@@ -456,12 +431,6 @@ export class SoundEngines {
     const stopTime = time + dur + release + 0.2;
     oscs.forEach(o => o.stop(stopTime));
 
-    return { stop: (t) => {
-      try {
-        amp.gain.cancelScheduledValues(t);
-        amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
-        oscs.forEach(o => o.stop(t + 0.35));
-      } catch (e) {}
-    }};
+    return { stop: (t) => cutGain(amp.gain, t) };
   }
 }

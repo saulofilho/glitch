@@ -28,7 +28,7 @@ class CybirmApp {
       new Track(3, 'TRK 4 - GLITCH/PERC', ENGINE_TYPES.CYBER_LOFI, this.audioMgr, this.engines, this.masterFx)
     ];
 
-    this.sequencer = new StepSequencer(this.audioMgr, this.tracks);
+    this.sequencer = new StepSequencer(this.audioMgr, this.tracks, this.masterFx);
     this.generative = new GenerativeMatrix(this.audioMgr, this.tracks, this.sequencer);
 
     this.midi = new MidiHandler(
@@ -67,6 +67,7 @@ class CybirmApp {
     };
 
     // 6. Initialize WebMIDI & Computer Keyboard
+    this.midi.onBeforePlay = () => this.audioMgr.resume();
     this.midi.initMidi();
     this.midi.initKeyboardListeners();
 

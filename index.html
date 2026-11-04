@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CYB!RM</title>
-  <meta name="description" content="CYB!RM is a groovebox for the FM-1: four tracks, seven sources, the same logic as GR!MM on a light surface.">
+  <meta name="description" content="CYB!RM is a groovebox for the FM-1: four tracks, seven sources, neon-noir scales and factory sounds.">
   <link rel="stylesheet" href="css/skin.css">
+  <script src="js/theme.js"></script>
 </head>
 <body class="shop">
   <header class="nav">
@@ -15,6 +16,7 @@
       <a href="web/index.html">FM-1</a>
       <a href="web/editor.html">Editor</a>
       <a href="MANUAL.md">Manual</a>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">Dark</button>
       <a class="nav-cta" href="play.html">Open</a>
     </nav>
   </header>
@@ -22,7 +24,7 @@
   <section class="hero">
     <p class="eyebrow">Groovebox for the M-VAVE FM-1</p>
     <h1>Four tracks. A clear surface.</h1>
-    <p class="sub">The same logic as GR!MM — sequencer, seven sources, effects — in blue, violet, and mint instead of a dark panel.</p>
+    <p class="sub">Four-track sequencer, seven sources, tape and space effects — on a light blue, violet, and mint surface.</p>
     <div class="actions">
       <a class="btn primary" href="play.html">Open the deck</a>
       <a class="btn ghost" href="web/index.html">View the FM-1 panel</a>
@@ -44,7 +46,7 @@
     <a href="web/index.html">
       <i class="swatch s2" aria-hidden="true"></i>
       <h2>FM-1 panel</h2>
-      <p>The same JavaScript as GR!MM. It sounds once the WebAssembly build is in place.</p>
+      <p>FM-1 panel in the browser. It sounds once <code>web/build_web.sh</code> has been run.</p>
     </a>
     <a href="web/editor.html">
       <i class="swatch s3" aria-hidden="true"></i>
@@ -56,14 +58,14 @@
   <section class="split">
     <h2>On the FM-1, the name on the screen is CYB!RM.</h2>
     <ol>
-      <li><span>1</span><p>Build <code>build/grimm.fwsc</code> with <code>./build.sh</code>.</p></li>
-      <li><span>2</span><p>Install it from the <a href="https://thefirmwarehub.com">Firmware Hub</a>, in Chrome or Edge, or with <code>python3 tools/fm1_install.py build/grimm.fwsc</code>.</p></li>
+      <li><span>1</span><p>Build <code>build/cybirm.fwsc</code> with <code>./build.sh --name cybirm.fwsc</code> (JieLi toolchain required).</p></li>
+      <li><span>2</span><p>Install on your FM-1 with <code>python3 tools/fm1_install.py build/cybirm.fwsc</code> while the unit is connected over USB. The <a href="https://thefirmwarehub.com">Firmware Hub</a> is optional — use it only if you want to publish firmware for others to install in the browser.</p></li>
       <li><span>3</span><p>Colour 1 on the unit is cyan. The added scales are Insen, Hirajoshi, Iwato, and whole tone.</p></li>
     </ol>
   </section>
 
   <footer>
-    <p>CYB!RM uses the GPL-3.0 code from <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>. M-VAVE and FM-1 are trademarks of their owners.</p>
+    <p>CYB!RM is licensed under <a href="LICENSE">GPL-3.0</a>. Third-party credits are in <a href="LICENSING.md">LICENSING.md</a>. M-VAVE and FM-1 are trademarks of their owners.</p>
   </footer>
 </body>
 </html>

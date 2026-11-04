@@ -94,8 +94,20 @@ export class MasterEffects {
     this.dcBlock.type = 'highpass';
     this.dcBlock.frequency.setValueAtTime(18, this.ctx.currentTime);
     this.dcBlock.Q.setValueAtTime(0.7, this.ctx.currentTime);
+
+    // Backstop: even with the comb/delay loops clamped above, this keeps any future FX
+    // bug from reaching the master bus at more than unity instead of distorting or
+    // crashing the audio thread.
+    this.masterClamp = this.ctx.createWaveShaper();
+    const clampCurve = new Float32Array(1024);
+    for (let i = 0; i < clampCurve.length; i++) {
+      clampCurve[i] = Math.tanh((i / 512) - 1);
+    }
+    this.masterClamp.curve = clampCurve;
+
     this.outputGain.connect(this.dcBlock);
-    this.dcBlock.connect(this.audioMgr.masterGain);
+    this.dcBlock.connect(this.masterClamp);
+    this.masterClamp.connect(this.audioMgr.masterGain);
   }
 
   /* ================= 1. TAPE SATURATION & DRIFT ================= */
@@ -251,6 +263,7 @@ export class MasterEffects {
     this.delayFeedbackGain.channelCount = 1;
     this.delayFeedbackGain.channelCountMode = 'explicit';
     this.delayFeedbackGain.gain.setValueAtTime(0.45, this.ctx.currentTime);
+    this.delayFeedback = 0.45;
 
     // Tape darkening lowpass filter
     this.delayFilter = this.ctx.createBiquadFilter();
@@ -300,6 +313,8 @@ export class MasterEffects {
 
   setDelayFeedback(val) {
     const clamped = Math.max(0, Math.min(0.72, val));
+    this.delayFeedback = clamped;
+    if (this._tailsHalted) return;
     this.delayFeedbackGain.gain.setTargetAtTime(clamped, this.ctx.currentTime, 0.05);
   }
 
@@ -321,10 +336,20 @@ export class MasterEffects {
     this.reverbInputGain.connect(reverbHp);
 
     // 6 Parallel Comb Filters (Schroeder / Freeverb architecture for massive space)
+    // Each loop carries a hard tanh clamp: the lowpass's Q=1 resonance stacked with a
+    // near-1.0 feedback gain pushed the round-trip gain just over unity at the damping
+    // filter's cutoff, so the comb slowly grew without bound instead of decaying (the
+    // sound that "broke" a few seconds after pressing play). The clamp caps the loop's
+    // own signal, not just the final mix, so the resonance can no longer compound.
     const combDelays = [0.0297, 0.0371, 0.0411, 0.0437, 0.0493, 0.0531];
     const combGains = [];
     const combSum = this.ctx.createGain();
     combSum.gain.setValueAtTime(0.16, this.ctx.currentTime);
+
+    const combClipCurve = new Float32Array(256);
+    for (let i = 0; i < combClipCurve.length; i++) {
+      combClipCurve[i] = Math.tanh(((i / 128) - 1) * 1.4);
+    }
 
     combDelays.forEach((delayTime) => {
       const delay = this.ctx.createDelay(0.1);
@@ -333,15 +358,21 @@ export class MasterEffects {
       const feedback = this.ctx.createGain();
       feedback.gain.setValueAtTime(this.reverbDecayTime, this.ctx.currentTime);
 
-      // Lowpass damping filter in comb loop
+      // Lowpass damping filter in comb loop. Explicit low Q keeps it flat (no resonant
+      // peak) so the loop's gain at any frequency never exceeds the feedback value.
       const damping = this.ctx.createBiquadFilter();
       damping.type = 'lowpass';
       damping.frequency.setValueAtTime(4500, this.ctx.currentTime);
+      damping.Q.setValueAtTime(0.5, this.ctx.currentTime);
+
+      const loopClamp = this.ctx.createWaveShaper();
+      loopClamp.curve = combClipCurve;
 
       reverbHp.connect(delay);
       delay.connect(damping);
       damping.connect(feedback);
-      feedback.connect(delay);
+      feedback.connect(loopClamp);
+      loopClamp.connect(delay);
       damping.connect(combSum);
 
       combGains.push(feedback);
@@ -389,7 +420,7 @@ export class MasterEffects {
 
   setReverbDecay(val) {
     this.reverbDecayTime = Math.max(0.2, Math.min(0.985, val));
-    if (!this.isReverbFrozen) {
+    if (!this.isReverbFrozen && !this._tailsHalted) {
       const now = this.ctx.currentTime;
       this.reverbCombFilters.forEach(({ feedback }) => {
         feedback.gain.setTargetAtTime(this.reverbDecayTime, now, 0.05);
@@ -475,5 +506,40 @@ export class MasterEffects {
   setBitcrushDownsample(val) {
     // val 0.05 to 1.0 (1.0 = normal, 0.05 = heavily downsampled)
     this.crushNormFreq = Math.max(0.02, Math.min(1.0, val));
+  }
+
+  // STOP. Notes already have a scheduled end, and the delay/reverb buses keep
+  // sounding after the voices go quiet. Drop those returns until the next play.
+  haltTails() {
+    if (this._tailsHalted) return;
+    this._tailsHalted = true;
+    const now = this.ctx.currentTime;
+    const zero = (node) => {
+      node.gain.cancelScheduledValues(now);
+      node.gain.setValueAtTime(0, now);
+    };
+    zero(this.delayReturnGain);
+    zero(this.delayFeedbackGain);
+    zero(this.reverbReturnGain);
+    this.reverbCombFilters.forEach(({ feedback }) => zero(feedback));
+  }
+
+  restoreTails() {
+    if (!this._tailsHalted) return;
+    this._tailsHalted = false;
+    const now = this.ctx.currentTime;
+    const fb = this.delayFeedback !== undefined ? this.delayFeedback : 0.45;
+    // Keep the returns closed long enough for the old delay line and combs to empty.
+    this.delayFeedbackGain.gain.setValueAtTime(0, now);
+    this.delayFeedbackGain.gain.setValueAtTime(fb, now + 0.55);
+    this.delayReturnGain.gain.setValueAtTime(0, now);
+    this.delayReturnGain.gain.setValueAtTime(0.7, now + 0.55);
+    const decay = this.isReverbFrozen ? 0.999 : this.reverbDecayTime;
+    this.reverbCombFilters.forEach(({ feedback }) => {
+      feedback.gain.setValueAtTime(0, now);
+      feedback.gain.setValueAtTime(decay, now + 0.12);
+    });
+    this.reverbReturnGain.gain.setValueAtTime(0, now);
+    this.reverbReturnGain.gain.setValueAtTime(0.85, now + 0.2);
   }
 }

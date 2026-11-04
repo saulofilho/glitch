@@ -28,6 +28,32 @@ export class UIController {
     this.bindEvents();
     this.renderSequencerGrid();
     this.updateTrackUI();
+    this.verifyControls();
+  }
+
+  /** Logs missing DOM / knobs at boot (console). */
+  verifyControls() {
+    const buttonIds = [
+      'btn-play', 'btn-stop', 'btn-tap-tempo', 'btn-generative', 'btn-record',
+      'btn-vis-mode', 'btn-granular-freeze', 'btn-reverb-infinite',
+      'btn-track-mute', 'btn-track-solo'
+    ];
+    const knobIds = [
+      'knob-tape-drive', 'knob-tape-flutter', 'knob-delay-time', 'knob-delay-feedback',
+      'knob-reverb-decay', 'knob-bitcrush-mix', 'knob-master-vol', 'knob-swing',
+      'knob-track-vol', 'knob-track-pan', 'knob-track-cutoff', 'knob-track-res',
+      'knob-track-send-delay', 'knob-track-send-reverb', 'knob-track-attack', 'knob-track-release'
+    ];
+    const missingEl = [...buttonIds, ...knobIds].filter((id) => !document.getElementById(id));
+    const brokenKnob = Object.entries(this.knobs)
+      .filter(([, k]) => !k || !k.el || !k.el.querySelector('.knob-dial'))
+      .map(([name]) => name);
+    if (missingEl.length || brokenKnob.length) {
+      console.error('[CYB!RM] Deck control check failed', { missingEl, brokenKnob });
+      return false;
+    }
+    console.info(`[CYB!RM] Deck OK: ${buttonIds.length} buttons, ${knobIds.length} knobs, ${this.dom.pageBtns.length} page tabs, ${this.dom.trackTabs.length} tracks`);
+    return true;
   }
 
   cacheDOMElements() {
@@ -223,15 +249,21 @@ export class UIController {
 
   bindEvents() {
     // Transport
+    this._playToken = 0;
+    this.app.sequencer.onTransport = (playing) => {
+      this.dom.playBtn.classList.toggle('active', playing);
+    };
     this.dom.playBtn.addEventListener('click', async () => {
+      const token = ++this._playToken;
       await this.app.audioMgr.resume();
+      // A STOP click that landed while the context was resuming must win.
+      if (token !== this._playToken) return;
       this.app.sequencer.start();
-      this.dom.playBtn.classList.add('active');
     });
 
     this.dom.stopBtn.addEventListener('click', () => {
+      this._playToken++;
       this.app.sequencer.stop();
-      this.dom.playBtn.classList.remove('active');
     });
 
     // BPM input

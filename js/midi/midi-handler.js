@@ -9,6 +9,8 @@ export class MidiHandler {
     this.getTracks = tracksGetter;
     this.getActiveTrack = activeTrackGetter;
     this.sequencer = sequencer;
+    /** Called before sequencer.start() from the keyboard (AudioContext resume). */
+    this.onBeforePlay = null;
 
     this.midiAccess = null;
     this.connectedDevices = [];
@@ -140,7 +142,11 @@ export class MidiHandler {
         if (this.sequencer.isPlaying) {
           this.sequencer.stop();
         } else {
-          this.sequencer.start();
+          const go = async () => {
+            if (this.onBeforePlay) await this.onBeforePlay();
+            this.sequencer.start();
+          };
+          go();
         }
         return;
       }
