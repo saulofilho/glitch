@@ -1267,11 +1267,11 @@ if (savedMidi()) sqMidiInit(false);                          // (a keyboard chos
 // ------------------------------------------------------------------ start: the four tracks as GR!MM starts
 (async () => {
   try {
-    let wasmRes = await fetch("cybirm.wasm");
-    if (!wasmRes.ok) wasmRes = await fetch("dist/cybirm.wasm");
+    let wasmRes = await fetch("glitch.wasm");
+    if (!wasmRes.ok) wasmRes = await fetch("dist/glitch.wasm");
     if (!wasmRes.ok) wasmRes = await fetch("grimm.wasm");
     if (!wasmRes.ok) wasmRes = await fetch("dist/grimm.wasm");
-    if (!wasmRes.ok) throw new Error("cybirm.wasm is not built yet (" + wasmRes.status + ")");
+    if (!wasmRes.ok) throw new Error("glitch.wasm is not built yet (" + wasmRes.status + ")");
     wasm = await wasmRes.arrayBuffer();
     vf = await VirtualFM1.create(wasm.slice(0));
     vf.log = midiLog;

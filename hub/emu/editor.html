@@ -9,7 +9,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CYB!RM // EDITOR</title>
+<title>GL!TCH // EDITOR</title>
 <link rel="icon" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
 :root { --k: #050402; --d: #1a1204; --m: #5a3d05; --n: #a66b00; --l: #ffb000; --w: #ffd98a; --a: #ffb000; --f: #ff7a1a;
         --glow: 0 0 2px rgba(255,176,0,.5), 0 0 9px rgba(255,140,0,.26);
         --f1: "VT323", "Share Tech Mono", ui-monospace, monospace; color-scheme: dark; }
-/* CYB!RM editor, phosphor-CRT: amber on black, scanlines, vignette. --m: off/disabled; --n: help text; --f: focus */
+/* GL!TCH editor, phosphor-CRT: amber on black, scanlines, vignette. --m: off/disabled; --n: help text; --f: focus */
 #crt { position: fixed; inset: 0; z-index: 90; pointer-events: none; }
 #crt::before { content: ""; position: absolute; inset: 0; mix-blend-mode: multiply; background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.26) 2px 3px); }
 #crt::after { content: ""; position: absolute; inset: 0; background: radial-gradient(130% 120% at 50% 50%, rgba(0,0,0,0) 58%, rgba(0,0,0,.45) 86%, rgba(0,0,0,.85) 100%); }
@@ -163,7 +163,7 @@ input[type=range]:focus-visible { outline: 3px solid var(--f); outline-offset: 2
 <div id="crt" aria-hidden="true"></div>
 <div id="flicker" aria-hidden="true"></div>
 <header>
-  <a class="tag px" href="../index.html" aria-label="CYB!RM: the hub">CYB!RM</a>
+  <a class="tag px" href="../index.html" aria-label="GL!TCH: the hub">GL!TCH</a>
   <div class="bar"><b class="px">EDITOR 2.0</b><span><a class="lnk px" href="index.html">WEB EMULATOR</a> · <span id="conn" class="px">NOT CONNECTED</span></span></div>
 </header>
 <div class="drip" role="presentation"></div>
@@ -179,7 +179,7 @@ input[type=range]:focus-visible { outline: 3px solid var(--f); outline-offset: 2
     <a href="#backup" data-s="backup">BACKUP</a>
   </nav>
   <main>
-    <div id="msgs"><div id="msg" class="px">LOADING CYB!RM…</div><div id="prog"><i></i></div></div>
+    <div id="msgs"><div id="msg" class="px">LOADING GL!TCH…</div><div id="prog"><i></i></div></div>
 
     <section id="s-connect">
       <h2>CONNECT</h2>
