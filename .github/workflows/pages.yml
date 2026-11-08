@@ -1,4 +1,4 @@
-# CYB!RM's hub (hub/) on GitHub Pages: https://saulofilho.github.io/cybirm/
+# GL!TCH's hub (hub/) on GitHub Pages: https://saulofilho.github.io/glitch/
 # Turn it on once: the repository's Settings > Pages > Source: GitHub Actions.
 # The page's data is made beforehand (tools/gen_hub.py) and committed in hub/: this only publishes it.
 name: hub

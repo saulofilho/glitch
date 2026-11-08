@@ -112,8 +112,8 @@
  * Rules of the road (the chip has no FPU and no libgcc): integers only, no float, no 64-bit division.
  * firmware/src/host.c runs this file on a computer (the screen as a PNG, the sound as a WAV), firmware/src/fm1_web.c in a browser.
  * What platform.c offers: docs/API.md. The chip's rules: docs/RULES.md. */
-#define APP_NAME "CYB!RM"                       /* the app, the rescue and the crash screen say this.
-                                                 * CYB!RM: the same FM-1 engines as GR!MM, neon-noir names and scales. */
+#define APP_NAME "GL!TCH"                       /* the app, the rescue and the crash screen say this.
+                                                 * GL!TCH: the same FM-1 engines as GR!MM, neon-noir names and scales. */
 #include "platform.c"
 #include "dsp.c"
 #include "wear.c"

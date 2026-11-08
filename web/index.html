@@ -8,14 +8,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CYB!RM // FM-1 PANEL</title>
+<title>GL!TCH // FM-1 PANEL</title>
 <link rel="icon" href="../favicon.svg">
-<meta name="description" content="CYB!RM on a fake FM-1: neon-noir panel in the browser, firmware compiled to WebAssembly, on an amber CRT.">
+<meta name="description" content="GL!TCH on a fake FM-1: neon-noir panel in the browser, firmware compiled to WebAssembly, on an amber CRT.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap">
 <style>
-/* CYB!RM FM-1 PANEL — the emulator in the hub's phosphor-CRT terminal. The chrome (bar, help, footer) is amber on
+/* GL!TCH FM-1 PANEL — the emulator in the hub's phosphor-CRT terminal. The chrome (bar, help, footer) is amber on
  * black with scanlines and a vignette; the device's glow is amber too. The LCD canvas is the firmware's own output,
  * left as the unit draws it. */
 :root { --black: #050402; --bg: #0a0702; --body: #120d04; --bed: #0a0702; --part: #241904; --edge: #5a3d05;
@@ -109,8 +109,8 @@ code { font-family: var(--f); text-transform: none; background: #140d02; border:
 <div id="flicker" aria-hidden="true"></div>
 <main>
 <div class="topbar">
-  <span>&#9656; CYB!RM / <b>FM-1 PANEL</b> / FIRMWARE ON A FAKE FM-1</span>
-  <span><a href="../index.html">[HUB]</a><a href="editor.html">[EDITOR]</a><a href="../../MANUAL.md">[MANUAL]</a></span>
+  <span>&#9656; GL!TCH / <b>FM-1 PANEL</b> / FIRMWARE ON A FAKE FM-1</span>
+  <span><a href="../index.html">[HUB]</a><a href="editor.html">[EDITOR]</a><a href="../MANUAL.md">[MANUAL]</a></span>
 </div>
 <section class="fm1" id="fm1" aria-label="The FM-1">
   <canvas id="screen" width="240" height="240" role="img" aria-label="The screen"></canvas>
@@ -150,10 +150,10 @@ code { font-family: var(--f); text-transform: none; background: #140d02; border:
 </p>
 
 <footer>
-  <p><b><a href="editor.html">Open the CYB!RM editor</a></b>: edit sounds live, load samples, back up your FM-1 (Chrome or Edge). The panel sounds once <code>web/cybirm.wasm</code> is built (<code>web/build_web.sh</code>).</p>
-  <p>CYB!RM · <a href="LICENSE">GPL-3.0-only</a> · <a href="LICENSING.md">credits and licences</a> · fonts: Press Start 2P, <a href="LICENSES/OFL-PressStart2P.txt">SIL OFL 1.1</a>; Terminus, <a href="Terminus-LICENSE.txt">SIL OFL 1.1</a> · factory samples: <a href="LICENSES/CC0-1.0.txt">CC0 1.0</a> · choir wavetables: made from <a href="https://doi.org/10.5281/zenodo.1442513">VocalSet</a> (Julia Wilkins, Prem Seetharaman, Alison Wahl, Bryan Pardo, Northwestern University), <a href="LICENSES/CC-BY-4.0.txt">CC BY 4.0</a>, single cycles made from its recordings · built with Emscripten (<a href="LICENSES/MIT-Emscripten.txt">MIT</a>, musl <a href="LICENSES/MIT-musl.txt">MIT</a>)</p>
+  <p><b><a href="editor.html">Open the GL!TCH editor</a></b>: edit sounds live, load samples, back up your FM-1 (Chrome or Edge). The panel sounds once <code>web/glitch.wasm</code> is built (<code>web/build_web.sh</code>).</p>
+  <p>GL!TCH · <a href="LICENSE">GPL-3.0-only</a> · <a href="LICENSING.md">credits and licences</a> · fonts: Press Start 2P, <a href="LICENSES/OFL-PressStart2P.txt">SIL OFL 1.1</a>; Terminus, <a href="Terminus-LICENSE.txt">SIL OFL 1.1</a> · factory samples: <a href="LICENSES/CC0-1.0.txt">CC0 1.0</a> · choir wavetables: made from <a href="https://doi.org/10.5281/zenodo.1442513">VocalSet</a> (Julia Wilkins, Prem Seetharaman, Alison Wahl, Bryan Pardo, Northwestern University), <a href="LICENSES/CC-BY-4.0.txt">CC BY 4.0</a>, single cycles made from its recordings · built with Emscripten (<a href="LICENSES/MIT-Emscripten.txt">MIT</a>, musl <a href="LICENSES/MIT-musl.txt">MIT</a>)</p>
   <p>Built on <a href="https://github.com/zvenson/dinghy">Dinghy</a>, <a href="https://github.com/hugelton/Felucca">Felucca</a>, and <a href="https://github.com/isod89/sloop-fm1">SLOOP</a> · panel layout follows Felucca and <a href="https://github.com/charlesvestal/fm1-x0x">X0X</a> (GPL-3.0).</p>
-  <p>M-VAVE and FM-1 are trademarks of their respective owners. CYB!RM is not affiliated with or endorsed by them.</p>
+  <p>M-VAVE and FM-1 are trademarks of their respective owners. GL!TCH is not affiliated with or endorsed by them.</p>
 </footer>
 </main>
 <script type="module" src="panel.js"></script>

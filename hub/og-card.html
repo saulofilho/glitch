@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>CYB!RM og generator</title>
+<title>GL!TCH og generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
@@ -11,7 +11,7 @@
 <body>
 <canvas id="c" width="1200" height="630"></canvas>
 <script>
-/* Draws the CYB!RM social card (1200x630) to a canvas in the amber-CRT look, then exposes it as a PNG data URL on
+/* Draws the GL!TCH social card (1200x630) to a canvas in the amber-CRT look, then exposes it as a PNG data URL on
  * window.OG_PNG. A phosphor-colour query (?p=green|cyan|magenta) re-tints it; default amber. */
 const COL = { amber:["#ffb000","#ffd98a","#a66b00","255,140,0"], green:["#2bff6a","#b9ffce","#1a9e43","0,255,120"],
               cyan:["#14e2ff","#b3f3ff","#0b8aa6","0,200,255"], magenta:["#ff3ac6","#ffb6ec","#a61f82","255,0,180"] };
@@ -25,8 +25,8 @@ function draw() {
 
   // top status line
   x.fillStyle = LO; x.font = "30px VT323"; x.textBaseline = "alphabetic";
-  x.fillText("▸ CYB!RM / FM-1 FIRMWARE", 72, 92);
-  x.fillStyle = AM; x.fillText("SAULOFILHO.GITHUB.IO/CYBIRM", 760, 92);
+  x.fillText("▸ GL!TCH / FM-1 FIRMWARE", 72, 92);
+  x.fillStyle = AM; x.fillText("SAULOFILHO.GITHUB.IO/GLITCH", 760, 92);
 
   // ascii mark (left)
   const art = ["  ______ _   _ ____", " / ___\\ \\ | | | __ )", "| |    _\\ \\| | |  _ \\",
@@ -36,7 +36,7 @@ function draw() {
 
   // title + tag (right of mark)
   x.fillStyle = HI; x.font = "150px VT323";
-  x.fillText("CYB!RM", 470, 300);
+  x.fillText("GL!TCH", 470, 300);
   x.fillStyle = LO; x.font = "40px VT323";
   x.fillText("NEON-NOIR GROOVEBOX FIRMWARE", 476, 352);
   x.fillText("M-VAVE FM-1", 476, 394);

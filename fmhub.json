@@ -2,7 +2,7 @@
   "what": "Neon-noir groovebox firmware for the M-VAVE FM-1: four tracks, seven sources, tape and megacity space FX, sixteen scales (Insen, Hirajoshi, Iwato, whole tone), and forty-four Blade Runner factory sounds. On an amber CRT.",
   "author": "saulofilho",
   "kinds": ["groove"],
-  "play": "https://saulofilho.github.io/cybirm/emu/",
+  "play": "https://saulofilho.github.io/glitch/emu/",
   "image": "docs/card.png",
   "color": "#ffb000"
 }

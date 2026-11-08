@@ -5,7 +5,7 @@
 # with Emscripten, then Asyncify (Binaryen's wasm-opt) so the app's main loop can pause between audio blocks.
 # After Felucca's web/emu/build.sh (hugelton/Felucca, Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton
 # Instruments) and X0X's (charlesvestal/fm1-x0x), both GPL-3.0.
-#   web/build_web.sh   ->  web/dist/{index.html, panel.js, worklet.js, cybirm.wasm, Terminus-LICENSE.txt; the editor:
+#   web/build_web.sh   ->  web/dist/{index.html, panel.js, worklet.js, glitch.wasm, Terminus-LICENSE.txt; the editor:
 #                          editor.html, editor.js, editor_core.js, PressStart2P-Regular.ttf, OFL-PressStart2P.txt}
 #   node web/test_web.mjs   (after tests/run_host.sh: the browser build against host mode)
 #   EMSDK    the Emscripten SDK (default ~/emsdk; not needed when emcc is on the PATH)
@@ -22,12 +22,12 @@ WASM_OPT="$EMSDK/upstream/bin/wasm-opt"
 mkdir -p build/web web/dist
 "$EMCC" -O2 -Wall -Wno-unused-function -DGRIMM_WEB -DAPP_VER="\"${APP_VER:-2.0}\"" -Ifirmware/src -Ifirmware/gen \
     --no-entry -sSTANDALONE_WASM -sFILESYSTEM=0 -sSTACK_SIZE=262144 -sINITIAL_MEMORY=4194304 \
-    -o build/web/cybirm.wasm firmware/src/grimm.c
-"$WASM_OPT" build/web/cybirm.wasm --enable-bulk-memory --enable-nontrapping-float-to-int --enable-sign-ext \
-    --enable-mutable-globals --asyncify --pass-arg=asyncify-imports@env.web_yield -O2 -o web/dist/cybirm.wasm
+    -o build/web/glitch.wasm firmware/src/grimm.c
+"$WASM_OPT" build/web/glitch.wasm --enable-bulk-memory --enable-nontrapping-float-to-int --enable-sign-ext \
+    --enable-mutable-globals --asyncify --pass-arg=asyncify-imports@env.web_yield -O2 -o web/dist/glitch.wasm
 cp web/index.html web/panel.js web/worklet.js assets/fonts/Terminus-LICENSE.txt web/dist/   # (the screen font: SIL OFL 1.1)
 cp web/editor.html web/editor.js web/editor_core.js assets/fonts/PressStart2P-Regular.ttf web/dist/   # (the editor page)
 mkdir -p web/dist/LICENSES                       # (the pages ship with their licences: linked from their footers)
 cp LICENSE LICENSING.md web/dist/ && cp LICENSES/*.txt web/dist/LICENSES/ && touch web/dist/.nojekyll
-cp web/dist/cybirm.wasm web/cybirm.wasm
-echo "web: web/dist ($(wc -c < web/dist/cybirm.wasm | tr -d ' ') B wasm)"
+cp web/dist/glitch.wasm web/glitch.wasm
+echo "web: web/dist ($(wc -c < web/dist/glitch.wasm | tr -d ' ') B wasm)"

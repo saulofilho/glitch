@@ -1,4 +1,4 @@
-# CYB!RM
+# GL!TCH
 
 **A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
 seven sources, tape and megacity space — on a dead-stock amber tube.
@@ -6,9 +6,9 @@ seven sources, tape and megacity space — on a dead-stock amber tube.
 > **Version 2.0.** Unofficial firmware, not made or endorsed by M-VAVE. Install at your own risk.
 > Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
 
-**[The CYB!RM hub](https://saulofilho.github.io/cybirm/)**: the sources, scales and sounds, and how to install ·
-**[Boot it in your browser](https://saulofilho.github.io/cybirm/emu/)** (the real firmware, no FM-1 needed) ·
-**[The editor](https://saulofilho.github.io/cybirm/emu/editor.html)** (sounds, samples, backup over USB)
+**[The GL!TCH hub](https://saulofilho.github.io/glitch/)**: the sources, scales and sounds, and how to install ·
+**[Boot it in your browser](https://saulofilho.github.io/glitch/emu/)** (the real firmware, no FM-1 needed) ·
+**[The editor](https://saulofilho.github.io/glitch/emu/editor.html)** (sounds, samples, backup over USB)
 
 Free and open source (GPL-3.0). Re-imagined from GR!MM's dark-ambient/dungeon-synth aesthetic into cyberpunk, neon
 noir and industrial sci-fi.
@@ -29,9 +29,9 @@ noir and industrial sci-fi.
   one-key chords, GENERATE, tape, grain, delay, and megacity space reverb (6 combs + 3 allpass + infinite freeze),
   MIDI in.
 
-## Architecture: GR!MM → CYB!RM
+## Architecture: GR!MM → GL!TCH
 
-| Feature | GR!MM (Original) | CYB!RM (Cyberpunk Edition) |
+| Feature | GR!MM (Original) | GL!TCH (Cyberpunk Edition) |
 | :--- | :--- | :--- |
 | **Aesthetic** | Dark Ambient, Dungeon Synth, Deathdream | Neon Noir, Cyberdeck, Blade Runner, Darksynth |
 | **Tracks** | 4 independent tracks | 4 independent tracks (Sub/Bass, Lead, Choir/Pad, Glitch) |
@@ -65,12 +65,12 @@ web/build_web.sh           # -> web/dist/ (then: python3 tools/gen_hub.py copies
 
 ## Install on the FM-1
 
-On the unit the boot screen reads **CYB!RM**; colour 1 is cyan.
+On the unit the boot screen reads **GL!TCH**; colour 1 is cyan.
 
 ```bash
 tools/get_toolchain.sh                         # the JieLi toolchain (once)
-./build.sh --name cybirm.fwsc                  # -> build/cybirm.fwsc
-python3 tools/fm1_install.py build/cybirm.fwsc # flash a connected FM-1 over USB
+./build.sh --name glitch.fwsc                  # -> build/glitch.fwsc
+python3 tools/fm1_install.py build/glitch.fwsc # flash a connected FM-1 over USB
 ```
 
 ## The hub
@@ -81,7 +81,7 @@ python3 tools/fm1_install.py build/cybirm.fwsc # flash a connected FM-1 over USB
 python3 tools/gen_hub.py --version 2.0
 ```
 
-- `hub/cybirm-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
+- `hub/glitch-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
 - `hub/emu/` — the WebAssembly emulator and the editor (from `web/dist`).
 - `hub/og.png` — the 1200×630 social card, drawn by `hub/og-card.html` (open it to re-export).
 
@@ -90,14 +90,14 @@ If a host build exists (`tests/run_host.sh`, Linux), `gen_hub.py` also renders a
 surfaces as a **HEAR IT** button. Pass `--no-audio` to skip it. The hub's live sound is the emulator either way.
 
 `.github/workflows/pages.yml` publishes `hub/` to GitHub Pages; `release.yml` builds and attests
-`build/cybirm-X.Y.fwsc` when you push a `v*` tag.
+`build/glitch-X.Y.fwsc` when you push a `v*` tag.
 
 ## Project structure
 
 ```
-cybirm/
+glitch/
 ├── firmware/            # the GPL-3.0 engine (firmware/src/: 4 tracks, 7 sources, sequencer, tape, space)
-├── hub/                 # the GitHub Pages site: index.html (landing), cybirm-data.js, emu/ (the emulator)
+├── hub/                 # the GitHub Pages site: index.html (landing), glitch-data.js, emu/ (the emulator)
 ├── web/                 # the browser build: panel.js, worklet.js, editor, build_web.sh -> web/dist
 ├── tools/               # build.py, fm1_install.py, gen_hub.py, get_toolchain.sh …
 ├── tests/               # host-mode tests (tests/run_host.sh)
@@ -113,6 +113,6 @@ cybirm/
   [Dinghy](https://github.com/zvenson/dinghy), [Felucca](https://github.com/hugelton/Felucca) and
   [SLOOP](https://github.com/isod89/sloop-fm1).
 - The hub's phosphor-CRT look is after [ardor.cloud/retro-computer](https://ardor.cloud/retro-computer); the colour
-  and the content are CYB!RM's own.
+  and the content are GL!TCH's own.
 - GPL-3.0. Third-party licences in [LICENSING.md](LICENSING.md). M-VAVE and FM-1 are trademarks of their owners;
-  CYB!RM is not affiliated with or endorsed by them.
+  GL!TCH is not affiliated with or endorsed by them.

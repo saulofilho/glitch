@@ -620,7 +620,7 @@ static void pic_home(void)                      /* Main: matrix rain, CRT hub, f
     ui_matrix_grid(PY0, 120);
     mx_rain(PY0, 120, an_n, 72, 48, 96, 72);
     ui_matrix_crt(72, 48, (int32_t)an_avg);
-    ui_text(PX0, 31, "> CYB!RM", 1, UI_MX_M);
+    ui_text(PX0, 31, "> GL!TCH", 1, UI_MX_M);
     for (t = 0; t < (int32_t)NT; t++) {
         int32_t x = 43 + t * 45, h = cn_h[t], bh = h * 3;
         char lab[2] = {(char)('1' + t), 0};
@@ -1877,7 +1877,7 @@ static uint32_t ui_pic_key(void)
 }
 
 /* ---- the screen: the boot, then the page, only what changed */
-/* Boot, UI_BOOT_MS at power-on: CYB!RM grid — scan lines, four track meters, logo glitch, progress bar. */
+/* Boot, UI_BOOT_MS at power-on: GL!TCH grid — scan lines, four track meters, logo glitch, progress bar. */
 #define BOOT_LINE "FM-1 / NEON NOIR / V" APP_VER
 static const char *bt_note;                     /* the boot screen's last line, if not BOOT_LINE ("INSTALLING SAMPLES") */
 static uint32_t ui_boot_t, bt_e;                /* from when; elapsed ms for ui_boot_draw */

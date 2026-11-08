@@ -1,8 +1,8 @@
-# CYB!RM manual
+# GL!TCH manual
 
 Version 2.0 · for the M-VAVE FM-1
 
-![CYB!RM HOME screen](docs/screens/home.png)
+![GL!TCH HOME screen](docs/screens/home.png)
 
 ---
 
@@ -29,7 +29,7 @@ Version 2.0 · for the M-VAVE FM-1
 
 ![The boot screen](docs/screens/boot.png)
 
-CYB!RM has **four tracks (T1–T4)**. Each track plays one sound, has its own sequence, and goes through the shared effects. Six voices are shared by all four tracks.
+GL!TCH has **four tracks (T1–T4)**. Each track plays one sound, has its own sequence, and goes through the shared effects. Six voices are shared by all four tracks.
 
 **The controls you use all the time:**
 
@@ -39,7 +39,7 @@ CYB!RM has **four tracks (T1–T4)**. Each track plays one sound, has its own se
 | **PRESETS** knob | Loads the next or previous sound into the selected track. (On the sequencer pages it sets the tempo instead.) |
 | **SELECT** knob | On HOME: tempo. On MIXER 1: picks the tile. On the sequencer: moves the cursor. |
 | **KNOB 1–4** | The four values at the bottom of the screen, whatever page you're on. |
-| **MASTER** knob | Volume. Its top quarter adds up to 6 dB more (at the very top: as loud as CYB!RM 1.0); a limiter keeps the output from ever clipping. |
+| **MASTER** knob | Volume. Its top quarter adds up to 6 dB more (at the very top: as loud as GL!TCH 1.0); a limiter keeps the output from ever clipping. |
 | **OCT− / OCT+** | Octave down / up. In save menus: back / confirm. |
 | **Keys** | Play the selected track. |
 
@@ -47,11 +47,11 @@ CYB!RM has **four tracks (T1–T4)**. Each track plays one sound, has its own se
 
 **Knobs speed up:** turn slowly for fine steps, quickly to sweep the whole range.
 
-**Saving is automatic:** when the sequencer is stopped and you haven't touched anything for 2.5 seconds, CYB!RM saves your work. Switch off any time; it comes back exactly as you left it. (It never saves while something is still sounding, to avoid audio dropouts; the header says `SAVES WHEN SILENT` for 2 seconds when it starts waiting, then gets out of the way; the save still waits. With an effect tail that never ends (DELAY feeding back, SPACE on INF, GRAIN frozen) it would wait for ever, so saves, sample uploads and editor writes go ahead 10 seconds after the last note. While a computer records the FM-1 over USB, autosave waits until you have left the FM-1 alone for 60 seconds, and saves straight away when the recording stops.)
+**Saving is automatic:** when the sequencer is stopped and you haven't touched anything for 2.5 seconds, GL!TCH saves your work. Switch off any time; it comes back exactly as you left it. (It never saves while something is still sounding, to avoid audio dropouts; the header says `SAVES WHEN SILENT` for 2 seconds when it starts waiting, then gets out of the way; the save still waits. With an effect tail that never ends (DELAY feeding back, SPACE on INF, GRAIN frozen) it would wait for ever, so saves, sample uploads and editor writes go ahead 10 seconds after the last note. While a computer records the FM-1 over USB, autosave waits until you have left the FM-1 alone for 60 seconds, and saves straight away when the recording stops.)
 
 **Undo:** hold **EDIT** and press **OCT−** to undo the last edit, **OCT+** to redo it.
 
-**At the first start** after installing, CYB!RM writes its four factory samples into any sample slot that is still empty (the boot screen says `INSTALLING SAMPLES` for a few seconds). A few seconds later it does the same for any slot that holds something that cannot play, such as data left by another firmware or an upload that was cut short (the header says `SAMPLES RESTORED: 1 2`). A slot with a working sample is never touched.
+**At the first start** after installing, GL!TCH writes its four factory samples into any sample slot that is still empty (the boot screen says `INSTALLING SAMPLES` for a few seconds). A few seconds later it does the same for any slot that holds something that cannot play, such as data left by another firmware or an upload that was cut short (the header says `SAMPLES RESTORED: 1 2`). A slot with a working sample is never touched.
 
 ---
 
@@ -86,7 +86,7 @@ Press **HOME** again for the mixer pages:
 - **DRIVE send:** sends the track to a drive of its own, which joins the dry mix in the middle (not panned); the driven sound isn't sent on to GRAIN, DELAY or SPACE, but MASTER and the DRIVE page still act on it. It uses the DRIVE page's **TYPE** and **TONE**; the send is how hard the track hits it. It works even when the DRIVE page's AMOUNT is 0, so you can drive one track and leave the others clean. All DRIVE sends at 0 = off completely.
 - **TAPE:** how much of this track goes through the tape. **0 = untouched**: the track doesn't go through the tape at all. The tape sits first on the track, so the track's other sends (DELAY, REVERB, GRAIN, DRIVE) hear the taped sound. It uses the TAPE page's **WOW**, **SATURATION** and **TONE**; **HISS** plays while at least one track uses the tape. **WOW** is random tape slips on the track's notes: the pitch stays steady, then every few seconds the tape briefly jerks or sags off and back. The TAPE page's knob only sets how big the slips are. All TAPE tiles at 0 = the tape is off completely.
 - **TYPE** (MIXER 2): the track filter is a low-pass (`LP`), high-pass (`HP`) or band-pass (`BP`). `LP` open (CUTOFF at the top) or `HP` open (CUTOFF at the bottom) means no filtering. A band-pass is gentle at RESONANCE 0 and narrows as you turn it up.
-- **POS** (MIXER 2): `PRE`: the effect sends hear the filtered sound (as CYB!RM 1.0). `POST`: only the track's dry sound is filtered; GRAIN, DELAY and SPACE hear it unfiltered (a dark track with a bright reverb, say).
+- **POS** (MIXER 2): `PRE`: the effect sends hear the filtered sound (as GL!TCH 1.0). `POST`: only the track's dry sound is filtered; GRAIN, DELAY and SPACE hear it unfiltered (a dark track with a bright reverb, say).
 
 ---
 
@@ -101,9 +101,9 @@ Press **HOME** again for the mixer pages:
 | SOURCE: VA, FM, SAMPLE, VOICE, WHEEL, PHYS, PHASE | LATCH: OFF / ON | TYPE (VOICE only): SOLO, ANDROID, GHOST, MEGACITY | GLIDE: OFF, 10 MS – 2.5 S |
 
 - **LATCH OFF:** a note sounds while you hold the key, like a normal keyboard.
-- **LATCH ON:** press once to start a note, press again to stop it. For drones. A note latched from MIDI (a DAW, a keyboard) stops with its key on the FM-1 too, and switching LATCH off stops every note of the track, wherever it came from. (After a DAW's STOP, notes it latched stay on: with LATCH ON a note-off doesn't end a note, as in CYB!RM 1.0.)
+- **LATCH ON:** press once to start a note, press again to stop it. For drones. A note latched from MIDI (a DAW, a keyboard) stops with its key on the FM-1 too, and switching LATCH off stops every note of the track, wherever it came from. (After a DAW's STOP, notes it latched stay on: with LATCH ON a note-off doesn't end a note, as in GL!TCH 1.0.)
 - **Hold SEL + OCT+** switches the selected track's LATCH on or off from any page, while you play. Switching it off lets go of the latched notes.
-- A sound you load brings its own LATCH, as in CYB!RM 1.0, unless SYSTEM 3's LATCH is set to ALWAYS OFF: then a sound you load sets the track's LATCH off. Either way, EDIT's LATCH and SEL + OCT+ work at any time.
+- A sound you load brings its own LATCH, as in GL!TCH 1.0, unless SYSTEM 3's LATCH is set to ALWAYS OFF: then a sound you load sets the track's LATCH off. Either way, EDIT's LATCH and SEL + OCT+ work at any time.
 - **GLIDE** (portamento): each new note starts at the pitch of the track's last note and slides to its own, fast at first, then easing in. The knob sets how long the slide takes, from 10 ms (a quick scoop) to about 2.5 s (a slow siren). OFF (the default, and every sound made before) jumps straight to the note, as in 1.0. It works with every source, with chords (every note of the chord slides by the same amount), the sequencer, ARP and GENERATE, and is saved with the sound.
 
 ### SOUND page: the source's four knobs
@@ -126,7 +126,7 @@ On PHYS, STRUCTURE and BOW change meaning with the model; the screen shows the c
 
 | TYPE | Who sings each note |
 |---|---|
-| SOLO | One synthesized voice, as in CYB!RM 1.0 (the default; every sound made before 2.0 is SOLO) |
+| SOLO | One synthesized voice, as in GL!TCH 1.0 (the default; every sound made before 2.0 is SOLO) |
 | ANDROID | Six men (three singers, two parts each), almost no vibrato |
 | GHOST | Six women (three singers, two parts each), a gentle vibrato |
 | MEGACITY | Three men and three women an octave above them, a gentle vibrato |
@@ -142,7 +142,7 @@ With chord mode, every note of the chord is a choir. The men sound most natural 
 
 **Reverb for the choirs** (a sound doesn't store these: set them on the FX pages and MIXER 1): SPACE **SIZE** about 10 s, **DAMP** about 47 % (a darker tail), **MIX** 79 % (as it starts), **PRE-DELAY** about 40 ms, and the track's **REVERB** on MIXER 1 at about 80 %. For a long, cathedral wash, SIZE up to 15–20 s.
 
-The choir recordings are from **VocalSet** (Wilkins, Seetharaman, Wahl, Pardo, Northwestern University, 2018, <https://doi.org/10.5281/zenodo.1442513>), licensed under Creative Commons Attribution 4.0 (<https://creativecommons.org/licenses/by/4.0/>); CYB!RM made single cycles from them (see LICENSING.md).
+The choir recordings are from **VocalSet** (Wilkins, Seetharaman, Wahl, Pardo, Northwestern University, 2018, <https://doi.org/10.5281/zenodo.1442513>), licensed under Creative Commons Attribution 4.0 (<https://creativecommons.org/licenses/by/4.0/>); GL!TCH made single cycles from them (see LICENSING.md).
 
 ### PHASE's LINE 2 page
 
@@ -177,9 +177,9 @@ After LINE 2 comes **PHASE ENV**: two envelopes that every PHASE note plays by i
 | MEMBRANE | a struck drum head | HARM: an ideal head → a tuned (tabla-like) one | as MODAL | BEND: the pitch drop after the strike (no bowing) |
 | SYMPATH | a plucked string with three strings ringing along | CHORD of the sympathetic strings | as MODAL | BUZZ: a buzzing bridge (no bowing) |
 
-PHYS's "bow" is not a smooth violin bow: it keeps the model sounding with many tiny random hits (MODAL) or noise (STRING). With DAMP low each hit dies at once and you hear a stream of little plucks; turn **DAMP up** (long ring) for a smooth, sustained, swelling tone. MEMBRANE and SYMPATH can't be bowed: on them the fourth knob is BEND and BUZZ. A bowed STRING with STRUCTURE high can sound unsteady and break up while you hold it: that is the string model itself (CYB!RM 1.0 sounds the same).
+PHYS's "bow" is not a smooth violin bow: it keeps the model sounding with many tiny random hits (MODAL) or noise (STRING). With DAMP low each hit dies at once and you hear a stream of little plucks; turn **DAMP up** (long ring) for a smooth, sustained, swelling tone. MEMBRANE and SYMPATH can't be bowed: on them the fourth knob is BEND and BUZZ. A bowed STRING with STRUCTURE high can sound unsteady and break up while you hold it: that is the string model itself (GL!TCH 1.0 sounds the same).
 
-The four sample slots come with CYB!RM's factory samples: **1 URCHIN, 2 LEAVE, 3 NIKOLAI, 4 M-SOFT**. Replace them with your own from the [editor](#15-the-editor) (see also [Good to know](#14-good-to-know)).
+The four sample slots come with GL!TCH's factory samples: **1 URCHIN, 2 LEAVE, 3 NIKOLAI, 4 M-SOFT**. Replace them with your own from the [editor](#15-the-editor) (see also [Good to know](#14-good-to-know)).
 
 ### FM editor (FM tracks only)
 
@@ -430,10 +430,10 @@ A track can play by itself: random notes of the **SCALE** (with chord mode on: r
   - `USB` or `TRS`: the FM-1 follows the MIDI clock coming in over USB or the TRS jack. START plays from step 1, CONTINUE carries on where STOP left it, STOP stops; PLAY and STOP on the FM-1 still work (PLAY starts on the next pulse). HOME shows `EXT` and the tempo it measures; SELECT and PRESETS don't change the tempo meanwhile. The arp, song mode and slots changed "at the next bar" all follow the clock. If the clock stops for half a second, the FM-1 carries on at its own tempo.
 - SYSTEM 2 also shows the processor load (CPU NOW / PEAK) and **USB REC DROPS**: how many gaps there have been in the audio sent over USB while a computer records the FM-1. Stopping or pausing the DAW also adds to it. OCT− + OCT+ together resets both.
 - **LATCH** (SYSTEM 3): what loading a sound does to a track's LATCH.
-  - `FROM SOUND` (`SOUND` on the knob; the default, as CYB!RM 1.0): the sound brings the LATCH it was saved with.
+  - `FROM SOUND` (`SOUND` on the knob; the default, as GL!TCH 1.0): the sound brings the LATCH it was saved with.
   - `ALWAYS OFF` (`OFF` on the knob): loading a sound sets the track's LATCH off (latched notes stop), so every sound starts unlatched, whatever was saved in it. You can still latch it by hand any time, with EDIT's LATCH or **SEL + OCT+**.
   - Projects and slots A–D keep the LATCH they were saved with, and a NEW project's tracks start unlatched.
-- **VELOCITY** (SYSTEM 3): `OFF` (as CYB!RM 1.0): every note at full volume. `ON`: a MIDI note (USB or the TRS jack) plays as loud as it was played (soft notes much quieter). The FM-1's own keys, the sequencer and GENERATE stay at full volume either way, and so do notes the arpeggiator plays.
+- **VELOCITY** (SYSTEM 3): `OFF` (as GL!TCH 1.0): every note at full volume. `ON`: a MIDI note (USB or the TRS jack) plays as loud as it was played (soft notes much quieter). The FM-1's own keys, the sequencer and GENERATE stay at full volume either way, and so do notes the arpeggiator plays.
 
 ---
 
@@ -489,7 +489,7 @@ Turn **PRESETS** to step through them by category, then your own.
 - **CPU FULL: NOTE DROPPED:** the FM-1 has too much to play at once. It lets go of fading and generated notes first and keeps the notes you hold and the latched ones.
 - **After an unexpected restart** the header says why for a moment at power-on: `WATCHDOG RESET` (the FM-1 froze and restarted itself) or `LOW VOLTAGE RESET` (the power supply dipped).
 - **Factory sounds never switch chord mode on** when you load them. ANDROID, MEGACITY CHOIR and CHOIR GHOST have their chord type set (ANDROID: FIFTH), so hold SEL to hear them as chords.
-- **Loudness:** CYB!RM 2.0 keeps 6 dB of headroom: up to three quarters of MASTER everything plays 6 dB quieter than in 1.0 (sounds and projects are unchanged, only the output), and the last quarter of MASTER brings it back up to 1.0's level. A limiter at the very end means the output never clips, whatever LEVEL, chords or DRIVE do; at the top of MASTER the loudest chords are limited a little.
+- **Loudness:** GL!TCH 2.0 keeps 6 dB of headroom: up to three quarters of MASTER everything plays 6 dB quieter than in 1.0 (sounds and projects are unchanged, only the output), and the last quarter of MASTER brings it back up to 1.0's level. A limiter at the very end means the output never clips, whatever LEVEL, chords or DRIVE do; at the top of MASTER the loudest chords are limited a little.
 - **MIDI IN:** over USB, and on the **TRS jack** (3.5 mm, MIDI IN only) with a TRS-to-DIN MIDI adapter. (TRS adapters come in different wirings; which one the FM-1's jack needs is still being tested, and this manual will say once it's confirmed.) Notes and CCs from the jack go exactly where USB's do (MIDI CHANNEL, MIDI LEARN); SysEx from the jack is ignored.
 - **Samples:** load your own WAV files into the four slots with the [editor](#15-the-editor) (or, optionally, `tools/fm1_sample_upload.py`, see the README). SYSTEM 2's SAMPLES brings the factory samples back.
 - **Stuck?** Use the Rescue page on the [FM-1 Firmware Hub](https://thefirmwarehub.com/).
@@ -498,14 +498,14 @@ Turn **PRESETS** to step through them by category, then your own.
 
 ## 15. The editor
 
-**[saulofilho.github.io/cybirm/emu/editor.html](https://saulofilho.github.io/cybirm/emu/editor.html)**, in Chrome or Edge on a computer. Connect the FM-1 over USB, press **CONNECT FM-1 (USB)** and allow MIDI when the browser asks. **TRY WITHOUT AN FM-1** runs CYB!RM's own code in the page instead.
+**[saulofilho.github.io/glitch/emu/editor.html](https://saulofilho.github.io/glitch/emu/editor.html)**, in Chrome or Edge on a computer. Connect the FM-1 over USB, press **CONNECT FM-1 (USB)** and allow MIDI when the browser asks. **TRY WITHOUT AN FM-1** runs GL!TCH's own code in the page instead.
 
-- **SOUND EDITOR:** the four tracks' sounds (T1–T4), every setting on screen with the FM-1's names. Every move plays on the FM-1 at once, like turning its knobs, and in the page's own CYB!RM, whose screen and keys are beside the sliders (play them with the mouse or the computer keyboard: `Z`–`/`, `S`–`'`, `Q`–`O`). **STORE IN SLOT** saves the sound into one of your 64 slots, with the name you give it.
+- **SOUND EDITOR:** the four tracks' sounds (T1–T4), every setting on screen with the FM-1's names. Every move plays on the FM-1 at once, like turning its knobs, and in the page's own GL!TCH, whose screen and keys are beside the sliders (play them with the mouse or the computer keyboard: `Z`–`/`, `S`–`'`, `Q`–`O`). **STORE IN SLOT** saves the sound into one of your 64 slots, with the name you give it.
 - **SOUNDS:** your 64 slots and the 44 factory sounds; **LOAD TO T1–T4** puts one on a track. Rename, clear, import and export single sounds.
 - **SAMPLES:** drop a WAV on a slot and **UPLOAD** it; **RESTORE FACTORY SAMPLES**. **NORMALISE** (on unless you untick it) brings every WAV to the same loudness; off, a sample keeps its own level.
 - **FX:** the project's effects (TAPE, GRAIN, DELAY, SPACE, MASTER, DRIVE), each track's filter TYPE and POS, and each track's five sends (MIXER 1), live: **READ FROM FM-1**, then every move plays on the FM-1 at once.
 - **SETTINGS:** MIDI CHANNEL, CLOCK, LATCH (FROM SOUND / ALWAYS OFF) and VELOCITY (OFF / ON), read from the FM-1 and written back (the rest of the settings stay as they are).
-- **BACKUP:** one file with all your sounds, slots A–D, settings and the four sample slots, and a restore that makes a backup of what's there first. A restore puts the samples back too; a slot that already holds the same sample isn't written again, and a slot that was empty in the backup is emptied. Backups from CYB!RM 1.0 (they have no samples) restore too and leave your samples as they are.
+- **BACKUP:** one file with all your sounds, slots A–D, settings and the four sample slots, and a restore that makes a backup of what's there first. A restore puts the samples back too; a slot that already holds the same sample isn't written again, and a slot that was empty in the backup is emptied. Backups from GL!TCH 1.0 (they have no samples) restore too and leave your samples as they are.
 
 The FM-1 only writes to its memory (store, upload, restore) while the sequencer is stopped and nothing sounds; the editor tells you when to wait. Nothing is written without you pressing a button.
 
@@ -513,7 +513,7 @@ The FM-1 only writes to its memory (store, upload, restore) while the sequencer 
 
 ## 16. The web emulator
 
-**[saulofilho.github.io/cybirm/emu/](https://saulofilho.github.io/cybirm/emu/)**: the FM-1's panel in your browser, running the same firmware. Press **Switch on**, then play it with the mouse or the computer keyboard. Each button shows its key in its corner.
+**[saulofilho.github.io/glitch/emu/](https://saulofilho.github.io/glitch/emu/)**: the FM-1's panel in your browser, running the same firmware. Press **Switch on**, then play it with the mouse or the computer keyboard. Each button shows its key in its corner.
 
 | Key | Does |
 |---|---|

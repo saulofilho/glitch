@@ -1,8 +1,8 @@
-# CYB!RM's releases: push a tag (git tag v2.0 && git push origin v2.0) and GitHub builds the FM-1 package from this
+# GL!TCH's releases: push a tag (git tag v2.0 && git push origin v2.0) and GitHub builds the FM-1 package from this
 # source with the FM-1 Firmware Hub's shared workflow (zvenson/fm1-build, its review at v1), runs the host tests first,
-# signs a build attestation (the hub's "Built from source" badge) and publishes build/cybirm-X.Y.fwsc as the tag's
+# signs a build attestation (the hub's "Built from source" badge) and publishes build/glitch-X.Y.fwsc as the tag's
 # release. A tag below 1.0, or with -rc / -beta in it, is a beta on the hub.
-#   gh attestation verify cybirm-2.0.fwsc --repo saulofilho/cybirm \
+#   gh attestation verify glitch-2.0.fwsc --repo saulofilho/glitch \
 #     --signer-workflow zvenson/fm1-build/.github/workflows/build.yml
 name: release
 on:

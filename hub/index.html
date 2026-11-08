@@ -3,27 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="CYB!RM: a neon-noir groovebox firmware for the M-VAVE FM-1. Seven sources, sixteen scales, forty-four factory sounds. Boot the emulator in your browser, or install it on the unit.">
-<title>CYB!RM // FM-1 FIRMWARE</title>
+<meta name="description" content="GL!TCH: a neon-noir groovebox firmware for the M-VAVE FM-1. Seven sources, sixteen scales, forty-four factory sounds. Boot the emulator in your browser, or install it on the unit.">
+<title>GL!TCH // FM-1 FIRMWARE</title>
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="CYB!RM">
-<meta property="og:title" content="CYB!RM: neon-noir groovebox firmware for the M-VAVE FM-1">
+<meta property="og:site_name" content="GL!TCH">
+<meta property="og:title" content="GL!TCH: neon-noir groovebox firmware for the M-VAVE FM-1">
 <meta property="og:description" content="Seven sources, sixteen cyber scales, forty-four factory sounds. Boot the web emulator, flash the unit. GPL-3.0.">
-<meta property="og:image" content="https://saulofilho.github.io/cybirm/og.png">
+<meta property="og:image" content="https://saulofilho.github.io/glitch/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="CYB!RM: neon-noir FM-1 firmware on an amber CRT — 7 sources, 16 scales, 44 sounds">
+<meta property="og:image:alt" content="GL!TCH: neon-noir FM-1 firmware on an amber CRT — 7 sources, 16 scales, 44 sounds">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://saulofilho.github.io/cybirm/og.png">
+<meta name="twitter:image" content="https://saulofilho.github.io/glitch/og.png">
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap">
 <style>
-/* CYB!RM HUB — a phosphor CRT terminal. Amber on black, scanlines, bloom, vignette and a slow flicker; the whole
+/* GL!TCH HUB — a phosphor CRT terminal. Amber on black, scanlines, bloom, vignette and a slow flicker; the whole
  * page behaves like a dead-stock cyberdeck booted onto the FM-1's firmware. One look, on purpose. After the
- * reference at ardor.cloud/retro-computer; the color and the content are CYB!RM's own. */
+ * reference at ardor.cloud/retro-computer; the color and the content are GL!TCH's own. */
 :root {
   --black: #050402;            /* the tube when it is off (a warm, not pure, black) */
   --bg: #0a0702;
@@ -193,8 +193,8 @@ footer a { color: var(--amber); }
 <div id="glowwrap">
 <main class="screen">
   <div class="bar">
-    <span>&#9656; CYB!RM / <b>IN COMMUNICATION</b> / FM-1 FIRMWARE TERMINAL</span>
-    <span><button type="button" id="color-btn" class="barbtn" aria-label="Cycle the phosphor colour">[C] COLOR: <b id="color-name">AMBER</b></button> &middot; <a href="https://github.com/saulofilho/cybirm">CYB!RM.SRC &#8599;</a></span>
+    <span>&#9656; GL!TCH / <b>IN COMMUNICATION</b> / FM-1 FIRMWARE TERMINAL</span>
+    <span><button type="button" id="color-btn" class="barbtn" aria-label="Cycle the phosphor colour">[C] COLOR: <b id="color-name">AMBER</b></button> &middot; <a href="https://github.com/saulofilho/glitch">GL!TCH.SRC &#8599;</a></span>
   </div>
 
   <header>
@@ -205,7 +205,7 @@ footer a { color: var(--amber); }
  \____|  |_| |_|____/
   &gt;&gt; !RM  //  v<span id="verA">2.0</span></pre>
     <div class="lede">
-      <h1>CYB!RM</h1>
+      <h1>GL!TCH</h1>
       <p class="tag">Neon-noir groovebox firmware for the M-VAVE FM-1</p>
       <p>Four tracks, seven sources, a 64-step sequencer, tape and megacity space. A Blade Runner factory bank and
         six cyber scales, on a dead-stock phosphor tube.</p>
@@ -213,7 +213,7 @@ footer a { color: var(--amber); }
         <a class="key" href="emu/" id="k-boot"><b>[B]</b> BOOT EMULATOR</a>
         <button type="button" class="key" id="k-hear" hidden><b>[P]</b> <span id="hear-lbl">HEAR IT</span></button>
         <a class="key" href="emu/editor.html"><b>[E]</b> EDITOR</a>
-        <a class="key" href="../MANUAL.md"><b>[M]</b> MANUAL</a>
+        <a class="key" href="MANUAL.md"><b>[M]</b> MANUAL</a>
       </div>
       <audio id="demo-audio" preload="none"></audio>
     </div>
@@ -242,9 +242,9 @@ footer a { color: var(--amber); }
 
   <div class="rule"><h2>INSTALL IN A MINUTE</h2><span class="line"></span></div>
   <ol class="steps">
-    <li><p>Build the package: <code>./build.sh --name cybirm.fwsc</code> &rarr; <code>build/cybirm.fwsc</code> (JieLi toolchain; get it with <code>tools/get_toolchain.sh</code>).</p></li>
-    <li><p>Connect the FM-1 over USB and flash it: <code>python3 tools/fm1_install.py build/cybirm.fwsc</code>.</p></li>
-    <li><p>On the unit the boot screen reads <b>CYB!RM</b>, colour 1 is cyan, and the added scales are Insen, Hirajoshi, Iwato and whole tone. Unofficial firmware &mdash; install at your own risk.</p></li>
+    <li><p>Build the package: <code>./build.sh --name glitch.fwsc</code> &rarr; <code>build/glitch.fwsc</code> (JieLi toolchain; get it with <code>tools/get_toolchain.sh</code>).</p></li>
+    <li><p>Connect the FM-1 over USB and flash it: <code>python3 tools/fm1_install.py build/glitch.fwsc</code>.</p></li>
+    <li><p>On the unit the boot screen reads <b>GL!TCH</b>, colour 1 is cyan, and the added scales are Insen, Hirajoshi, Iwato and whole tone. Unofficial firmware &mdash; install at your own risk.</p></li>
   </ol>
 
   <div class="rule"><h2>HOW TO PLAY</h2><span class="line"></span></div>
@@ -262,38 +262,38 @@ footer a { color: var(--amber); }
     <div class="log" id="log"></div>
     <div class="inrow">
       <span class="ps">YOU &gt;</span>
-      <input id="cmd" autocomplete="off" spellcheck="false" aria-label="CYB!RM terminal command" placeholder="HELP">
+      <input id="cmd" autocomplete="off" spellcheck="false" aria-label="GL!TCH terminal command" placeholder="HELP">
       <span class="cursor">&#9608;</span>
     </div>
   </section>
 
   <footer>
-    <p>CYB!RM is <a href="../LICENSE">GPL-3.0</a>. Built on <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>.
-      Credits in <a href="../LICENSING.md">LICENSING.md</a>. M-VAVE and FM-1 are trademarks of their owners.
+    <p>GL!TCH is <a href="LICENSE">GPL-3.0</a>. Built on <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>.
+      Credits in <a href="LICENSING.md">LICENSING.md</a>. M-VAVE and FM-1 are trademarks of their owners.
       Not made or endorsed by M-VAVE.</p>
   </footer>
 </main>
 </div>
 
-<script src="cybirm-data.js"></script>
+<script src="glitch-data.js"></script>
 <script>
 (function () {
   "use strict";
-  var D = window.CYBIRM || { version: "2.0", sources: [], scales: [], cats: [], sounds: [] };
+  var D = window.GLITCH || { version: "2.0", sources: [], scales: [], cats: [], sounds: [] };
   var $ = function (s, r) { return (r || document).querySelector(s); };
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
 
   /* ---- phosphor colour cycle [C] ---- */
   var PHOS = ["amber", "green", "cyan", "magenta"];
   var pi = 0;
-  try { var saved = localStorage.getItem("cybirm-phosphor"); if (saved && PHOS.indexOf(saved) >= 0) { pi = PHOS.indexOf(saved); } } catch (e) {}
+  try { var saved = localStorage.getItem("glitch-phosphor"); if (saved && PHOS.indexOf(saved) >= 0) { pi = PHOS.indexOf(saved); } } catch (e) {}
   function setPhosphor(i, announce) {
     pi = (i + PHOS.length) % PHOS.length;
     var name = PHOS[pi];
     if (name === "amber") { document.documentElement.removeAttribute("data-phosphor"); }
     else { document.documentElement.setAttribute("data-phosphor", name); }
     var lbl = $("#color-name"); if (lbl) { lbl.textContent = name.toUpperCase(); }
-    try { localStorage.setItem("cybirm-phosphor", name); } catch (e) {}
+    try { localStorage.setItem("glitch-phosphor", name); } catch (e) {}
     if (announce && typeof say === "function") { say('PHOSPHOR: <span class="ok">' + name.toUpperCase() + '</span>'); }
   }
   setPhosphor(pi, false);
@@ -355,7 +355,7 @@ footer a { color: var(--amber); }
     var k = e.key.toLowerCase();
     if (k === "b") { location.href = "emu/"; }
     else if (k === "e") { location.href = "emu/editor.html"; }
-    else if (k === "m") { location.href = "../MANUAL.md"; }
+    else if (k === "m") { location.href = "MANUAL.md"; }
     else if (k === "c") { setPhosphor(pi + 1, false); }
     else if (k === "p" && D.demo) { toggleHear(); }
     else if (k === "/" || k === "?") { e.preventDefault(); $("#cmd").focus(); }
@@ -364,7 +364,7 @@ footer a { color: var(--amber); }
   /* ---- the terminal ---- */
   var log = $("#log"), input = $("#cmd");
   function say(h, cls) { var d = el("div", null, h); if (cls) { d.className = cls; } log.appendChild(d); log.scrollTop = log.scrollHeight; }
-  say('CYB!RM FIRMWARE TERMINAL v' + (D.version || "2.0") + ' &mdash; TYPE <span class="ok">HELP</span>.');
+  say('GL!TCH FIRMWARE TERMINAL v' + (D.version || "2.0") + ' &mdash; TYPE <span class="ok">HELP</span>.');
 
   var CMDS = {
     help: function () {
@@ -376,8 +376,8 @@ footer a { color: var(--amber); }
     sounds: function () { say(D.sounds.length + ' FACTORY SOUNDS ACROSS ' + D.cats.length + ' CATEGORIES. TRY: CAT BELL'); },
     boot: function () { say('BOOTING EMULATOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/"; }, 500); },
     editor: function () { say('OPENING EDITOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/editor.html"; }, 500); },
-    install: function () { say('BUILD: <span class="ok">./build.sh --name cybirm.fwsc</span> &middot; FLASH: <span class="ok">python3 tools/fm1_install.py build/cybirm.fwsc</span>'); },
-    about: function () { say('CYB!RM v' + (D.version || "2.0") + ' &mdash; neon-noir GR!MM for the M-VAVE FM-1. GPL-3.0. IDENTITY ' + (D.identity || "FM-1_923") + '.'); },
+    install: function () { say('BUILD: <span class="ok">./build.sh --name glitch.fwsc</span> &middot; FLASH: <span class="ok">python3 tools/fm1_install.py build/glitch.fwsc</span>'); },
+    about: function () { say('GL!TCH v' + (D.version || "2.0") + ' &mdash; neon-noir GR!MM for the M-VAVE FM-1. GPL-3.0. IDENTITY ' + (D.identity || "FM-1_923") + '.'); },
     clear: function () { log.innerHTML = ""; }
   };
   function run(raw) {
@@ -400,10 +400,10 @@ footer a { color: var(--amber); }
   });
 
   /* ---- boot sequence overlay (skipped for reduced motion) ---- */
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("cybirm-booted")) {
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("glitch-booted")) {
     var ov = $("#boot"), bl = $("#bootlog");
     var lines = [
-      "CYB!RM BIOS " + (D.version || "2.0") + "  (C) 2026",
+      "GL!TCH BIOS " + (D.version || "2.0") + "  (C) 2026",
       "JIELI AC690N .............. OK",
       "PHOSPHOR TUBE ............. WARMING",
       "AUDIO CODEC 44100HZ ....... OK",
@@ -411,12 +411,12 @@ footer a { color: var(--amber); }
       "44 FACTORY SOUNDS ......... LOADED",
       "SEQUENCER 64 STEPS ........ OK",
       "",
-      "> BOOT CYB!RM FIRMWARE TERMINAL"
+      "> BOOT GL!TCH FIRMWARE TERMINAL"
     ];
     var i = 0;
     (function tick() {
       if (i < lines.length) { bl.textContent += lines[i++] + "\n"; setTimeout(tick, 120 + Math.random() * 90); }
-      else { setTimeout(function () { ov.style.transition = "opacity .4s"; ov.style.opacity = "0"; setTimeout(function () { ov.style.display = "none"; }, 420); sessionStorage.setItem("cybirm-booted", "1"); }, 420); }
+      else { setTimeout(function () { ov.style.transition = "opacity .4s"; ov.style.opacity = "0"; setTimeout(function () { ov.style.display = "none"; }, 420); sessionStorage.setItem("glitch-booted", "1"); }, 420); }
     })();
   } else { var b = $("#boot"); if (b) { b.style.display = "none"; } }
 })();

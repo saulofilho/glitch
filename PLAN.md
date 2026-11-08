@@ -1,11 +1,11 @@
-# CYB!RM — plan
+# GL!TCH — plan
 
-CYB!RM is GR!MM's firmware re-skinned as neon-noir cyberpunk for the M-VAVE FM-1, with its own factory sounds,
-scales and hub. The engine tracks GR!MM upstream; this file tracks CYB!RM's own direction.
+GL!TCH is GR!MM's firmware re-skinned as neon-noir cyberpunk for the M-VAVE FM-1, with its own factory sounds,
+scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own direction.
 
 ## Done (2.0)
 
-- Firmware identity: 44 factory sounds (9 categories), 16 scales, cyber source names, CYB!RM boot screen.
+- Firmware identity: 44 factory sounds (9 categories), 16 scales, cyber source names, GL!TCH boot screen.
 - Clean web presence modelled on the COQUI project: `hub/` (landing + `emu/`), `tools/gen_hub.py`, GitHub Actions
   (`pages.yml`, `release.yml`). The parallel hand-written JavaScript synth was removed.
 - Phosphor-CRT amber redesign (after ardor.cloud/retro-computer) across the hub, the panel and the editor.
