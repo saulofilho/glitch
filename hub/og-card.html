@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CYB!RM og card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<style>
+/* A 1200x630 social card in the hub's amber-CRT look. Screenshot this at 1200x630 -> og.jpg. */
+:root { --black:#050402; --amber:#ffb000; --amber-hi:#ffd98a; --amber-lo:#a66b00;
+        --glow:0 0 2px rgba(255,176,0,.55),0 0 12px rgba(255,140,0,.3); --f:"VT323",ui-monospace,monospace; }
+* { box-sizing:border-box; margin:0; }
+html,body { background:var(--black); }
+.card { position:relative; width:1200px; height:630px; overflow:hidden; background:var(--black);
+        color:var(--amber); font-family:var(--f); text-shadow:var(--glow); text-transform:uppercase; }
+.scan { position:absolute; inset:0; z-index:3; pointer-events:none;
+        background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 3px, rgba(0,0,0,.32) 3px 4px); mix-blend-mode:multiply; }
+.vig { position:absolute; inset:0; z-index:4; pointer-events:none;
+       background:radial-gradient(120% 120% at 50% 45%, rgba(0,0,0,0) 54%, rgba(0,0,0,.6) 86%, rgba(0,0,0,.95) 100%); }
+.wrap { position:relative; z-index:2; height:100%; padding:64px 72px; display:flex; flex-direction:column; justify-content:space-between; }
+.top { display:flex; justify-content:space-between; font-size:30px; color:var(--amber-lo); letter-spacing:.04em; }
+.top b { color:var(--amber); }
+.mid { display:flex; align-items:center; gap:56px; }
+pre.ascii { font-size:34px; line-height:1.0; color:var(--amber); margin:0; }
+h1 { font-size:168px; line-height:.86; color:var(--amber-hi); letter-spacing:.01em; }
+.tag { font-size:40px; color:var(--amber-lo); margin-top:6px; }
+.bot { font-size:34px; color:var(--amber); display:flex; gap:28px; flex-wrap:wrap; }
+.bot .chip { border:2px solid var(--amber); padding:4px 18px; }
+.bot .dim { color:var(--amber-lo); border-color:transparent; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="scan"></div><div class="vig"></div>
+  <div class="wrap">
+    <div class="top"><span>&#9656; CYB!RM / <b>FM-1 FIRMWARE</b></span><span>SAULOFILHO.GITHUB.IO/CYBIRM</span></div>
+    <div class="mid">
+      <pre class="ascii">  ______ _   _ ____
+ / ___\ \ | | | __ )
+| |    _\ \| | |  _ \
+| |___|__  | | | |_) |
+ \____|  |_| |_|____/
+  &gt;&gt; !RM // V2.0</pre>
+      <div>
+        <h1>CYB!RM</h1>
+        <div class="tag">Neon-noir groovebox firmware &middot; M-VAVE FM-1</div>
+      </div>
+    </div>
+    <div class="bot">
+      <span class="chip">7 SOURCES</span>
+      <span class="chip">16 SCALES</span>
+      <span class="chip">44 SOUNDS</span>
+      <span class="chip dim">BOOT IN THE BROWSER &middot; GPL-3.0</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

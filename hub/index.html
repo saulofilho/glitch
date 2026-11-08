@@ -30,6 +30,14 @@
   --f: "VT323", "Share Tech Mono", ui-monospace, monospace;
   color-scheme: dark;
 }
+/* the [C] phosphor cycle: amber (default) -> green -> cyan -> magenta. Only the phosphor colour changes; the tube,
+ * the scanlines and the layout stay. */
+:root[data-phosphor="green"] { --amber: #2bff6a; --amber-hi: #b9ffce; --amber-lo: #1a9e43; --amber-ghost: rgba(43,255,106,.14);
+  --glow: 0 0 2px rgba(43,255,106,.5), 0 0 10px rgba(0,255,120,.26); }
+:root[data-phosphor="cyan"] { --amber: #14e2ff; --amber-hi: #b3f3ff; --amber-lo: #0b8aa6; --amber-ghost: rgba(20,226,255,.14);
+  --glow: 0 0 2px rgba(20,226,255,.5), 0 0 10px rgba(0,200,255,.26); }
+:root[data-phosphor="magenta"] { --amber: #ff3ac6; --amber-hi: #ffb6ec; --amber-lo: #a61f82; --amber-ghost: rgba(255,58,198,.14);
+  --glow: 0 0 2px rgba(255,58,198,.5), 0 0 10px rgba(255,0,180,.26); }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--black); }
 body {
@@ -63,7 +71,7 @@ b, strong { color: var(--amber-hi); font-weight: normal; }
   content: ""; position: absolute; inset: 0;
   background: radial-gradient(130% 120% at 50% 50%, rgba(0,0,0,0) 56%, rgba(0,0,0,.55) 82%, rgba(0,0,0,.9) 100%);
 }
-#flicker { position: fixed; inset: 0; z-index: 51; pointer-events: none; background: rgba(255,176,0,.025); animation: flk .14s steps(2) infinite; }
+#flicker { position: fixed; inset: 0; z-index: 51; pointer-events: none; background: rgba(255,255,255,.018); animation: flk .14s steps(2) infinite; }
 #glowwrap { animation: breathe 5.6s ease-in-out infinite; }
 @keyframes flk { 0% { opacity: .55; } 100% { opacity: .9; } }
 @keyframes breathe { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.05); } }
@@ -72,6 +80,9 @@ b, strong { color: var(--amber-hi); font-weight: normal; }
 /* ---- status bar ---- */
 .bar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 18px; color: var(--amber-lo); border-bottom: 1px solid var(--amber-ghost); padding-bottom: 6px; margin-bottom: 14px; }
 .bar b { color: var(--amber); }
+.barbtn { font: inherit; background: none; border: 1px solid var(--amber-ghost); color: var(--amber-lo); padding: 0 6px; cursor: pointer; text-shadow: var(--glow); text-transform: uppercase; }
+.barbtn:hover, .barbtn:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; outline: none; }
+.barbtn:hover b, .barbtn:focus-visible b { color: var(--black); }
 
 /* ---- header: ascii mark + pitch ---- */
 header { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 4vw, 40px); align-items: start; margin: 10px 0 8px; }
@@ -176,7 +187,7 @@ footer a { color: var(--amber); }
 <main class="screen">
   <div class="bar">
     <span>&#9656; CYB!RM / <b>IN COMMUNICATION</b> / FM-1 FIRMWARE TERMINAL</span>
-    <span><a href="https://github.com/saulofilho/cybirm">CYB!RM.SRC &#8599;</a></span>
+    <span><button type="button" id="color-btn" class="barbtn" aria-label="Cycle the phosphor colour">[C] COLOR: <b id="color-name">AMBER</b></button> &middot; <a href="https://github.com/saulofilho/cybirm">CYB!RM.SRC &#8599;</a></span>
   </div>
 
   <header>
@@ -263,6 +274,22 @@ footer a { color: var(--amber); }
   var $ = function (s, r) { return (r || document).querySelector(s); };
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
 
+  /* ---- phosphor colour cycle [C] ---- */
+  var PHOS = ["amber", "green", "cyan", "magenta"];
+  var pi = 0;
+  try { var saved = localStorage.getItem("cybirm-phosphor"); if (saved && PHOS.indexOf(saved) >= 0) { pi = PHOS.indexOf(saved); } } catch (e) {}
+  function setPhosphor(i, announce) {
+    pi = (i + PHOS.length) % PHOS.length;
+    var name = PHOS[pi];
+    if (name === "amber") { document.documentElement.removeAttribute("data-phosphor"); }
+    else { document.documentElement.setAttribute("data-phosphor", name); }
+    var lbl = $("#color-name"); if (lbl) { lbl.textContent = name.toUpperCase(); }
+    try { localStorage.setItem("cybirm-phosphor", name); } catch (e) {}
+    if (announce && typeof say === "function") { say('PHOSPHOR: <span class="ok">' + name.toUpperCase() + '</span>'); }
+  }
+  setPhosphor(pi, false);
+  var cbtn = $("#color-btn"); if (cbtn) { cbtn.addEventListener("click", function () { setPhosphor(pi + 1, false); }); }
+
   if (D.version) { $("#verA").textContent = D.version; }
   if (D.sources) { $("#n-src").textContent = "/ " + D.sources.length; }
   if (D.scales) { $("#n-sc").textContent = "/ " + D.scales.length; }
@@ -306,6 +333,7 @@ footer a { color: var(--amber); }
     if (k === "b") { location.href = "emu/"; }
     else if (k === "e") { location.href = "emu/editor.html"; }
     else if (k === "m") { location.href = "../MANUAL.md"; }
+    else if (k === "c") { setPhosphor(pi + 1, false); }
     else if (k === "/" || k === "?") { e.preventDefault(); $("#cmd").focus(); }
   });
 
@@ -316,8 +344,9 @@ footer a { color: var(--amber); }
 
   var CMDS = {
     help: function () {
-      say('COMMANDS: <span class="ok">SOURCES SCALES SOUNDS SCALE &lt;NAME&gt; CAT &lt;NAME&gt; BOOT EDITOR INSTALL ABOUT CLEAR</span>');
+      say('COMMANDS: <span class="ok">SOURCES SCALES SOUNDS SCALE &lt;NAME&gt; CAT &lt;NAME&gt; COLOR BOOT EDITOR INSTALL ABOUT CLEAR</span>');
     },
+    color: function () { setPhosphor(pi + 1, true); },
     sources: function () { say('7 SOURCES: ' + D.sources.map(function (s) { return s.code + ' ' + s.name; }).join('  &middot;  ')); },
     scales: function () { say(D.scales.length + ' SCALES: ' + D.scales.map(function (s) { return s.name; }).join(', ')); },
     sounds: function () { say(D.sounds.length + ' FACTORY SOUNDS ACROSS ' + D.cats.length + ' CATEGORIES. TRY: CAT BELL'); },
