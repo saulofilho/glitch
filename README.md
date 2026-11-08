@@ -83,6 +83,11 @@ python3 tools/gen_hub.py --version 2.0
 
 - `hub/cybirm-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
 - `hub/emu/` — the WebAssembly emulator and the editor (from `web/dist`).
+- `hub/og.png` — the 1200×630 social card, drawn by `hub/og-card.html` (open it to re-export).
+
+If a host build exists (`tests/run_host.sh`, Linux), `gen_hub.py` also renders a short audio teaser to
+`hub/audio/demo.{mp3,wav}` — a WAV when no encoder is around, an MP3 when `ffmpeg` is on the PATH — which the hub
+surfaces as a **HEAR IT** button. Pass `--no-audio` to skip it. The hub's live sound is the emulator either way.
 
 `.github/workflows/pages.yml` publishes `hub/` to GitHub Pages; `release.yml` builds and attests
 `build/cybirm-X.Y.fwsc` when you push a `v*` tag.

@@ -10,7 +10,12 @@
 <meta property="og:title" content="CYB!RM: neon-noir groovebox firmware for the M-VAVE FM-1">
 <meta property="og:description" content="Seven sources, sixteen cyber scales, forty-four factory sounds. Boot the web emulator, flash the unit. GPL-3.0.">
 <meta property="og:image" content="https://saulofilho.github.io/cybirm/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CYB!RM: neon-noir FM-1 firmware on an amber CRT — 7 sources, 16 scales, 44 sounds">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://saulofilho.github.io/cybirm/og.png">
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,6 +97,8 @@ pre.ascii { margin: 0; font-size: 12px; line-height: 1.05; color: var(--amber); 
 .lede p { margin: 0 0 12px; max-width: 58ch; }
 .ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
 .key { border: 1px solid var(--amber); padding: 4px 12px; display: inline-block; }
+button.key { font: inherit; background: none; cursor: pointer; color: var(--amber-hi); text-shadow: var(--glow); text-transform: uppercase; }
+button.key[hidden] { display: none; }
 .key:hover, .key:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; }
 .key b { color: inherit; }
 
@@ -201,12 +208,14 @@ footer a { color: var(--amber); }
       <h1>CYB!RM</h1>
       <p class="tag">Neon-noir groovebox firmware for the M-VAVE FM-1</p>
       <p>Four tracks, seven sources, a 64-step sequencer, tape and megacity space. A Blade Runner factory bank and
-        six cyber scales, on a dead-stock amber tube.</p>
+        six cyber scales, on a dead-stock phosphor tube.</p>
       <div class="ctas">
         <a class="key" href="emu/" id="k-boot"><b>[B]</b> BOOT EMULATOR</a>
+        <button type="button" class="key" id="k-hear" hidden><b>[P]</b> <span id="hear-lbl">HEAR IT</span></button>
         <a class="key" href="emu/editor.html"><b>[E]</b> EDITOR</a>
         <a class="key" href="../MANUAL.md"><b>[M]</b> MANUAL</a>
       </div>
+      <audio id="demo-audio" preload="none"></audio>
     </div>
   </header>
 
@@ -326,6 +335,20 @@ footer a { color: var(--amber); }
     box.appendChild(ul); cw.appendChild(box);
   });
 
+  /* ---- "HEAR IT": the demo render, when gen_hub produced one (data.demo) ---- */
+  var hearBtn = $("#k-hear"), audio = $("#demo-audio"), hearLbl = $("#hear-lbl");
+  function toggleHear() {
+    if (!D.demo) { return; }
+    if (audio.paused) { audio.play().then(function () { hearLbl.textContent = "PLAYING…"; }).catch(function () {}); }
+    else { audio.pause(); audio.currentTime = 0; hearLbl.textContent = "HEAR IT"; }
+  }
+  if (D.demo && hearBtn && audio) {
+    audio.src = "audio/" + D.demo;
+    hearBtn.hidden = false;
+    audio.addEventListener("ended", function () { hearLbl.textContent = "HEAR IT"; });
+    hearBtn.addEventListener("click", toggleHear);
+  }
+
   /* ---- keyboard shortcuts ---- */
   document.addEventListener("keydown", function (e) {
     if (e.target && e.target.tagName === "INPUT") { return; }
@@ -334,6 +357,7 @@ footer a { color: var(--amber); }
     else if (k === "e") { location.href = "emu/editor.html"; }
     else if (k === "m") { location.href = "../MANUAL.md"; }
     else if (k === "c") { setPhosphor(pi + 1, false); }
+    else if (k === "p" && D.demo) { toggleHear(); }
     else if (k === "/" || k === "?") { e.preventDefault(); $("#cmd").focus(); }
   });
 

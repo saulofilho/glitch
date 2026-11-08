@@ -2,58 +2,72 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>CYB!RM og card</title>
+<title>CYB!RM og generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
-<style>
-/* A 1200x630 social card in the hub's amber-CRT look. Screenshot this at 1200x630 -> og.jpg. */
-:root { --black:#050402; --amber:#ffb000; --amber-hi:#ffd98a; --amber-lo:#a66b00;
-        --glow:0 0 2px rgba(255,176,0,.55),0 0 12px rgba(255,140,0,.3); --f:"VT323",ui-monospace,monospace; }
-* { box-sizing:border-box; margin:0; }
-html,body { background:var(--black); }
-.card { position:relative; width:1200px; height:630px; overflow:hidden; background:var(--black);
-        color:var(--amber); font-family:var(--f); text-shadow:var(--glow); text-transform:uppercase; }
-.scan { position:absolute; inset:0; z-index:3; pointer-events:none;
-        background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 3px, rgba(0,0,0,.32) 3px 4px); mix-blend-mode:multiply; }
-.vig { position:absolute; inset:0; z-index:4; pointer-events:none;
-       background:radial-gradient(120% 120% at 50% 45%, rgba(0,0,0,0) 54%, rgba(0,0,0,.6) 86%, rgba(0,0,0,.95) 100%); }
-.wrap { position:relative; z-index:2; height:100%; padding:64px 72px; display:flex; flex-direction:column; justify-content:space-between; }
-.top { display:flex; justify-content:space-between; font-size:30px; color:var(--amber-lo); letter-spacing:.04em; }
-.top b { color:var(--amber); }
-.mid { display:flex; align-items:center; gap:56px; }
-pre.ascii { font-size:34px; line-height:1.0; color:var(--amber); margin:0; }
-h1 { font-size:168px; line-height:.86; color:var(--amber-hi); letter-spacing:.01em; }
-.tag { font-size:40px; color:var(--amber-lo); margin-top:6px; }
-.bot { font-size:34px; color:var(--amber); display:flex; gap:28px; flex-wrap:wrap; }
-.bot .chip { border:2px solid var(--amber); padding:4px 18px; }
-.bot .dim { color:var(--amber-lo); border-color:transparent; }
-</style>
+<style>html,body{margin:0;background:#111}canvas{display:block}</style>
 </head>
 <body>
-<div class="card">
-  <div class="scan"></div><div class="vig"></div>
-  <div class="wrap">
-    <div class="top"><span>&#9656; CYB!RM / <b>FM-1 FIRMWARE</b></span><span>SAULOFILHO.GITHUB.IO/CYBIRM</span></div>
-    <div class="mid">
-      <pre class="ascii">  ______ _   _ ____
- / ___\ \ | | | __ )
-| |    _\ \| | |  _ \
-| |___|__  | | | |_) |
- \____|  |_| |_|____/
-  &gt;&gt; !RM // V2.0</pre>
-      <div>
-        <h1>CYB!RM</h1>
-        <div class="tag">Neon-noir groovebox firmware &middot; M-VAVE FM-1</div>
-      </div>
-    </div>
-    <div class="bot">
-      <span class="chip">7 SOURCES</span>
-      <span class="chip">16 SCALES</span>
-      <span class="chip">44 SOUNDS</span>
-      <span class="chip dim">BOOT IN THE BROWSER &middot; GPL-3.0</span>
-    </div>
-  </div>
-</div>
+<canvas id="c" width="1200" height="630"></canvas>
+<script>
+/* Draws the CYB!RM social card (1200x630) to a canvas in the amber-CRT look, then exposes it as a PNG data URL on
+ * window.OG_PNG. A phosphor-colour query (?p=green|cyan|magenta) re-tints it; default amber. */
+const COL = { amber:["#ffb000","#ffd98a","#a66b00","255,140,0"], green:["#2bff6a","#b9ffce","#1a9e43","0,255,120"],
+              cyan:["#14e2ff","#b3f3ff","#0b8aa6","0,200,255"], magenta:["#ff3ac6","#ffb6ec","#a61f82","255,0,180"] };
+const p = new URLSearchParams(location.search).get("p") || "amber";
+const [AM, HI, LO, GLOWRGB] = COL[p] || COL.amber;
+const cv = document.getElementById("c"), x = cv.getContext("2d"), W = 1200, H = 630;
+
+function draw() {
+  x.fillStyle = "#050402"; x.fillRect(0, 0, W, H);
+  x.save(); x.shadowColor = "rgba(" + GLOWRGB + ",.9)"; x.shadowBlur = 14;
+
+  // top status line
+  x.fillStyle = LO; x.font = "30px VT323"; x.textBaseline = "alphabetic";
+  x.fillText("▸ CYB!RM / FM-1 FIRMWARE", 72, 92);
+  x.fillStyle = AM; x.fillText("SAULOFILHO.GITHUB.IO/CYBIRM", 760, 92);
+
+  // ascii mark (left)
+  const art = ["  ______ _   _ ____", " / ___\\ \\ | | | __ )", "| |    _\\ \\| | |  _ \\",
+               "| |___|__  | | | |_) |", " \\____|  |_| |_|____/", "  >> !RM // V2.0"];
+  x.fillStyle = AM; x.font = "30px VT323";
+  art.forEach((l, i) => x.fillText(l, 72, 210 + i * 34));
+
+  // title + tag (right of mark)
+  x.fillStyle = HI; x.font = "150px VT323";
+  x.fillText("CYB!RM", 470, 300);
+  x.fillStyle = LO; x.font = "40px VT323";
+  x.fillText("NEON-NOIR GROOVEBOX FIRMWARE", 476, 352);
+  x.fillText("M-VAVE FM-1", 476, 394);
+
+  // bottom chips
+  x.font = "34px VT323";
+  let cx = 72; const y = 500, chips = ["7 SOURCES", "16 SCALES", "44 SOUNDS"];
+  chips.forEach(t => { const w = x.measureText(t).width + 36;
+    x.strokeStyle = AM; x.lineWidth = 2; x.strokeRect(cx, y, w, 50);
+    x.fillStyle = AM; x.fillText(t, cx + 18, y + 35); cx += w + 26; });
+  x.fillStyle = LO; x.fillText("BOOT IN THE BROWSER · GPL-3.0", cx + 6, y + 35);
+  x.restore();
+
+  // scanlines
+  x.globalCompositeOperation = "multiply";
+  x.fillStyle = "rgba(0,0,0,.34)";
+  for (let yy = 0; yy < H; yy += 4) x.fillRect(0, yy, W, 2);
+  x.globalCompositeOperation = "source-over";
+
+  // vignette
+  const g = x.createRadialGradient(W / 2, H * 0.45, H * 0.3, W / 2, H * 0.45, H * 0.9);
+  g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(0.75, "rgba(0,0,0,.45)"); g.addColorStop(1, "rgba(0,0,0,.92)");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+  window.OG_PNG = cv.toDataURL("image/png");
+  document.title = "OG READY";
+}
+if (document.fonts && document.fonts.load) {
+  Promise.all([document.fonts.load("150px VT323"), document.fonts.load("30px VT323")]).then(() => document.fonts.ready).then(draw).catch(draw);
+  setTimeout(draw, 1500);
+} else { setTimeout(draw, 800); }
+</script>
 </body>
 </html>
