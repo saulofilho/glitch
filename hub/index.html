@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="CYB!RM: a neon-noir groovebox firmware for the M-VAVE FM-1. Seven sources, sixteen scales, forty-four factory sounds. Boot the emulator in your browser, or install it on the unit.">
+<title>CYB!RM // FM-1 FIRMWARE</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CYB!RM">
+<meta property="og:title" content="CYB!RM: neon-noir groovebox firmware for the M-VAVE FM-1">
+<meta property="og:description" content="Seven sources, sixteen cyber scales, forty-four factory sounds. Boot the web emulator, flash the unit. GPL-3.0.">
+<meta property="og:image" content="https://saulofilho.github.io/cybirm/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap">
+<style>
+/* CYB!RM HUB — a phosphor CRT terminal. Amber on black, scanlines, bloom, vignette and a slow flicker; the whole
+ * page behaves like a dead-stock cyberdeck booted onto the FM-1's firmware. One look, on purpose. After the
+ * reference at ardor.cloud/retro-computer; the color and the content are CYB!RM's own. */
+:root {
+  --black: #050402;            /* the tube when it is off (a warm, not pure, black) */
+  --bg: #0a0702;
+  --amber: #ffb000;            /* P3 amber phosphor */
+  --amber-hi: #ffd98a;         /* a hot pixel */
+  --amber-lo: #a66b00;         /* a cold one / dim text */
+  --amber-ghost: rgba(255,176,0,.14);
+  --glow: 0 0 2px rgba(255,176,0,.55), 0 0 10px rgba(255,140,0,.28);
+  --f: "VT323", "Share Tech Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--black); }
+body {
+  font-family: var(--f);
+  color: var(--amber);
+  font-size: 21px;
+  line-height: 1.25;
+  letter-spacing: .02em;
+  text-shadow: var(--glow);
+  text-transform: uppercase;
+  overflow-x: hidden;
+}
+a { color: var(--amber-hi); text-decoration: none; }
+a:hover, a:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; outline: none; }
+:focus-visible { outline: 2px solid var(--amber-hi); outline-offset: 2px; }
+b, strong { color: var(--amber-hi); font-weight: normal; }
+.dim { color: var(--amber-lo); }
+.hi { color: var(--amber-hi); }
+
+/* ---- the tube: scanlines, grille, vignette, bloom, flicker ---- */
+.screen { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 22px clamp(14px, 4vw, 40px) 120px; }
+#crt { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+#crt::before {            /* scanlines + a faint shadow mask */
+  content: ""; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.28) 2px 3px),
+    repeating-linear-gradient(90deg, rgba(255,120,0,.015) 0 2px, rgba(0,0,0,.05) 2px 4px);
+  mix-blend-mode: multiply;
+}
+#crt::after {             /* vignette + curvature darkening at the edges */
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(130% 120% at 50% 50%, rgba(0,0,0,0) 56%, rgba(0,0,0,.55) 82%, rgba(0,0,0,.9) 100%);
+}
+#flicker { position: fixed; inset: 0; z-index: 51; pointer-events: none; background: rgba(255,176,0,.025); animation: flk .14s steps(2) infinite; }
+#glowwrap { animation: breathe 5.6s ease-in-out infinite; }
+@keyframes flk { 0% { opacity: .55; } 100% { opacity: .9; } }
+@keyframes breathe { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.05); } }
+@media (prefers-reduced-motion: reduce) { #flicker { display: none; } #glowwrap { animation: none; } #boot { display: none !important; } .cursor { animation: none; } }
+
+/* ---- status bar ---- */
+.bar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 18px; color: var(--amber-lo); border-bottom: 1px solid var(--amber-ghost); padding-bottom: 6px; margin-bottom: 14px; }
+.bar b { color: var(--amber); }
+
+/* ---- header: ascii mark + pitch ---- */
+header { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 4vw, 40px); align-items: start; margin: 10px 0 8px; }
+pre.ascii { margin: 0; font-size: 12px; line-height: 1.05; color: var(--amber); text-shadow: var(--glow); white-space: pre; }
+.lede h1 { font-size: clamp(34px, 7vw, 60px); margin: 0 0 6px; line-height: .92; color: var(--amber-hi); letter-spacing: .01em; }
+.lede .tag { color: var(--amber-lo); font-size: 19px; margin: 0 0 10px; }
+.lede p { margin: 0 0 12px; max-width: 58ch; }
+.ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.key { border: 1px solid var(--amber); padding: 4px 12px; display: inline-block; }
+.key:hover, .key:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; }
+.key b { color: inherit; }
+
+/* ---- rule with a label ---- */
+.rule { display: flex; align-items: center; gap: 10px; margin: 30px 0 14px; color: var(--amber-lo); }
+.rule::before { content: "::"; color: var(--amber); }
+.rule h2 { font-size: 22px; margin: 0; color: var(--amber-hi); white-space: nowrap; }
+.rule .line { flex: 1; border-top: 1px dashed var(--amber-ghost); }
+.rule .n { color: var(--amber-lo); }
+
+/* ---- menus / lists ---- */
+.menu { list-style: none; margin: 0; padding: 0; }
+.menu li { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; border-bottom: 1px dotted transparent; }
+.menu li .idx { color: var(--amber-lo); width: 2.4ch; flex: none; text-align: right; }
+.menu li .nm { color: var(--amber-hi); }
+.menu li .lead { flex: 1; border-bottom: 1px dotted var(--amber-ghost); margin: 0 6px; transform: translateY(-4px); }
+.menu li .rt { color: var(--amber-lo); flex: none; }
+.menu li p { margin: 0; color: var(--amber-lo); font-size: 18px; flex-basis: 100%; padding-left: 3.4ch; }
+
+/* sources grid */
+.sources { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px; border: 1px solid var(--amber-ghost); }
+.src { padding: 12px 14px; border: 1px solid var(--amber-ghost); }
+.src .code { color: var(--black); background: var(--amber); padding: 0 6px; }
+.src h3 { margin: 6px 0 4px; font-size: 21px; color: var(--amber-hi); }
+.src p { margin: 0; color: var(--amber-lo); font-size: 18px; }
+
+/* scales */
+.scales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 18px; }
+.sc { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px dotted var(--amber-ghost); }
+.sc .nm { color: var(--amber-hi); }
+.sc .dots { font-size: 18px; letter-spacing: 1px; color: var(--amber-lo); }
+.sc .dots b { color: var(--amber); }
+
+/* sounds by category */
+.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px 24px; }
+.cat h3 { font-size: 20px; margin: 0 0 4px; color: var(--amber-hi); border-bottom: 1px solid var(--amber-ghost); padding-bottom: 2px; }
+.cat ul { list-style: none; margin: 0; padding: 0; }
+.cat li { display: flex; justify-content: space-between; gap: 8px; color: var(--amber); font-size: 18px; padding: 1px 0; }
+.cat li span { color: var(--amber-lo); }
+
+/* big boot panel */
+.boot-cta { border: 1px solid var(--amber); padding: 20px clamp(16px,4vw,32px); margin: 8px 0; display: grid; gap: 10px; background: linear-gradient(0deg, rgba(255,176,0,.05), transparent); }
+.boot-cta h2 { margin: 0; font-size: clamp(26px, 5vw, 40px); color: var(--amber-hi); }
+.boot-cta p { margin: 0; color: var(--amber-lo); max-width: 60ch; }
+.boot-cta .go { display: inline-flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+.boot-cta .go a { border: 1px solid var(--amber); padding: 8px 18px; font-size: 22px; }
+
+/* install steps */
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 10px; }
+.steps li { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
+.steps li::before { counter-increment: s; content: "[" counter(s) "]"; color: var(--amber-lo); }
+.steps li p { margin: 0; color: var(--amber); }
+.steps code, code { background: #140d02; border: 1px solid var(--amber-ghost); color: var(--amber-hi); padding: 0 6px; font-family: var(--f); text-transform: none; font-size: .95em; overflow-wrap: anywhere; }
+
+/* play combos */
+.combos { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; align-items: baseline; }
+.combos .k { color: var(--amber-hi); white-space: nowrap; }
+.combos .d { color: var(--amber-lo); font-size: 18px; }
+
+/* ---- the command terminal ---- */
+.term { border: 1px solid var(--amber); margin-top: 18px; }
+.term .log { padding: 10px 14px; min-height: 72px; max-height: 220px; overflow-y: auto; font-size: 19px; }
+.term .log div { color: var(--amber-lo); }
+.term .log div .u { color: var(--amber-hi); }
+.term .log div .ok { color: var(--amber); }
+.term .inrow { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--amber-ghost); padding: 8px 14px; }
+.term .inrow .ps { color: var(--amber-hi); }
+.term input { flex: 1; background: transparent; border: none; color: var(--amber-hi); font: inherit; text-transform: uppercase; text-shadow: var(--glow); outline: none; }
+.term input::placeholder { color: var(--amber-lo); opacity: .7; }
+.cursor { color: var(--amber); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+footer { margin-top: 36px; border-top: 1px solid var(--amber-ghost); padding-top: 12px; color: var(--amber-lo); font-size: 17px; }
+footer a { color: var(--amber); }
+
+/* boot overlay */
+#boot { position: fixed; inset: 0; z-index: 60; background: var(--black); color: var(--amber); padding: 40px clamp(16px,6vw,80px); font-size: 19px; overflow: hidden; }
+#boot pre { margin: 0; white-space: pre-wrap; }
+
+@media (max-width: 680px) {
+  body { font-size: 19px; }
+  header { grid-template-columns: 1fr; }
+  pre.ascii { font-size: 9px; }
+}
+</style>
+</head>
+<body>
+<div id="crt" aria-hidden="true"></div>
+<div id="flicker" aria-hidden="true"></div>
+<div id="boot" aria-hidden="true"><pre id="bootlog"></pre></div>
+
+<div id="glowwrap">
+<main class="screen">
+  <div class="bar">
+    <span>&#9656; CYB!RM / <b>IN COMMUNICATION</b> / FM-1 FIRMWARE TERMINAL</span>
+    <span><a href="https://github.com/saulofilho/cybirm">CYB!RM.SRC &#8599;</a></span>
+  </div>
+
+  <header>
+    <pre class="ascii" aria-hidden="true">  ______ _   _ ____
+ / ___\ \ | | | __ )
+| |    _\ \| | |  _ \
+| |___|__  | | | |_) |
+ \____|  |_| |_|____/
+  &gt;&gt; !RM  //  v<span id="verA">2.0</span></pre>
+    <div class="lede">
+      <h1>CYB!RM</h1>
+      <p class="tag">Neon-noir groovebox firmware for the M-VAVE FM-1</p>
+      <p>Four tracks, seven sources, a 64-step sequencer, tape and megacity space. A Blade Runner factory bank and
+        six cyber scales, on a dead-stock amber tube.</p>
+      <div class="ctas">
+        <a class="key" href="emu/" id="k-boot"><b>[B]</b> BOOT EMULATOR</a>
+        <a class="key" href="emu/editor.html"><b>[E]</b> EDITOR</a>
+        <a class="key" href="../MANUAL.md"><b>[M]</b> MANUAL</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="rule"><h2>THE SOURCES</h2><span class="line"></span><span class="n" id="n-src">/ 7</span></div>
+  <div class="sources" id="sources"></div>
+
+  <div class="rule"><h2>THE SCALES</h2><span class="line"></span><span class="n" id="n-sc">/ 16</span></div>
+  <p class="dim" style="margin:0 0 10px">The keys snap to the scale. A 12-slot ring over the root: <b style="color:var(--amber)">&#9632;</b> in key, <span style="color:var(--amber-lo)">&#183;</span> out.</p>
+  <div class="scales" id="scales"></div>
+
+  <div class="rule"><h2>FACTORY SOUNDS</h2><span class="line"></span><span class="n" id="n-snd">/ 44</span></div>
+  <div class="cats" id="cats"></div>
+
+  <div class="rule"><h2>BOOT</h2><span class="line"></span></div>
+  <section class="boot-cta">
+    <h2>RUN THE REAL FIRMWARE, NO FM-1 NEEDED</h2>
+    <p>The emulator is <code>firmware/src/grimm.c</code> itself, compiled to WebAssembly and run in your browser.
+      Computer keyboard or MIDI; the editor backs up and reflashes a connected unit over USB (Chrome or Edge).</p>
+    <div class="go">
+      <a href="emu/">&#9656; BOOT EMULATOR</a>
+      <a href="emu/editor.html">&#9656; OPEN EDITOR</a>
+    </div>
+  </section>
+
+  <div class="rule"><h2>INSTALL IN A MINUTE</h2><span class="line"></span></div>
+  <ol class="steps">
+    <li><p>Build the package: <code>./build.sh --name cybirm.fwsc</code> &rarr; <code>build/cybirm.fwsc</code> (JieLi toolchain; get it with <code>tools/get_toolchain.sh</code>).</p></li>
+    <li><p>Connect the FM-1 over USB and flash it: <code>python3 tools/fm1_install.py build/cybirm.fwsc</code>.</p></li>
+    <li><p>On the unit the boot screen reads <b>CYB!RM</b>, colour 1 is cyan, and the added scales are Insen, Hirajoshi, Iwato and whole tone. Unofficial firmware &mdash; install at your own risk.</p></li>
+  </ol>
+
+  <div class="rule"><h2>HOW TO PLAY</h2><span class="line"></span></div>
+  <div class="combos">
+    <div class="k">TURN <b>PRESETS</b></div><div class="d">Load a factory sound by category: DRONE, PAD, BELL, ORGAN, KEYS, BASS, TEXTURE, VOICE.</div>
+    <div class="k"><b>EDIT</b> &gt; SOURCE</div><div class="d">Pick the engine (VA, FM, SAMPLE, VOICE, WHEEL, PHYS, PHASE) and turn its four knobs.</div>
+    <div class="k"><b>SEL</b> &gt; SCALE</div><div class="d">Snap the keys to one of 16 scales; hold a key for its one-key chord.</div>
+    <div class="k">HOLD <b>FX</b> + BLACK KEY</div><div class="d">GENERATE: a track plays itself in the chosen feel.</div>
+    <div class="k"><b>FX</b> &gt; SPACE</div><div class="d">Megacity reverb: 6 combs, 3 allpass, and an infinite freeze.</div>
+    <div class="k">HOLD <b>SAVE</b> + WHITE KEYS</div><div class="d">Recall or store slots A&ndash;D (while playing: at the next bar).</div>
+  </div>
+
+  <div class="rule"><h2>TERMINAL</h2><span class="line"></span><span class="n">TYPE HELP</span></div>
+  <section class="term">
+    <div class="log" id="log"></div>
+    <div class="inrow">
+      <span class="ps">YOU &gt;</span>
+      <input id="cmd" autocomplete="off" spellcheck="false" aria-label="CYB!RM terminal command" placeholder="HELP">
+      <span class="cursor">&#9608;</span>
+    </div>
+  </section>
+
+  <footer>
+    <p>CYB!RM is <a href="../LICENSE">GPL-3.0</a>. Built on <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>.
+      Credits in <a href="../LICENSING.md">LICENSING.md</a>. M-VAVE and FM-1 are trademarks of their owners.
+      Not made or endorsed by M-VAVE.</p>
+  </footer>
+</main>
+</div>
+
+<script src="cybirm-data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.CYBIRM || { version: "2.0", sources: [], scales: [], cats: [], sounds: [] };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
+
+  if (D.version) { $("#verA").textContent = D.version; }
+  if (D.sources) { $("#n-src").textContent = "/ " + D.sources.length; }
+  if (D.scales) { $("#n-sc").textContent = "/ " + D.scales.length; }
+  if (D.sounds) { $("#n-snd").textContent = "/ " + D.sounds.length; }
+
+  /* sources */
+  var sw = $("#sources");
+  D.sources.forEach(function (s) {
+    sw.appendChild(el("div", "src",
+      '<span class="code">' + s.code + '</span>' +
+      '<h3>' + s.name + '</h3><p>' + s.desc + '</p>'));
+  });
+
+  /* scales: the mask as a 12-slot ring */
+  var scw = $("#scales");
+  D.scales.forEach(function (s) {
+    var dots = (s.mask || "").split("").map(function (c) {
+      return c === "X" ? "<b>&#9632;</b>" : "&#183;";
+    }).join("");
+    scw.appendChild(el("div", "sc",
+      '<span class="nm">' + s.name + '</span><span class="dots">' + dots + '</span>'));
+  });
+
+  /* sounds grouped by category, in the enum's order */
+  var cw = $("#cats");
+  (D.cats || []).forEach(function (cat) {
+    var items = (D.sounds || []).filter(function (s) { return s.cat === cat; });
+    if (!items.length) { return; }
+    var box = el("div", "cat", '<h3>' + cat + ' <span style="color:var(--amber-lo);font-size:16px">(' + items.length + ')</span></h3>');
+    var ul = el("ul");
+    items.forEach(function (s) {
+      ul.appendChild(el("li", null, '<span>' + s.name + '</span><span>' + s.src + '</span>'));
+    });
+    box.appendChild(ul); cw.appendChild(box);
+  });
+
+  /* ---- keyboard shortcuts ---- */
+  document.addEventListener("keydown", function (e) {
+    if (e.target && e.target.tagName === "INPUT") { return; }
+    var k = e.key.toLowerCase();
+    if (k === "b") { location.href = "emu/"; }
+    else if (k === "e") { location.href = "emu/editor.html"; }
+    else if (k === "m") { location.href = "../MANUAL.md"; }
+    else if (k === "/" || k === "?") { e.preventDefault(); $("#cmd").focus(); }
+  });
+
+  /* ---- the terminal ---- */
+  var log = $("#log"), input = $("#cmd");
+  function say(h, cls) { var d = el("div", null, h); if (cls) { d.className = cls; } log.appendChild(d); log.scrollTop = log.scrollHeight; }
+  say('CYB!RM FIRMWARE TERMINAL v' + (D.version || "2.0") + ' &mdash; TYPE <span class="ok">HELP</span>.');
+
+  var CMDS = {
+    help: function () {
+      say('COMMANDS: <span class="ok">SOURCES SCALES SOUNDS SCALE &lt;NAME&gt; CAT &lt;NAME&gt; BOOT EDITOR INSTALL ABOUT CLEAR</span>');
+    },
+    sources: function () { say('7 SOURCES: ' + D.sources.map(function (s) { return s.code + ' ' + s.name; }).join('  &middot;  ')); },
+    scales: function () { say(D.scales.length + ' SCALES: ' + D.scales.map(function (s) { return s.name; }).join(', ')); },
+    sounds: function () { say(D.sounds.length + ' FACTORY SOUNDS ACROSS ' + D.cats.length + ' CATEGORIES. TRY: CAT BELL'); },
+    boot: function () { say('BOOTING EMULATOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/"; }, 500); },
+    editor: function () { say('OPENING EDITOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/editor.html"; }, 500); },
+    install: function () { say('BUILD: <span class="ok">./build.sh --name cybirm.fwsc</span> &middot; FLASH: <span class="ok">python3 tools/fm1_install.py build/cybirm.fwsc</span>'); },
+    about: function () { say('CYB!RM v' + (D.version || "2.0") + ' &mdash; neon-noir GR!MM for the M-VAVE FM-1. GPL-3.0. IDENTITY ' + (D.identity || "FM-1_923") + '.'); },
+    clear: function () { log.innerHTML = ""; }
+  };
+  function run(raw) {
+    var line = raw.trim(); if (!line) { return; }
+    say('<span class="u">YOU &gt; ' + line.replace(/</g, "&lt;") + '</span>');
+    var parts = line.toLowerCase().split(/\s+/), c = parts[0], arg = parts.slice(1).join(" ");
+    if (c === "scale" && arg) {
+      var sc = D.scales.filter(function (s) { return s.name.toLowerCase().indexOf(arg) === 0 || s.short.toLowerCase() === arg; })[0];
+      if (sc) { var dots = sc.mask.split("").map(function (x) { return x === "X" ? "#" : "."; }).join(""); say(sc.name + ': <span class="ok">' + dots + '</span> (12 semitones over the root)'); }
+      else { say('NO SUCH SCALE: ' + arg.toUpperCase()); }
+    } else if (c === "cat" && arg) {
+      var items = D.sounds.filter(function (s) { return s.cat.toLowerCase() === arg; });
+      if (items.length) { say(arg.toUpperCase() + ': ' + items.map(function (s) { return s.name + ' [' + s.src + ']'; }).join('  &middot;  ')); }
+      else { say('NO SUCH CATEGORY: ' + arg.toUpperCase() + '. TRY: ' + D.cats.join(", ")); }
+    } else if (CMDS[c]) { CMDS[c](); }
+    else { say('UNKNOWN: ' + c.toUpperCase() + '. TYPE HELP.'); }
+  }
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { run(input.value); input.value = ""; }
+  });
+
+  /* ---- boot sequence overlay (skipped for reduced motion) ---- */
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("cybirm-booted")) {
+    var ov = $("#boot"), bl = $("#bootlog");
+    var lines = [
+      "CYB!RM BIOS " + (D.version || "2.0") + "  (C) 2026",
+      "JIELI AC690N .............. OK",
+      "PHOSPHOR TUBE ............. WARMING",
+      "AUDIO CODEC 44100HZ ....... OK",
+      "7 SOURCES / 16 SCALES ..... LOADED",
+      "44 FACTORY SOUNDS ......... LOADED",
+      "SEQUENCER 64 STEPS ........ OK",
+      "",
+      "> BOOT CYB!RM FIRMWARE TERMINAL"
+    ];
+    var i = 0;
+    (function tick() {
+      if (i < lines.length) { bl.textContent += lines[i++] + "\n"; setTimeout(tick, 120 + Math.random() * 90); }
+      else { setTimeout(function () { ov.style.transition = "opacity .4s"; ov.style.opacity = "0"; setTimeout(function () { ov.style.display = "none"; }, 420); sessionStorage.setItem("cybirm-booted", "1"); }, 420); }
+    })();
+  } else { var b = $("#boot"); if (b) { b.style.display = "none"; } }
+})();
+</script>
+</body>
+</html>

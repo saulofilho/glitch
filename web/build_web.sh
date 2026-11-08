@@ -5,7 +5,7 @@
 # with Emscripten, then Asyncify (Binaryen's wasm-opt) so the app's main loop can pause between audio blocks.
 # After Felucca's web/emu/build.sh (hugelton/Felucca, Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton
 # Instruments) and X0X's (charlesvestal/fm1-x0x), both GPL-3.0.
-#   web/build_web.sh   ->  web/dist/{index.html, panel.js, worklet.js, grimm.wasm, Terminus-LICENSE.txt; the editor:
+#   web/build_web.sh   ->  web/dist/{index.html, panel.js, worklet.js, cybirm.wasm, Terminus-LICENSE.txt; the editor:
 #                          editor.html, editor.js, editor_core.js, PressStart2P-Regular.ttf, OFL-PressStart2P.txt}
 #   node web/test_web.mjs   (after tests/run_host.sh: the browser build against host mode)
 #   EMSDK    the Emscripten SDK (default ~/emsdk; not needed when emcc is on the PATH)

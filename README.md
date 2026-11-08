@@ -1,21 +1,35 @@
 # CYB!RM
 
-> **Cyberpunk Atmospheric Sound Matrix & Groovebox**  
-> *Directly inspired by the architecture and philosophy of [GRiMMBIENT/grimm](https://github.com/GRiMMBIENT/grimm), re-imagined for Dystopian Sci-Fi, Neon Noir, and Cyberdeck soundscapes.*
+**A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
+seven sources, tape and megacity space — on a dead-stock amber tube.
 
----
+> **Version 2.0.** Unofficial firmware, not made or endorsed by M-VAVE. Install at your own risk.
+> Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
 
-## ⚡ Overview
+**[The CYB!RM hub](https://saulofilho.github.io/cybirm/)**: the sources, scales and sounds, and how to install ·
+**[Boot it in your browser](https://saulofilho.github.io/cybirm/emu/)** (the real firmware, no FM-1 needed) ·
+**[The editor](https://saulofilho.github.io/cybirm/emu/editor.html)** (sounds, samples, backup over USB)
 
-**CYB!RM** preserves the core 4-track groovebox & atmospheric sound generator architecture of the legendary **GR!MM** (created for the M-VAVE FM-1), shifting the aesthetic from medieval dark ambient and dungeon synth into **Cyberpunk, Neon Noir, and Industrial Sci-Fi**.
+Free and open source (GPL-3.0). Re-imagined from GR!MM's dark-ambient/dungeon-synth aesthetic into cyberpunk, neon
+noir and industrial sci-fi.
 
-It is built as a zero-dependency, high-performance web synthesizer using the **Web Audio API**, **Canvas CRT visuals**, and **WebMIDI**, ready to run directly in any modern browser without complex build setups or toolchains.
+## What's inside
 
-The FM-1 firmware lives in this repository, not in a GR!MM checkout. `firmware/src/` is the GPL-3.0 engine (the same feature logic: 4 tracks, 7 sources, sequencer, tape, grain, delay, space). The boot screen says **CYB!RM**, the default accent is neon cyan, and the factory sounds and scales are the neon-noir set. Build it from this directory with `./build.sh` once the JieLi toolchain is installed (`tools/get_toolchain.sh`). The package is `build/grimm.fwsc` (the installer name; the program on the device is CYB!RM). Install with `python3 tools/fm1_install.py build/grimm.fwsc` while the FM-1 is connected.
+- **Seven sources**: **Cyber-Analog** (VA — dual detuned saw/pulse, sub-osc, resonant lowpass), **Neon-FM**
+  (algorithmic carrier/modulator with metallic feedback), **Cyber Lo-Fi** (SAMPLE — acid rain, telemetry, your own
+  WAV over USB), **Android Choir** (VOICE — 3-band vowel formants), **Grid Wheel** (tonewheel drones), **Metallic
+  Resonator** (PHYS — Karplus-Strong pipe and cable), and **Phase** (phase-distortion plates and glitch leads).
+- **Sixteen scales**: Chromatic, Aeolian, Major, **Cyber Dorian**, Phrygian, Lydian, Mixolydian, Locrian, Harmonic
+  Minor, **Phrygian Dominant**, **Iwato**, **Whole Tone**, **Noir Pentatonic**, Major Pentatonic, **Insen**,
+  **Hirajoshi**. The keys snap to the scale; hold a key for its one-key chord.
+- **Forty-four factory sounds** across nine categories — DRONE, PAD, BELL, ORGAN, KEYS, BASS, TEXTURE, VOICE, OTHER:
+  NEON PAD, RAIN VEIL, ICE HALL, CITY ABYSS, DATA BELL, PIPE GONG, ANDROID GHOST, MEGACITY CHOIR, NOIR ORGAN, CHROME
+  PIANO, CS80 BRASS, GLITCH LEAD, ACID RAIN…
+- **From GR!MM**: 4 tracks, a 64-step sequencer per track with swing, chance and ratchets, song mode, arpeggiator,
+  one-key chords, GENERATE, tape, grain, delay, and megacity space reverb (6 combs + 3 allpass + infinite freeze),
+  MIDI in.
 
----
-
-## 🎛️ Architecture Comparison: GR!MM vs CYB!RM
+## Architecture: GR!MM → CYB!RM
 
 | Feature | GR!MM (Original) | CYB!RM (Cyberpunk Edition) |
 | :--- | :--- | :--- |
@@ -25,111 +39,75 @@ The FM-1 firmware lives in this repository, not in a GR!MM checkout. `firmware/s
 | **FM Engine** | 6-Operator FM Bells & Metals | **Neon-FM:** Algorithmic carrier/modulator with decay envelope & metallic feedback |
 | **Physical Model** | String / Primitive Acoustic Pipe | **Metallic Resonator:** Karplus-Strong industrial pipe & cyber-cable resonator |
 | **Vocal Engine** | Gregorian Chants & Murmurs | **Android Choir:** 3-band vowel formant filters ([A], [O], [U], [I]) with vocal vibrato |
-| **Sampler / Lo-Fi** | Recorded Choirs & Cassette Noise | **Cyber Lo-Fi:** Neo-Tokyo acid rain generator, telemetry bursts, and custom WAV drag & drop |
-| **Acid Synthesis** | Monophonic organ drone | **Acid 303:** Screaming 24dB diode ladder filter, diode clipping, accent & slide |
-| **Pad Engine** | Organ sustain | **Drone Megapad:** Quad-oscillator ambient cloud with slow beating frequency drift |
-| **Tape Effects** | Tape saturation & wow/flutter | **Tape & VHS Drift:** Asymmetric saturation shaper + LFO pitch wow & flutter |
-| **Audio Freeze** | Granular buffer freeze | **Granular Freeze & Buffer Lock:** Real-time circular buffer grain player (40-200ms) |
+| **Sampler / Lo-Fi** | Recorded Choirs & Cassette Noise | **Cyber Lo-Fi:** Neo-Tokyo acid rain, telemetry bursts, and custom WAV over USB |
 | **Space Reverb** | Infinite cavern reverb | **Megacity Space Reverb:** 6 comb filters + 3 allpass diffusers + infinite freeze toggle |
-| **Sequencer** | 64 steps, self-playing modes | **64 steps (4 pages of 16), ratchets (1x-4x), probability, swing, and generative engine** |
+| **Sequencer** | 64 steps, self-playing modes | **64 steps, ratchets (1×–4×), probability, swing, and a generative engine** |
 | **Scales** | Phrygian, Dorian, Harmonic Minor | **Insen, Hirajoshi, Phrygian Dominant, Cyber Dorian, Iwato, Whole Tone** |
 
----
+## Try it in the browser
 
-## 🚀 Quick Start
-
-Run the included startup script:
-
-```bash
-./start.sh
-```
-
-Or start Python's built-in HTTP server:
+The emulator is `firmware/src/grimm.c` itself — the code the FM-1 runs — compiled to WebAssembly and played on a fake
+FM-1 (`firmware/src/fm1_web.c`). No hardware needed.
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Then open your browser at:
+- **`http://localhost:8080/hub/`** — the hub: a phosphor-CRT terminal with the sources, scales, sounds and install.
+- **`http://localhost:8080/hub/emu/`** — the FM-1 panel. Computer keyboard or Web MIDI.
+- **`http://localhost:8080/hub/emu/editor.html`** — the editor: sounds, samples, and a backup of the unit (Chrome or Edge).
 
-👉 **`http://localhost:8080`** — hub (install, learn, FM-1 combos)
+To rebuild the WebAssembly from source you need Emscripten:
 
-👉 **`http://localhost:8080/play.html`** — browser deck, plays immediately
+```bash
+web/build_web.sh           # -> web/dist/ (then: python3 tools/gen_hub.py copies it into hub/emu/)
+```
 
-👉 **`http://localhost:8080/web/index.html`** — the FM-1 panel, the same JavaScript as GR!MM (`web/panel.js`, `web/worklet.js`). It sounds after `web/build_web.sh` writes `web/dist/grimm.wasm`.
+## Install on the FM-1
 
----
+On the unit the boot screen reads **CYB!RM**; colour 1 is cyan.
 
-## 🎹 Control & Interaction
+```bash
+tools/get_toolchain.sh                         # the JieLi toolchain (once)
+./build.sh --name cybirm.fwsc                  # -> build/cybirm.fwsc
+python3 tools/fm1_install.py build/cybirm.fwsc # flash a connected FM-1 over USB
+```
 
-### 1. Computer Keyboard (QWERTY Piano)
-Play the active track in real-time with your keyboard:
-* **White Keys:** `A` (C), `S` (D), `D` (E), `F` (F), `G` (G), `H` (A), `J` (B), `K` (C)
-* **Black Keys:** `W` (C#), `E` (D#), `T` (F#), `Y` (G#), `U` (A#)
-* **Octave Shift:** `Z` (Octave Down), `X` (Octave Up)
-* **Transport:** `SPACE` (Play / Stop Sequencer)
+## The hub
 
-### 2. WebMIDI Controllers
-Connect any physical USB or Bluetooth MIDI controller (e.g. M-VAVE, Launchpad, Arturia, Korg). The app auto-detects incoming MIDI:
-* **Note On/Off & Velocity:** Triggers the currently selected track.
-* **CC 1 / CC 74 (Mod Wheel / Cutoff):** Modulates active filter cutoff.
-* **CC 71 (Resonance):** Modulates filter resonance.
-* **CC 91 / CC 93:** Modulates Reverb & Delay sends.
-* **CC 7:** Channel volume.
+`tools/gen_hub.py` makes the hub's data from the firmware source and copies the web build into it:
 
-### 3. Step Sequencer
-* **Step Pads:** Click any of the 16 step pads to toggle active notes on/off.
-* **Page Buttons:** Switch between pages (`1-16`, `17-32`, `33-48`, `49-64`) for sequences up to 64 steps.
-* **Step Inspector:** Select a step to customize its **Pitch**, **Ratchet** (`1x`, `2x` roll, `3x` triplet, `4x` burst), and trigger **Probability** (`0-100%`).
+```bash
+python3 tools/gen_hub.py --version 2.0
+```
 
-### 4. Self-Hacking Matrix (Autonomous Ambient Engine)
-Click **`⚡ SELF-HACK MATRIX`** to activate generative dark ambient mode. The engine will:
-* Procedurally generate chord swells on the Android Choir and Megapad.
-* Trigger rhythmic FM lead plucks and acid sub pulses in the selected Cyberpunk scale.
-* Evolve filter sweeps, resonance, and delay send spikes organically.
+- `hub/cybirm-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
+- `hub/emu/` — the WebAssembly emulator and the editor (from `web/dist`).
 
-### 5. Custom Samples
-Drag and drop any `.wav` or `.mp3` audio file directly into the browser window. It will be decoded and assigned to the **CYBER LO-FI** engine with chromatic pitch tracking!
+`.github/workflows/pages.yml` publishes `hub/` to GitHub Pages; `release.yml` builds and attests
+`build/cybirm-X.Y.fwsc` when you push a `v*` tag.
 
-### 6. Live Session Recording
-Click **`⏺ REC SESSION`** to record high-fidelity master output. When you click **STOP**, CYB!RM instantly generates and downloads a `.webm`/`.wav` audio file with your session.
-
----
-
-## 📂 Project Structure
+## Project structure
 
 ```
 cybirm/
-├── index.html                # Cyberdeck CRT interface & HUD
-├── css/
-│   ├── cyberpunk.css         # Cyberpunk design system, scanlines, knobs, LEDs
-│   └── components.css        # Channel strips, sequencer grid, mixer layout
-├── js/
-│   ├── app.js                # Bootstrap and master coordinator
-│   ├── audio/
-│   │   ├── audio-context.js  # AudioContext, master bus limiter, WAV recorder
-│   │   ├── engines.js        # The 7 Sound Engines (Analog, FM, Resonator, Formant, etc.)
-│   │   ├── track.js          # Track DSP class, routing, sends, and voice allocation
-│   │   └── effects.js        # Tape Saturation, Granular Freeze, Delay, Space Reverb
-│   ├── sequencer/
-│   │   ├── sequencer.js      # Precision lookahead clock, ratchets, probability, swing
-│   │   ├── scales.js         # Cyberpunk scales (Insen, Hirajoshi, Phrygian Dominant)
-│   │   └── generative.js     # Autonomous Self-Hacking Matrix ambient engine
-│   ├── midi/
-│   │   └── midi-handler.js   # WebMIDI API and QWERTY keyboard listener
-│   ├── ui/
-│   │   ├── visualizer.js     # Neon Oscilloscope & Spectrum Canvas visualizer
-│   │   ├── knob.js           # Precision hardware rotary knob component
-│   │   └── ui-controller.js  # UI bindings, presets, and playhead updates
-│   └── presets/
-│       └── presets.js        # Pre-configured cyberpunk soundscapes
-├── start.sh                  # One-click startup script
-└── README.md                 # Documentation and user manual
+├── firmware/            # the GPL-3.0 engine (firmware/src/: 4 tracks, 7 sources, sequencer, tape, space)
+├── hub/                 # the GitHub Pages site: index.html (landing), cybirm-data.js, emu/ (the emulator)
+├── web/                 # the browser build: panel.js, worklet.js, editor, build_web.sh -> web/dist
+├── tools/               # build.py, fm1_install.py, gen_hub.py, get_toolchain.sh …
+├── tests/               # host-mode tests (tests/run_host.sh)
+├── docs/                # API, building, protocols, screens
+├── build.sh             # build the .fwsc package (JieLi toolchain)
+├── MANUAL.md            # the full manual
+└── README.md
 ```
 
----
+## Credits
 
-## 📜 License & Credits
-
-* Inspired by **GR!MM** by [GRiMMBIENT](https://github.com/GRiMMBIENT/grimm).
-* Built under the **GPL-3.0** open-source license.
+- Based on **GR!MM** by [GRiMMBIENT](https://github.com/GRiMMBIENT/grimm), and through it on
+  [Dinghy](https://github.com/zvenson/dinghy), [Felucca](https://github.com/hugelton/Felucca) and
+  [SLOOP](https://github.com/isod89/sloop-fm1).
+- The hub's phosphor-CRT look is after [ardor.cloud/retro-computer](https://ardor.cloud/retro-computer); the colour
+  and the content are CYB!RM's own.
+- GPL-3.0. Third-party licences in [LICENSING.md](LICENSING.md). M-VAVE and FM-1 are trademarks of their owners;
+  CYB!RM is not affiliated with or endorsed by them.

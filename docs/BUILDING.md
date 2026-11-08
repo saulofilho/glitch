@@ -25,9 +25,9 @@ For the browser build: the [Emscripten SDK](https://emscripten.org) in `~/emsdk`
 ## The firmware
 
 ```sh
-./build.sh                                  # -> build/grimm.fwsc (identity FM-1_966, version 2.0)
+./build.sh                                  # -> build/cybirm.fwsc (identity FM-1_966, version 2.0)
 ./build.sh --release 2.1                    # -> build/grimm-2.1.fwsc, the version "2.1" on the screen
-py tools/fm1_install.py build/grimm.fwsc    # install it over USB (asks first); --info: what the FM-1 runs
+py tools/fm1_install.py build/cybirm.fwsc    # install it over USB (asks first); --info: what the FM-1 runs
 ```
 
 The build fails on what would brick or break an FM-1 firmware: a 64-bit division, a call into the chip ROM, too
@@ -43,7 +43,7 @@ tests/stress.sh 1                           # the stress test (seeds 1, 2, 3), w
 ## The browser: web emulator and editor
 
 ```sh
-web/build_web.sh                            # -> web/dist/ (index.html: the web emulator, editor.html: the editor, grimm.wasm)
+web/build_web.sh                            # -> web/dist/ (index.html: the web emulator, editor.html: the editor, cybirm.wasm)
 node web/test_web.mjs                       # after tests/run_host.sh: the browser build against host mode, the editor
 cd web/dist && python3 -m http.server 8000  # then open http://localhost:8000/ (or /editor.html)
 ```
