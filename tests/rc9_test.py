@@ -93,14 +93,14 @@ def slab_px(ms):                                # T1's slab: the label's rows, t
         for y in range(y0, y1):
             for x in range(3, 59):
                 r, g, b = px[3 * (y * w + x):3 * (y * w + x) + 3]
-                n += (r > 150 and g < 110) if red else (r > 150 and g > 150 and b > 150)
+                n += (r < 110 and g > 150 and b > 150) if red else (r > 150 and g > 150 and b > 150)   # (GL!TCH: the accent, neon cyan)
         return n
     return count(170, 178, False), count(180, 188, True)
 
 
 shots = [slab_px(t) for t in (6000, 6750, 7500, 8250)]
 check("HOME's warning beside the label (rc10): FX 0 with a send up, DRY under 'T1 VA'; FX up (1, 100), gone; the label "
-      "always there, the warning red only while so",
+      "always there, the warning in the accent only while so",
       st == ["T1_VA:0", "T1_VA:2", "T1_VA:0", "T1_VA:0"] and all(lab > 20 for lab, _ in shots) and
       shots[1][1] > 20 and shots[0][1] == shots[2][1] == shots[3][1] == 0,
       f"probe {st}; label/warning pixels {shots}")

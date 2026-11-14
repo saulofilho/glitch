@@ -61,3 +61,14 @@ cd web/dist && python3 -m http.server 8000  # then open http://localhost:8000/ (
   MIDI, settings, the flash map, timing.
 - [RULES.md](RULES.md): the chip's rules (no FPU, no libgcc, the audio interrupt's budget).
 - [EDITOR_PROTOCOL.md](EDITOR_PROTOCOL.md): how the editor talks to the FM-1 over USB SysEx.
+
+## With Docker (any computer, macOS too)
+
+The host build needs Linux (its `.pool` section attribute), the browser build needs Emscripten and the hub's demo needs
+ffmpeg. `tools/docker_refresh.sh` runs them all in containers:
+
+```sh
+tools/docker_refresh.sh 2.0     # web/glitch.wasm, the host tests, docs/screens/*.png, docs/card.png, hub/
+```
+
+It does not build the FM-1 package: that is `./build.sh`, with the JieLi toolchain and SDK.

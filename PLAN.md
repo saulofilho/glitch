@@ -16,9 +16,14 @@ scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own 
   plain MIDI events, normalised, mono 22 kHz — WAV with no toolchain, MP3 when ffmpeg is present. It is gated on the
   host binary and skips cleanly when absent; the landing's **`[P]` HEAR IT** button appears only when a demo exists.
 
+- **Built and tested from source in Docker** (`tools/docker_refresh.sh`): the browser build recompiled (the emulator
+  says GL!TCH), the host tests green (302 checks), the hub's demo rendered (`hub/audio/demo.mp3`), and the manual's
+  19 screens and `docs/card.png` shot from the firmware (`tools/gen_screens.py`).
+- **Fixed: MIXER 1 crashed** (the matrix rain's `MX_N 20` shadowed the mixer's six tiles: a null label, SELECT past
+  the last tile). The rain's is `RAIN_N` now.
+
 ## Next
 
-- **Render the demo on CI/Linux**: the host (`__attribute__((section(".pool")))`) does not build on macOS, so run
-  `tests/run_host.sh` then `tools/gen_hub.py` on Linux (or in the release workflow) to produce `hub/audio/demo.*` and
-  commit it. Optionally extend `render_demo()` to one teaser per source engine.
-- **Tag `v2.0`** once tested on a real FM-1, to cut the first attested release (`release.yml` is ready).
+- **Tag `v2.0`** once tested on a real FM-1, to cut the first attested release (`release.yml` is ready). The device
+  package itself (`./build.sh`) still needs the JieLi toolchain and SDK.
+- Optionally one audio teaser per source engine (`gen_hub.py`'s `render_demo()`).

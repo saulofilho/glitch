@@ -104,8 +104,9 @@ check("NOISE on: another sound, in range", " pd1 0,1" in out and n_b != base_b a
 out, w_b, w, pk = pd_on("pd_wav", "enc 2 4")
 check("LINE 2's WAVE (DSIN): line 2 on, another sound, in range", " pd1 0,0,4,0" in out and w_b != base_b and pk < 32767 and
       rms(w, 3200, 4800) > 100, f"peak {pk}")
-out, d_b, d, pk = pd_on("pd_dcw", "enc 3 100")
-check("LINE 2's DCW (100): line 2 on, another sound, in range", " pd1 0,0,0,100" in out and d_b != base_b and d_b != w_b and
+# (GL!TCH: sound 25 is GLITCH LEAD, its own DCW 100: LINE 2's DCW at 100 would be the same sound; 40 is another)
+out, d_b, d, pk = pd_on("pd_dcw", "enc 3 40")
+check("LINE 2's DCW (40): line 2 on, another sound, in range", " pd1 0,0,0,40" in out and d_b != base_b and d_b != w_b and
       pk < 32767 and rms(d, 3200, 4800) > 100, f"peak {pk}")
 SV = PD + [(600, "enc 4 1"), (650, "enc 5 1"), (660, "enc 2 6"), (670, "enc 3 33"), (1700, "keys 0")]
 

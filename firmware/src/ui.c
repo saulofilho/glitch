@@ -536,11 +536,11 @@ static void ui_eye(int32_t x, int32_t y, int32_t k, int32_t dx, int32_t dy)
 }
 
 /* ---- Matrix rain + CRT (HOME and boot), cyberpunk green on black */
-#define MX_N 20u
+#define RAIN_N 20u                             /* (the rain's columns; not MX_N: that is MIXER 1's six tiles, grimm.c) */
 #define CN_ROWS 10
 #define MX_BAR_Y 132
 #define MX_BAR_H 28
-static uint8_t mx_y[MX_N], mx_l[MX_N], mx_s[MX_N], mx_ok;
+static uint8_t mx_y[RAIN_N], mx_l[RAIN_N], mx_s[RAIN_N], mx_ok;
 static uint8_t cn_h[NT], cn_s[NT];
 static uint32_t an_rng = 0x2545F491u, an_e[NT], an_avg, an_n;
 
@@ -555,7 +555,7 @@ static void mx_seed(void)
     uint32_t i, s;
     if (mx_ok) return;
     s = ui_rnd_s, ui_rnd_s = 42u;
-    for (i = 0; i < MX_N; i++) {
+    for (i = 0; i < RAIN_N; i++) {
         mx_y[i] = (uint8_t)ui_rnd(120);
         mx_l[i] = (uint8_t)(4u + ui_rnd(9u));
         mx_s[i] = (uint8_t)(1u + ui_rnd(2u));
@@ -567,14 +567,14 @@ static void mx_seed(void)
 static void mx_tick(uint32_t boost)
 {
     uint32_t i;
-    for (i = 0; i < MX_N; i++)
+    for (i = 0; i < RAIN_N; i++)
         mx_y[i] = (uint8_t)((mx_y[i] + mx_s[i] + boost) % 130u);
 }
 
 static void mx_rain(int32_t y0, int32_t h, uint32_t tick, int32_t hole_x, int32_t hole_y, int32_t hole_w, int32_t hole_h)
 {
     uint32_t i;
-    for (i = 0; i < MX_N; i++) {
+    for (i = 0; i < RAIN_N; i++) {
         int32_t x = 14 + (int32_t)i * 11;
         int32_t head = ((int32_t)mx_y[i] + (int32_t)(tick / 4u) + (int32_t)i * 7) % (h + 16);
         int32_t k, len = mx_l[i];

@@ -18,11 +18,17 @@ identity (sounds, scales, hub) and releases.
   `[P]` HEAR IT button.
 - **Redesigned web emulator and editor** (`web/index.html`, `web/editor.html`) to the amber-CRT look: scanlines,
   vignette, bloom, VT323, respecting `prefers-reduced-motion`.
+- **`tools/gen_screens.py`**: the manual's 19 screens and `docs/card.png`, shot from the firmware in host mode (they
+  were GR!MM's before). **`tools/docker_refresh.sh`** runs the browser build, the host tests, the screens and the hub
+  in Docker, on any computer.
+- **Tests** follow GL!TCH's bank and accent (PHASE LINE 2's DCW against GLITCH LEAD; the CUT / DRY warning in cyan).
 - **GitHub Actions**: `pages.yml` publishes `hub/`; `release.yml` builds and attests `build/glitch-X.Y.fwsc` on a tag.
 - **Removed** the parallel hand-written JavaScript synth (`index.html`, `play.html`, `css/`, `js/`): the web presence
   is now the hub plus the WebAssembly emulator, as in the COQUI reference project.
 
 ### Firmware (GL!TCH identity on GR!MM 2.0)
+- **Fixed:** MIXER 1 crashed the unit: the matrix rain's column count was a macro named `MX_N`, shadowing the
+  mixer's six tiles (a null label drawn, SELECT ran past DRIVE). Found by the host tests once they ran on Linux.
 - 44 factory sounds across 9 categories (DRONE, PAD, BELL, ORGAN, KEYS, BASS, TEXTURE, VOICE, OTHER).
 - 16 scales including Cyber Dorian, Phrygian Dominant, Iwato, Whole Tone, Noir Pentatonic, Insen, Hirajoshi.
 - Seven sources: Cyber-Analog (VA), Neon-FM, Cyber Lo-Fi sampler, Android Choir (formant), Grid Wheel, Metallic
