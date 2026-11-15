@@ -1,6 +1,6 @@
-# Building GR!MM
+# Building GL!TCH
 
-GR!MM is one C program, `firmware/src/grimm.c` (it includes the other `.c` files), on the FM-1 platform of
+GL!TCH is one C program, `firmware/src/grimm.c` (it includes the other `.c` files), on the FM-1 platform of
 [Felucca](https://github.com/hugelton/Felucca) as [SLOOP](https://github.com/isod89/sloop-fm1) and
 [Dinghy](https://github.com/zvenson/dinghy) carry it. The same file builds three ways: for the FM-1, for your
 computer (host mode: the screen as images, the sound as a WAV) and for the browser (the web emulator and the editor).
@@ -26,7 +26,7 @@ For the browser build: the [Emscripten SDK](https://emscripten.org) in `~/emsdk`
 
 ```sh
 ./build.sh                                  # -> build/glitch.fwsc (identity FM-1_966, version 2.0)
-./build.sh --release 2.1                    # -> build/grimm-2.1.fwsc, the version "2.1" on the screen
+./build.sh --release 2.1                    # -> build/glitch-2.1.fwsc, the version "2.1" on the screen
 py tools/fm1_install.py build/glitch.fwsc    # install it over USB (asks first); --info: what the FM-1 runs
 ```
 
@@ -70,6 +70,9 @@ ffmpeg. `tools/docker_refresh.sh` runs them all in containers:
 ```sh
 tools/docker_refresh.sh 2.0     # web/glitch.wasm, the host tests, docs/screens/*.png, docs/card.png, hub/
 ```
+
+It also makes the hub's audio (`hub/audio/`), the hub's copy of the manual and its screens, and the social card
+(`hub/og.png`). The pictures of the hub in the README (`docs/hub/*.jpg`) are browser screenshots, taken by hand.
 
 It does not build the FM-1 package: that is `./build.sh`, with the JieLi toolchain and SDK.
 On macOS, where the system Python has no Pillow, give it one of its own:

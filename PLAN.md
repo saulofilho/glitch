@@ -8,10 +8,8 @@ scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own 
 - Firmware identity: 44 factory sounds (9 categories), 16 scales, cyber source names, GL!TCH boot screen.
 - Clean web presence modelled on the COQUI project: `hub/` (landing + `emu/`), `tools/gen_hub.py`, GitHub Actions
   (`pages.yml`, `release.yml`). The parallel hand-written JavaScript synth was removed.
-- Phosphor-CRT amber redesign (after ardor.cloud/retro-computer) across the hub, the panel and the editor.
-- **Phosphor-colour cycle `[C]`** (amber → green → cyan → magenta, amber default, saved per browser), on the hub.
-- **1200×630 social card** `hub/og.png`, drawn by `hub/og-card.html` to the amber-CRT look (the generator page stays
-  in the repo so the card can be re-exported).
+- A first web look (amber phosphor CRT, with a colour cycle and a canvas-drawn social card): replaced by the glitch
+  look below.
 - **Audio pipeline in `gen_hub.py`**: renders a short teaser (`hub/audio/demo.{mp3,wav}`) from the host build via
   plain MIDI events, normalised, mono 22 kHz — WAV with no toolchain, MP3 when ffmpeg is present. It is gated on the
   host binary and skips cleanly when absent; the landing's **`[P]` HEAR IT** button appears only when a demo exists.

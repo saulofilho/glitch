@@ -10,8 +10,20 @@ seven sources, tape and megacity space — under a glitched sky.
 **[Boot it in your browser](https://saulofilho.github.io/glitch/emu/)** (the real firmware, no FM-1 needed) ·
 **[The editor](https://saulofilho.github.io/glitch/emu/editor.html)** (sounds, samples, backup over USB)
 
+[![The GL!TCH hub: the glitched landscape, alive, and the name standing on its plain](docs/hub/landing.jpg)](https://saulofilho.github.io/glitch/)
+
 Free and open source (GPL-3.0). Re-imagined from GR!MM's dark-ambient/dungeon-synth aesthetic into cyberpunk, neon
 noir and industrial sci-fi.
+
+## On the unit
+
+HOME and the boot screen are a glitched landscape: a sky in mint, teal and lemon bands torn to pink and violet, navy
+hills, a striped plain. Its bands drift and its rows tear sideways the louder it plays. Every screen below is shot
+from the firmware itself (`tools/gen_screens.py`).
+
+| HOME | Boot | MIXER 1 | SEQ |
+| :---: | :---: | :---: | :---: |
+| ![HOME](docs/screens/home.png) | ![The boot screen](docs/screens/boot.png) | ![MIXER 1](docs/screens/mixer1.png) | ![The sequencer's grid](docs/screens/seq.png) |
 
 ## What's inside
 
@@ -53,27 +65,37 @@ FM-1 (`firmware/src/fm1_web.c`). No hardware needed.
 python3 -m http.server 8080
 ```
 
-- **`http://localhost:8080/hub/`** — the hub: the sources (with a teaser each), the unit's screens, the scales, the sounds and the install; `manual.html` is the manual.
+- **`http://localhost:8080/hub/`** — the hub: the sources (with a teaser each), the unit's screens, the scales, the sounds and the install.
+- **`http://localhost:8080/hub/manual.html`** — the manual, as a page.
 - **`http://localhost:8080/hub/emu/`** — the FM-1 panel. Computer keyboard or Web MIDI.
 - **`http://localhost:8080/hub/emu/editor.html`** — the editor: sounds, samples, and a backup of the unit (Chrome or Edge).
 
-To rebuild the WebAssembly from source you need Emscripten:
+![The emulator: the FM-1's panel, HOME on its screen](docs/hub/emulator.jpg)
+
+To rebuild everything that is made from the firmware (the WebAssembly, the host tests, the screens, the hub) on any
+computer with Docker:
 
 ```bash
-web/build_web.sh           # -> web/dist/ (then: python3 tools/gen_hub.py copies it into hub/emu/)
+tools/docker_refresh.sh 2.0
 ```
+
+Or by hand, with Emscripten: `web/build_web.sh` (-> `web/dist/`), then `python3 tools/gen_hub.py`.
 
 ## Install on the FM-1
 
 On the unit the boot screen reads **GL!TCH**; colour 1 is pink (SYSTEM has lemon, teal and violet).
 
 ```bash
-tools/get_toolchain.sh                         # the JieLi toolchain (once)
-./build.sh --name glitch.fwsc                  # -> build/glitch.fwsc
-python3 tools/fm1_install.py build/glitch.fwsc # flash a connected FM-1 over USB
+tools/get_toolchain.sh                             # the JieLi toolchain (once; the AC79 SDK too: docs/BUILDING.md)
+./build.sh --release 2.0                           # -> build/glitch-2.0.fwsc
+python3 tools/fm1_install.py build/glitch-2.0.fwsc # flash a connected FM-1 over USB
 ```
 
 ## The hub
+
+| The sources, a teaser each | The unit's screens | The manual |
+| :---: | :---: | :---: |
+| ![The seven sources](docs/hub/sources.jpg) | ![The screens, as the firmware draws them](docs/hub/unit.jpg) | ![The manual, as a page](docs/hub/manual.jpg) |
 
 `tools/gen_hub.py` makes the hub's data from the firmware source and copies the web build into it:
 
@@ -85,9 +107,9 @@ python3 tools/gen_hub.py --version 2.0
 - `hub/emu/` — the WebAssembly emulator and the editor (from `web/dist`).
 - `hub/screens/`, `hub/manual.html` — the manual and its screens; `hub/og.png` — the social card (`tools/gen_screens.py` makes it from the boot screen and HOME).
 
-If a host build exists (`tests/run_host.sh`, Linux), `gen_hub.py` also renders a short audio teaser to
-`hub/audio/demo.{mp3,wav}` — a WAV when no encoder is around, an MP3 when `ffmpeg` is on the PATH — which the hub
-surfaces as a **HEAR IT** button. Pass `--no-audio` to skip it. The hub's live sound is the emulator either way.
+If a host build exists (`tests/run_host.sh`, Linux), `gen_hub.py` also renders the hub's audio to `hub/audio/`: a
+short demo (`demo.mp3`, the **Hear it** button) and a teaser a source (`src-xx.mp3`, the play button on each source's
+card) — WAV when no encoder is around, MP3 when `ffmpeg` is on the PATH. Pass `--no-audio` to keep what is there.
 
 `.github/workflows/pages.yml` publishes `hub/` to GitHub Pages; `release.yml` builds and attests
 `build/glitch-X.Y.fwsc` when you push a `v*` tag.
@@ -97,11 +119,12 @@ surfaces as a **HEAR IT** button. Pass `--no-audio` to skip it. The hub's live s
 ```
 glitch/
 ├── firmware/            # the GPL-3.0 engine (firmware/src/: 4 tracks, 7 sources, sequencer, tape, space)
-├── hub/                 # the GitHub Pages site: index.html (landing), glitch-data.js, emu/ (the emulator)
+├── hub/                 # the GitHub Pages site: index.html, manual.html, glitch.css, land.js (the landscape),
+│                        #   glitch-data.js, audio/, screens/, emu/ (the emulator and the editor)
 ├── web/                 # the browser build: panel.js, worklet.js, editor, build_web.sh -> web/dist
-├── tools/               # build.py, fm1_install.py, gen_hub.py, get_toolchain.sh …
+├── tools/               # build.py, fm1_install.py, gen_hub.py, gen_screens.py, docker_refresh.sh …
 ├── tests/               # host-mode tests (tests/run_host.sh)
-├── docs/                # API, building, protocols, screens
+├── docs/                # API, building, protocols; screens/ (the manual's), hub/ (this page's pictures)
 ├── build.sh             # build the .fwsc package (JieLi toolchain)
 ├── MANUAL.md            # the full manual
 └── README.md
