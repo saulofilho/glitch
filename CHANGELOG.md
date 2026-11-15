@@ -3,9 +3,12 @@
 All notable changes to GL!TCH are noted here. The firmware engine follows GR!MM; this file tracks GL!TCH's own
 identity (sounds, scales, hub) and releases.
 
-## [2.0.1] — 2026-11-15
+## [2.0.2] — 2026-11-15
 
 For the FM-1 Firmware Hub's check of 2.0.
+
+(A `v2.0.1` tag exists, set one commit too early: its package is 2.0's code under another number, still answering
+`FM-1_966`. 2.0.2 is the first release with these changes.)
 
 - **Its own identity: `FM-1_986`.** 2.0 answered `FM-1_966`, GR!MM's, so an installer could not tell the two apart.
   `tools/fm1_sample_upload.py` talks to either.

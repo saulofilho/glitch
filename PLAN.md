@@ -30,10 +30,10 @@ scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own 
   hub (an editorial page, the landscape alive at its top), the panel, the editor, the social card; the manual as a
   page (`hub/manual.html`). Host tests green, the browser build and the FM-1 package rebuilt.
 
-- **2.0 released and tested on a real FM-1** (docs/TEST-RESULTS-2.0.md). **2.0.1** for the hub's check: its own
+- **2.0 released and tested on a real FM-1** (docs/TEST-RESULTS-2.0.md). **2.0.2** for the hub's check: its own
   identity (`FM-1_986`), the newer flash chip, the `sounds` line in `fmhub.json`.
 
 ## Next
 
-- Tag `v2.0.1`, install that release on the FM-1 (from another firmware, leave, come back), then "Check again" on the
+- Tag `v2.0.2`, install that release on the FM-1 (from another firmware, leave, come back), then "Check again" on the
   hub's status page.

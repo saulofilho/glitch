@@ -252,7 +252,7 @@ def copy_emu():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--version", default="2.0.1")
+    ap.add_argument("--version", default="2.0.2")
     ap.add_argument("--no-audio", action="store_true", help="skip the demo render (data and emu only)")
     a = ap.parse_args()
     scales, sounds = parse_scales(), parse_sounds()

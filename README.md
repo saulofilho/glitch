@@ -3,8 +3,8 @@
 **A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
 seven sources, tape and megacity space — under a glitched sky.
 
-> **Version 2.0.1.** 2.0 was tested on a real FM-1: the release installed from another firmware, left again, and
-> installed back ([the results](docs/TEST-RESULTS-2.0.md), and what they do not cover); 2.0.1 gives GL!TCH its own
+> **Version 2.0.2.** 2.0 was tested on a real FM-1: the release installed from another firmware, left again, and
+> installed back ([the results](docs/TEST-RESULTS-2.0.md), and what they do not cover); 2.0.2 gives GL!TCH its own
 > identity (`FM-1_986`) and accepts the newer FM-1s' flash chip. Unofficial firmware, not made or endorsed by
 > M-VAVE: install at your own risk.
 > Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
@@ -79,7 +79,7 @@ To rebuild everything that is made from the firmware (the WebAssembly, the host 
 computer with Docker:
 
 ```bash
-tools/docker_refresh.sh 2.0.1
+tools/docker_refresh.sh 2.0.2
 ```
 
 Or by hand, with Emscripten: `web/build_web.sh` (-> `web/dist/`), then `python3 tools/gen_hub.py`.
@@ -90,8 +90,8 @@ On the unit the boot screen reads **GL!TCH**; colour 1 is pink (SYSTEM has lemon
 
 ```bash
 tools/get_toolchain.sh                             # the JieLi toolchain (once; the AC79 SDK too: docs/BUILDING.md)
-./build.sh --release 2.0.1                           # -> build/glitch-2.0.1.fwsc
-python3 tools/fm1_install.py build/glitch-2.0.1.fwsc # flash a connected FM-1 over USB
+./build.sh --release 2.0.2                           # -> build/glitch-2.0.2.fwsc
+python3 tools/fm1_install.py build/glitch-2.0.2.fwsc # flash a connected FM-1 over USB
 ```
 
 ## Tested on the unit
@@ -105,10 +105,10 @@ on a real FM-1, over USB, each step confirmed by the identity the unit answers:
 
 ```bash
 python3 tools/fm1_install.py --info                    # what the connected FM-1 runs
-python3 tools/fm1_install.py build/glitch-2.0.1.fwsc   # install (asks first)
+python3 tools/fm1_install.py build/glitch-2.0.2.fwsc   # install (asks first)
 ```
 
-GL!TCH 2.0 answered `FM-1_966` (GR!MM's identity); from 2.0.1 on it answers `FM-1_986`. The installer needs `mido`
+GL!TCH 2.0 answered `FM-1_966` (GR!MM's identity); from 2.0.2 on it answers `FM-1_986`. The installer needs `mido`
 and `python-rtmidi`. What was not tested (the official V15, an interrupted update, the
 screens and the sound by eye and ear) is listed in [docs/TEST-RESULTS-2.0.md](docs/TEST-RESULTS-2.0.md).
 
@@ -121,7 +121,7 @@ screens and the sound by eye and ear) is listed in [docs/TEST-RESULTS-2.0.md](do
 `tools/gen_hub.py` makes the hub's data from the firmware source and copies the web build into it:
 
 ```bash
-python3 tools/gen_hub.py --version 2.0.1
+python3 tools/gen_hub.py --version 2.0.2
 ```
 
 - `hub/glitch-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
