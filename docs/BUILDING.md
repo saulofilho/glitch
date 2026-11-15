@@ -72,3 +72,9 @@ tools/docker_refresh.sh 2.0     # web/glitch.wasm, the host tests, docs/screens/
 ```
 
 It does not build the FM-1 package: that is `./build.sh`, with the JieLi toolchain and SDK.
+On macOS, where the system Python has no Pillow, give it one of its own:
+
+```sh
+python3 -m venv build/venv && build/venv/bin/pip install Pillow
+PYTHON=build/venv/bin/python ./build.sh --release 2.0     # -> build/glitch-2.0.fwsc
+```

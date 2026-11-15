@@ -158,6 +158,59 @@ def render_demo(out, ff):
     return dst
 
 
+# a teaser a source: the factory sound that shows it (by name: found in PRESETS' order, checked on the host's probe)
+# and what is played on it ("chord": held; "arp": the demo's arpeggio). SAMPLE has no factory sound: T1's SOURCE is
+# turned to it (EDIT twice, KNOB 1), its first slot (the factory sample URCHIN) played.
+SRC_DEMO = {"VA": ("NEON PAD", "chord"), "FM": ("DATA BELL", "arp"), "SA": (None, "arp"), "VO": ("MEGACITY CHOIR", "chord"),
+            "WH": ("NOIR ORGAN", "chord"), "PH": ("CHROME PIANO", "arp"), "PD": ("GLITCH LEAD", "arp")}
+CATS = ["DRONE", "PAD", "BELL", "ORGAN", "KEYS", "BASS", "TEXTURE", "VOICE", "OTHER"]
+
+
+def render_sources(out, ff, sounds):
+    """hub/audio/src-XX.{mp3,wav}, one a source; returns {code: {"file", "sound"}} of those that came out sounding"""
+    order = [x["name"] for c in CATS for x in sounds if x["cat"] == c]   # (PRESETS: by category, then the bank's order)
+    made = {}
+    for code, (snd, kind) in SRC_DEMO.items():
+        t0 = BOOT_MS + 1200
+        if snd:
+            ev = [(BOOT_MS, f"enc 6 {order.index(snd) + 1}")]
+        else:
+            ev = [(BOOT_MS, "btn 6"), (BOOT_MS + 200, "btn 6"), (BOOT_MS + 400, "enc 2 2")]
+        ev.append((BOOT_MS + 900, "probe"))
+        if kind == "chord":
+            for n in (45, 57, 60, 64):
+                ev += [(t0, f"midi 0x90 {n} 100"), (t0 + 3600, f"midi 0x80 {n} 0")]
+            end = t0 + 6200
+        else:
+            step = 60000 // 96 // 2
+            for i, n in enumerate([45, 48, 52, 57, 60, 57, 52, 48, 45, 52, 57, 64]):
+                ev += [(t0 + i * step, f"midi 0x90 {n} 100"), (t0 + (i + 1) * step - 10, f"midi 0x80 {n} 0")]
+            end = t0 + 12 * step + 2200
+        name = f"src-{code.lower()}"
+        script = out / f"{name}.txt"
+        script.write_text("".join(f"{t} {e}\n" for t, e in sorted(ev, key=lambda x: x[0])) + f"{end} end\n")
+        r = subprocess.run([str(BIN), str(out / name), str(script)], check=True, capture_output=True, text=True,
+                           env=dict(os.environ, GRIMM_MASTER="1022"))
+        got = r.stdout.split(" snd1 ")[1].split(" mix ")[0].strip() if " snd1 " in r.stdout else ""
+        eng = r.stdout.split(" eng ")[1].split()[0] if " eng " in r.stdout else "?"
+        if snd and got != snd:
+            print(f"source {code}: PRESETS gave '{got}', not '{snd}': no teaser", file=sys.stderr)
+            continue
+        with wave.open(str(out / f"{name}.wav")) as w:
+            ch, raw = w.getnchannels(), w.readframes(w.getnframes())
+        clip = cut(raw, ch, t0, end - 300)
+        a = array.array("h")
+        a.frombytes(clip)
+        rms = math.sqrt(sum(x * x for x in a[::9]) / max(1, len(a[::9])))
+        if rms < 60:                             # (nothing to hear: no teaser rather than a silent one)
+            print(f"source {code}: silent (rms {rms:.0f}, eng {eng}): no teaser", file=sys.stderr)
+            continue
+        dst = write_demo(clip, ch, HUB / "audio" / name, ff, fade_ms=900)
+        made[code] = {"file": dst.name, "sound": snd or "SAMPLE 1"}
+        print(f"source {code} ({snd or 'SAMPLE 1'}, eng {eng}) -> hub/audio/{dst.name}")
+    return made
+
+
 EMU_FILES = ["index.html", "panel.js", "worklet.js", "glitch.wasm", "Terminus-LICENSE.txt", "LICENSE",
              "LICENSING.md", "editor.html", "editor.js", "editor_core.js", "PressStart2P-Regular.ttf"]
 
@@ -204,6 +257,7 @@ def main():
     copy_emu()
 
     demo = None                                 # the landing's "HEAR IT": the demo file's name, or null
+    src_demo = {}                               # the sources' teasers: {code: {"file", "sound"}}
     if not a.no_audio:
         if not BIN.exists():
             print(f"audio: no {BIN.relative_to(ROOT)} (run tests/run_host.sh on Linux first): no demo rendered")
@@ -216,18 +270,23 @@ def main():
                 dst = render_demo(out, ff)
                 demo = dst.name
                 print(f"demo -> hub/audio/{demo}" + ("" if ff else "  (no ffmpeg: WAV; install ffmpeg for MP3)"))
+                src_demo = render_sources(out, ff, sounds)
             except Exception as e:                # a render failure must never break the data/emu publish
                 print(f"audio: demo render failed ({e}); no demo", file=sys.stderr)
     else:
         existing = sorted((HUB / "audio").glob("demo.*")) if (HUB / "audio").exists() else []
         demo = existing[0].name if existing else None
+        for c, (snd, _) in SRC_DEMO.items():     # (the teasers made before: kept as they are)
+            f = sorted((HUB / "audio").glob(f"src-{c.lower()}.*")) if (HUB / "audio").exists() else []
+            if f:
+                src_demo[c] = {"file": f[0].name, "sound": snd or "SAMPLE 1"}
 
     data = {
         "version": a.version,
-        "identity": "FM-1_923",
-        "sources": [{"code": c, "name": n, "desc": d} for c, n, d in SOURCES],
+        "identity": "FM-1_966",
+        "sources": [{"code": c, "name": n, "desc": d, "demo": src_demo.get(c)} for c, n, d in SOURCES],
         "scales": scales,
-        "cats": ["DRONE", "PAD", "BELL", "ORGAN", "KEYS", "BASS", "TEXTURE", "VOICE", "OTHER"],
+        "cats": CATS,
         "sounds": sounds,
         "demo": demo,
     }

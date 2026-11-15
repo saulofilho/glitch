@@ -22,6 +22,8 @@ identity (sounds, scales, hub) and releases.
   were GR!MM's before). **`tools/docker_refresh.sh`** runs the browser build, the host tests, the screens and the hub
   in Docker, on any computer.
 - **Tests** follow GL!TCH's bank and accent (PHASE LINE 2's DCW against GLITCH LEAD; the CUT / DRY warning in cyan).
+- **A teaser a source** on the hub: a play button on each of the seven sources' cards (`hub/audio/src-xx.mp3`, made by
+  `tools/gen_hub.py` from the host build).
 - **GitHub Actions**: `pages.yml` publishes `hub/`; `release.yml` builds and attests `build/glitch-X.Y.fwsc` on a tag.
 - **Removed** the parallel hand-written JavaScript synth (`index.html`, `play.html`, `css/`, `js/`): the web presence
   is now the hub plus the WebAssembly emulator, as in the COQUI reference project.

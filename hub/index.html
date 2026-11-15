@@ -124,6 +124,8 @@ button.key[hidden] { display: none; }
 .src .code { color: var(--black); background: var(--amber); padding: 0 6px; }
 .src h3 { margin: 6px 0 4px; font-size: 21px; color: var(--amber-hi); }
 .src p { margin: 0; color: var(--amber-lo); font-size: 18px; }
+.srcplay { font: inherit; font-size: 18px; margin-top: 8px; background: none; border: 1px solid var(--amber-ghost); color: var(--amber); padding: 1px 10px; cursor: pointer; text-shadow: var(--glow); text-transform: uppercase; }
+.srcplay:hover, .srcplay:focus-visible, .srcplay.on { background: var(--amber); color: var(--black); text-shadow: none; outline: none; }
 
 /* scales */
 .scales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 18px; }
@@ -302,12 +304,32 @@ footer a { color: var(--amber); }
   if (D.scales) { $("#n-sc").textContent = "/ " + D.scales.length; }
   if (D.sounds) { $("#n-snd").textContent = "/ " + D.sounds.length; }
 
-  /* sources */
+  /* sources: a card each, with its teaser when there is one (one player for them all: a second click stops it) */
+  var srcAudio = new Audio(), srcBtn = null;
+  srcAudio.preload = "none";
+  function srcReset() { if (srcBtn) { srcBtn.innerHTML = '&#9656; ' + srcBtn.dataset.snd; srcBtn.classList.remove("on"); srcBtn = null; } }
+  srcAudio.addEventListener("ended", srcReset);
+  function playSrc(bt, url, snd) {
+    var same = srcBtn === bt;
+    srcAudio.pause(); srcReset();
+    if (same) { return; }
+    bt.dataset.snd = snd; srcBtn = bt;
+    srcAudio.src = url;
+    srcAudio.play().then(function () { bt.innerHTML = '&#9632; ' + snd; bt.classList.add("on"); }).catch(srcReset);
+  }
   var sw = $("#sources");
   D.sources.forEach(function (s) {
-    sw.appendChild(el("div", "src",
+    var card = el("div", "src",
       '<span class="code">' + s.code + '</span>' +
-      '<h3>' + s.name + '</h3><p>' + s.desc + '</p>'));
+      '<h3>' + s.name + '</h3><p>' + s.desc + '</p>');
+    if (s.demo && s.demo.file) {               /* the source's teaser (gen_hub: hub/audio/src-xx) */
+      var bt = el("button", "srcplay", '&#9656; ' + s.demo.sound);
+      bt.type = "button";
+      bt.setAttribute("aria-label", "Hear " + s.name + ": " + s.demo.sound);
+      bt.addEventListener("click", function () { playSrc(bt, "audio/" + s.demo.file, s.demo.sound); });
+      card.appendChild(bt);
+    }
+    sw.appendChild(card);
   });
 
   /* scales: the mask as a 12-slot ring */
@@ -375,7 +397,7 @@ footer a { color: var(--amber); }
     boot: function () { say('BOOTING EMULATOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/"; }, 500); },
     editor: function () { say('OPENING EDITOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/editor.html"; }, 500); },
     install: function () { say('BUILD: <span class="ok">./build.sh --name glitch.fwsc</span> &middot; FLASH: <span class="ok">python3 tools/fm1_install.py build/glitch.fwsc</span>'); },
-    about: function () { say('GL!TCH v' + (D.version || "2.0") + ' &mdash; neon-noir GR!MM for the M-VAVE FM-1. GPL-3.0. IDENTITY ' + (D.identity || "FM-1_923") + '.'); },
+    about: function () { say('GL!TCH v' + (D.version || "2.0") + ' &mdash; neon-noir GR!MM for the M-VAVE FM-1. GPL-3.0. IDENTITY ' + (D.identity || "FM-1_966") + '.'); },
     clear: function () { log.innerHTML = ""; }
   };
   function run(raw) {

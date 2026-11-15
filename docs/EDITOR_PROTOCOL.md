@@ -1,8 +1,11 @@
-# GR!MM editor protocol
+# GL!TCH editor protocol
 
-How an editor (a web page, `tools/fm1_editor_test.py`) talks to GR!MM on the FM-1 over USB-MIDI SysEx: read and
+> GL!TCH speaks GR!MM's editor protocol unchanged (it is GR!MM 2.0's engine): where this says GR!MM 1.0, it means that
+> engine's first version, whose saves, backups and editors still work.
+
+How an editor (a web page, `tools/fm1_editor_test.py`) talks to GL!TCH on the FM-1 over USB-MIDI SysEx: read and
 write the user's sounds, the slots A–D and the settings, read the factory sounds, set the tracks' sounds live, and
-upload samples (and, GR!MM V2, read them back). The device side is `firmware/src/editor.c` (commands 20–25) and `firmware/src/samples.c` (11–15). The
+upload samples (and, GL!TCH V2, read them back). The device side is `firmware/src/editor.c` (commands 20–25) and `firmware/src/samples.c` (11–15). The
 read/write scheme follows SLOOP's editor backup ([sloop-fm1](https://github.com/isod89/sloop-fm1)
 `web/EDITOR_PROTOCOL.md`, commands 34–36, GPL-3.0): objects by id, read by offset and count, written as BEGIN → DATA →
 COMMIT. The live one (23 TRACK) follows SLOOP's live SET: values at once, while playing, never saved.
@@ -40,7 +43,7 @@ Request: none. Reply, in order:
 
 | Bytes | |
 | --- | --- |
-| 1 | protocol version (2; step 26a's GR!MM: 1, without TRACK) |
+| 1 | protocol version (2; step 26a's GL!TCH: 1, without TRACK) |
 | 1 | object format (1). A PUT's BEGIN must name it |
 | n + 1 | the firmware version, ASCII, 0-terminated ("2.0"; GR!MM 1.0: "1.0") |
 | 1 | user sound slots (64) |
@@ -57,9 +60,9 @@ Request: none. Reply, in order:
 | --- | --- | --- | --- | --- |
 | 0 | the settings | 170 (1.0: 168) | yes | yes |
 | 1–4 | slots A–D | 2532 | yes | yes |
-| 5–8 | sample slots 1–4 (GR!MM V2) | 512 + the data's length | yes | no |
-| 9 | the working project as it is now (GR!MM V2 rc9) | 2576 | yes | no |
-| 10 | the mix's change log (GR!MM V2 rc9) | 772 | yes | no |
+| 5–8 | sample slots 1–4 (GL!TCH V2) | 512 + the data's length | yes | no |
+| 9 | the working project as it is now (GL!TCH V2 rc9) | 2576 | yes | no |
+| 10 | the mix's change log (GL!TCH V2 rc9) | 772 | yes | no |
 | 16–79 | user sounds 1–64 (id 16 + slot) | 64 | yes | yes |
 | 80–123 | factory sounds 1–44 (id 80 + index, in the firmware's order; GR!MM 1.0: 80–119) | 64 | yes | no |
 
@@ -70,7 +73,7 @@ A factory sound reads as a user sound's record, so it can be written into a user
 
 A sample slot reads as the flash holds it: the header (480 bytes, as an upload's END sends it), 32 bytes of nothing
 (`0xFF`), then the ADPCM data; its length is the header's u32 at byte 16. Only a ready slot (INFO 15: state 1) is
-there; an empty one, or one being checked, answers rc 1, as does a GR!MM before V2. Read the first 512 bytes, then the
+there; an empty one, or one being checked, answers rc 1, as does a GL!TCH before V2. Read the first 512 bytes, then the
 data from 512. It is written back as an upload (11 BEGIN, 12 WRITE from 512, 13 END with the header), not by PUT.
 
 The working project (9) is what the autosave keeps: the four tracks (LEVEL, the sends, CUTOFF, RESONANCE, FX, PAN, the
@@ -233,10 +236,10 @@ Pages (a link's page): 0 SOUND, 1 SOURCE, 2 ENV, 3 LFO, 4 SCALE, 5 CHORD, 6 SONG
 14 ARP, 15 GRID, 16 PATTERN SETTINGS, 17 TAPE, 18 GRAIN, 19 DELAY, 20 SPACE, 23 FM ALGO, 24 FM OP, 25 MASTER, 26 DRIVE
 (the others can't be learned; 27 is SYSTEM 3).
 
-## 24 CPU (GR!MM V2, a diagnostic)
+## 24 CPU (GL!TCH V2, a diagnostic)
 
 Where the audio time goes, as SYSTEM 2's CPU row measures it; `tools/fm1_cpu.py` prints it. It has no protocol number
-of its own (INFO stays 2); a GR!MM before V2 does not answer it.
+of its own (INFO stays 2); a GL!TCH before V2 does not answer it.
 
 Request: none (rc11: or the byte 1, below). Reply: `n` (the stages, 10), then u35 values in the FM-1's timer ticks (24 a microsecond): the budget of a
 256-frame block (139320, 5.8 ms), NOW, PEAK, then NOW's split over the same ~0.5 s: the sources (VOICES), the tracks'
@@ -254,9 +257,9 @@ of the FM-1's own, so it alone proves nothing); this start's byte, with its kind
 voltage); the faults; the uptime in ms. A request with one argument byte 1 starts the peaks and counts over
 (`tools/fm1_cpu.py --clear`; `--health` prints them).
 
-## 25 FX (GR!MM V2)
+## 25 FX (GL!TCH V2)
 
-The project's effects, live, for the editor page's FX section (no protocol number of its own; a GR!MM before V2 does
+The project's effects, live, for the editor page's FX section (no protocol number of its own; a GL!TCH before V2 does
 not answer it). A value set here acts at once and is kept by the project (the FM-1's autosave), as a knob's turn.
 
 Request: `op`, then for SET `i`, `v`.
@@ -279,7 +282,7 @@ As before (`tools/fm1_sample_upload.py`, `firmware/src/samples.c`'s header): 11 
 off (3 × 7 bits), pack7 data (≤ 256 B, from 512 on, in order) → slot, off, rc; 13 END slot, pack7 header (480 B) →
 slot, rc; 14 ERASE slot → slot, rc; 15 INFO → slots, then per slot: state (0 empty, 1 ready, 2 checking), name
 (0-terminated, up to 8: the slot header's), samples (3 × 7 bits), capacity (3 × 7 bits), then (step 26c) per slot its
-root note (MIDI; 60 for an empty slot); 16 FACTORY (none) → rc: all four slots GR!MM's factory samples again (about
+root note (MIDI; 60 for an empty slot); 16 FACTORY (none) → rc: all four slots GL!TCH's factory samples again (about
 5 s; only while nothing sounds). Their rc: 0 ok, 1 arguments, 2 erase, 3 write, 4 not begun / out of order, 5 header
 or CRC, 6 something sounds, 7 no flash. Before step 26b2, INFO came back cut short when the four slots all had long
 names (and overran a buffer on the FM-1).
@@ -292,7 +295,7 @@ RESTORE and OCT+ on the FM-1, write all four.
 
 ## A backup
 
-All sounds, slots and settings: GET objects 0, 1–4, 16–79 (256 bytes a GET); GR!MM V2: the sample slots too, objects
+All sounds, slots and settings: GET objects 0, 1–4, 16–79 (256 bytes a GET); GL!TCH V2: the sample slots too, objects
 5–8 (an empty slot: none). To restore, PUT each one (an empty sound as 64 × `0xFF`), each COMMIT while stopped
 and silent; then each sample slot as an upload (11–13; one whose header already matches, its data's CRC in it, need
 not be written again; one empty in the backup: 14 ERASE). `tools/fm1_editor_test.py` and the editor page do both

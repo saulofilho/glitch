@@ -194,7 +194,7 @@ input[type=range]:focus-visible { outline: 3px solid var(--f); outline-offset: 2
       <p class="note">The FM-1 only accepts writes while it is stopped and silent: stop the sequencer and let every
         note, release and DELAY or SPACE tail end. Nothing is ever written without you clicking a button.</p>
       <p class="note">GL!TCH 2.0 adds FX, SETTINGS (MIDI CHANNEL's CH n &gt; SEL, CLOCK, LATCH) and the samples in a
-        backup; an FM-1 with GL!TCH 1.0 doesn't answer those (update it on the FM-1 Firmware Hub), the rest works.</p>
+        backup; an FM-1 with GR!MM 1.0 doesn't answer those (update it on the FM-1 Firmware Hub), the rest works.</p>
       <table class="kv" id="info"></table>
       <div class="row"><button id="b-log" class="toggle">MIDI LOG</button><button id="b-logclear">CLEAR LOG</button></div>
       <pre id="log" hidden></pre>
@@ -350,9 +350,9 @@ input[type=range]:focus-visible { outline: 3px solid var(--f); outline-offset: 2
         channel n on the selected track and ignores the others. CLOCK: INT, the FM-1's own tempo; INT+OUT, the same
         and its MIDI clock out over USB (START, STOP and 24 pulses a beat); USB or TRS, it follows the MIDI clock from
         there (START, CONTINUE, STOP; the jack is MIDI IN only). LATCH: FROM SOUND, a sound you load brings its own
-        LATCH (as GL!TCH 1.0); ALWAYS OFF, a sound you load sets the track's LATCH off (you can still latch it by hand:
+        LATCH (as GR!MM 1.0); ALWAYS OFF, a sound you load sets the track's LATCH off (you can still latch it by hand:
         EDIT's LATCH, SEL + OCT+). The same on the FM-1: SYSTEM's KNOB 2, SYSTEM 2's KNOB 4, SYSTEM 3's
-        KNOB 1. READ first; WRITE changes only these three (the FM-1 stopped and silent). GL!TCH 1.0 has no CLOCK, and
+        KNOB 1. READ first; WRITE changes only these three (the FM-1 stopped and silent). GR!MM 1.0 has no CLOCK, and
         no LATCH setting.</p>
     </section>
 
@@ -366,7 +366,7 @@ input[type=range]:focus-visible { outline: 3px solid var(--f); outline-offset: 2
       <p class="note">A backup holds all 64 user sounds, slots A–D, the settings and the four sample slots (the same
         file as tools/fm1_editor_test.py makes). Restoring first makes a backup of what the FM-1 has now (downloaded),
         then writes everything, then reads it back to check; a sample slot that already holds the same sample is not
-        written again, one empty in the backup is emptied. An older backup (GL!TCH 1.0's, without samples) restores the
+        written again, one empty in the backup is emptied. An older backup (GR!MM 1.0's, without samples) restores the
         rest and leaves the sample slots as they are.</p>
     </section>
     <footer class="note">

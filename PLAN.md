@@ -22,8 +22,13 @@ scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own 
 - **Fixed: MIXER 1 crashed** (the matrix rain's `MX_N 20` shadowed the mixer's six tiles: a null label, SELECT past
   the last tile). The rain's is `RAIN_N` now.
 
+- **The FM-1 package builds**: `build/glitch-2.0.fwsc` (`./build.sh --release 2.0`, the JieLi toolchain in Docker), its
+  size, RAM and stack checks all ok. Not yet installed on a unit.
+- **A teaser a source** on the hub (`hub/audio/src-xx.mp3`: NEON PAD, DATA BELL, SAMPLE 1, MEGACITY CHOIR, NOIR ORGAN,
+  CHROME PIANO, GLITCH LEAD), each loaded through PRESETS and checked by name on the host's probe.
+- The technical docs say GL!TCH; *GR!MM 1.0* stays where it is the engine's history.
+
 ## Next
 
-- **Tag `v2.0`** once tested on a real FM-1, to cut the first attested release (`release.yml` is ready). The device
-  package itself (`./build.sh`) still needs the JieLi toolchain and SDK.
-- Optionally one audio teaser per source engine (`gen_hub.py`'s `render_demo()`).
+- **Install `build/glitch-2.0.fwsc` on a real FM-1 and play it** (MIXER 1 above all: it crashed before the fix), then
+  **tag `v2.0`** to cut the first attested release (`release.yml` is ready).
