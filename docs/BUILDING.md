@@ -25,7 +25,7 @@ For the browser build: the [Emscripten SDK](https://emscripten.org) in `~/emsdk`
 ## The firmware
 
 ```sh
-./build.sh                                  # -> build/glitch.fwsc (identity FM-1_966, version 2.0)
+./build.sh                                  # -> build/glitch.fwsc (identity FM-1_986, version 2.0)
 ./build.sh --release 2.1                    # -> build/glitch-2.1.fwsc, the version "2.1" on the screen
 py tools/fm1_install.py build/glitch.fwsc    # install it over USB (asks first); --info: what the FM-1 runs
 ```

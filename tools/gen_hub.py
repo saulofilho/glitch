@@ -252,7 +252,7 @@ def copy_emu():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--version", default="2.0")
+    ap.add_argument("--version", default="2.0.1")
     ap.add_argument("--no-audio", action="store_true", help="skip the demo render (data and emu only)")
     a = ap.parse_args()
     scales, sounds = parse_scales(), parse_sounds()
@@ -287,7 +287,7 @@ def main():
 
     data = {
         "version": a.version,
-        "identity": "FM-1_966",
+        "identity": "FM-1_986",
         "sources": [{"code": c, "name": n, "desc": d, "demo": src_demo.get(c)} for c, n, d in SOURCES],
         "scales": scales,
         "cats": CATS,

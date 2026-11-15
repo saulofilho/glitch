@@ -42,7 +42,7 @@ static void app_main(void)
 
 Names the platform defines that you can change from the build: `APP_NAME` (the rescue and crash screens,
 default `"DINGHY"`), `APP_VER` (set by `./build.sh --release`), `FELUCCA_ID` (the package identity:
-GL!TCH's is `FM-1_966`, set in `tools/build.py`).
+GL!TCH's is `FM-1_986`, set in `tools/build.py`; 2.0 answered `FM-1_966`, GR!MM's).
 
 ## Time
 

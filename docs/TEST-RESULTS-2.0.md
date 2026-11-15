@@ -22,9 +22,14 @@ byte for byte.
 - **An interrupted update** and the USB rescue (OCT- at power-on) were not tried.
 - **CPU load** of the heaviest scene was not measured on the unit.
 
-## Known
+## Known in 2.0, fixed in 2.0.1
 
-- GL!TCH answers `FM-1_966`, the identity GR!MM uses (`tools/build.py`). An installer cannot tell the two apart by it.
+- 2.0 answers `FM-1_966`, the identity GR!MM uses: an installer cannot tell the two apart by it. 2.0.1 answers
+  `FM-1_986`.
+- 2.0 accepts only the older flash chip (Puya, `0x856014`). 2.0.1 accepts the newer one too (UC25HQ80, `0xB36014`).
+
+2.0.1 has passed the host tests and builds; it has **not yet been installed on a unit** (and no unit with the newer
+chip was at hand).
 
 Before the hardware: the host tests pass (`tests/run_host.sh`, 302 checks, on Linux in Docker) and the browser build
 runs the same code (`web/build_web.sh`).

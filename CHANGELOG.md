@@ -3,7 +3,18 @@
 All notable changes to GL!TCH are noted here. The firmware engine follows GR!MM; this file tracks GL!TCH's own
 identity (sounds, scales, hub) and releases.
 
-## [2.0] — unreleased
+## [2.0.1] — 2026-11-15
+
+For the FM-1 Firmware Hub's check of 2.0.
+
+- **Its own identity: `FM-1_986`.** 2.0 answered `FM-1_966`, GR!MM's, so an installer could not tell the two apart.
+  `tools/fm1_sample_upload.py` talks to either.
+- **Newer FM-1s** (UC25HQ80 flash, `0xB36014`, units sold since autumn 2026) are accepted beside the Puya chip, in the
+  app, the rescue and the update loader: on them 2.0 kept its saves in RAM only and its loader refused to write.
+- **`fmhub.json` says where the sounds come from** (the four factory samples: GR!MM's, CC0; the hub's recordings: made
+  from this firmware).
+
+## [2.0] — 2026-11-15
 
 ### Hub and web
 - **A new look, off a glitched landscape**: night navy, mint ink, pink for what is lit, the sky's teal and lemon. The

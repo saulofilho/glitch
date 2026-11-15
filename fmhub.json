@@ -4,5 +4,6 @@
   "kinds": ["groove"],
   "play": "https://saulofilho.github.io/glitch/emu/",
   "image": "docs/card.png",
-  "color": "#e62aa8"
+  "color": "#e62aa8",
+  "sounds": "CC0: the four factory samples (assets/samples) are from the GR!MM firmware by GRiMMBIENT, released under CC0 1.0; the recordings on the hub page (hub/audio) are my own, recorded from this firmware"
 }
