@@ -3,7 +3,9 @@
 **A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
 seven sources, tape and megacity space — under a glitched sky.
 
-> **Version 2.0.** Unofficial firmware, not made or endorsed by M-VAVE. Install at your own risk.
+> **Version 2.0.** Tested on a real FM-1: the release installed from another firmware, left again, and installed back
+> ([the results](docs/TEST-RESULTS-2.0.md), and what they do not cover). Unofficial firmware, not made or endorsed by
+> M-VAVE: install at your own risk.
 > Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
 
 **[The GL!TCH hub](https://saulofilho.github.io/glitch/)**: the sources, scales and sounds, and how to install ·
@@ -91,6 +93,23 @@ tools/get_toolchain.sh                             # the JieLi toolchain (once; 
 python3 tools/fm1_install.py build/glitch-2.0.fwsc # flash a connected FM-1 over USB
 ```
 
+## Tested on the unit
+
+On 2026-11-15 the v2.0 release (`glitch-2.0.fwsc`, its checksum matching the release's `SHA256SUMS`) went through this
+on a real FM-1, over USB, each step confirmed by the identity the unit answers:
+
+1. installed from another firmware (COQUÍ, `FM-1_923`) → the unit answers `FM-1_966`;
+2. left again: COQUÍ 1.1.1 installed over it → `FM-1_923`;
+3. installed back → `FM-1_966`.
+
+```bash
+python3 tools/fm1_install.py --info                    # what the connected FM-1 runs
+python3 tools/fm1_install.py build/glitch-2.0.fwsc     # install (asks first)
+```
+
+The installer needs `mido` and `python-rtmidi`. What was not tested (the official V15, an interrupted update, the
+screens and the sound by eye and ear) is listed in [docs/TEST-RESULTS-2.0.md](docs/TEST-RESULTS-2.0.md).
+
 ## The hub
 
 | The sources, a teaser each | The unit's screens | The manual |
@@ -124,7 +143,7 @@ glitch/
 ├── web/                 # the browser build: panel.js, worklet.js, editor, build_web.sh -> web/dist
 ├── tools/               # build.py, fm1_install.py, gen_hub.py, gen_screens.py, docker_refresh.sh …
 ├── tests/               # host-mode tests (tests/run_host.sh)
-├── docs/                # API, building, protocols; screens/ (the manual's), hub/ (this page's pictures)
+├── docs/                # API, building, protocols, test results; screens/ (the manual's), hub/ (this page's pictures)
 ├── build.sh             # build the .fwsc package (JieLi toolchain)
 ├── MANUAL.md            # the full manual
 └── README.md
