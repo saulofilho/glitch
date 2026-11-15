@@ -3,15 +3,18 @@
 **A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
 seven sources, tape and megacity space — under a glitched sky.
 
-> **Version 2.0.2.** 2.0 was tested on a real FM-1: the release installed from another firmware, left again, and
-> installed back ([the results](docs/TEST-RESULTS-2.0.md), and what they do not cover); 2.0.2 gives GL!TCH its own
-> identity (`FM-1_986`) and accepts the newer FM-1s' flash chip. Unofficial firmware, not made or endorsed by
+> **Version 2.0.2.** Its own identity on the hub (`FM-1_986`) and the newer FM-1s' flash chip. 2.0 was tested on a
+> real FM-1: the release installed from another firmware, left again, and installed back
+> ([the results](docs/TEST-RESULTS-2.0.md), and what they do not cover); 2.0.2 is not yet tested on a unit. Unofficial firmware, not made or endorsed by
 > M-VAVE: install at your own risk.
 > Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
 
 **[The GL!TCH hub](https://saulofilho.github.io/glitch/)**: the sources, scales and sounds, and how to install ·
 **[Boot it in your browser](https://saulofilho.github.io/glitch/emu/)** (the real firmware, no FM-1 needed) ·
 **[The editor](https://saulofilho.github.io/glitch/emu/editor.html)** (sounds, samples, backup over USB)
+
+**New here? → [First steps: your first song](docs/FIRST-STEPS.md)** (also [on the hub](https://saulofilho.github.io/glitch/guide.html)), then
+the [manual](MANUAL.md) for every page and knob.
 
 [![The GL!TCH hub: the glitched landscape, alive, and the name standing on its plain](docs/hub/landing.jpg)](https://saulofilho.github.io/glitch/)
 
@@ -69,6 +72,7 @@ python3 -m http.server 8080
 ```
 
 - **`http://localhost:8080/hub/`** — the hub: the sources (with a teaser each), the unit's screens, the scales, the sounds and the install.
+- **`http://localhost:8080/hub/guide.html`** — first steps: your first song.
 - **`http://localhost:8080/hub/manual.html`** — the manual, as a page.
 - **`http://localhost:8080/hub/emu/`** — the FM-1 panel. Computer keyboard or Web MIDI.
 - **`http://localhost:8080/hub/emu/editor.html`** — the editor: sounds, samples, and a backup of the unit (Chrome or Edge).
@@ -126,7 +130,7 @@ python3 tools/gen_hub.py --version 2.0.2
 
 - `hub/glitch-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
 - `hub/emu/` — the WebAssembly emulator and the editor (from `web/dist`).
-- `hub/screens/`, `hub/manual.html` — the manual and its screens; `hub/og.png` — the social card (`tools/gen_screens.py` makes it from the boot screen and HOME).
+- `hub/screens/`, `hub/manual.html`, `hub/guide.html` — the manual, the first-steps guide (`docs/FIRST-STEPS.md`) and their screens; `hub/og.png` — the social card (`tools/gen_screens.py` makes it from the boot screen and HOME).
 
 If a host build exists (`tests/run_host.sh`, Linux), `gen_hub.py` also renders the hub's audio to `hub/audio/`: a
 short demo (`demo.mp3`, the **Hear it** button) and a teaser a source (`src-xx.mp3`, the play button on each source's
@@ -145,9 +149,9 @@ glitch/
 ├── web/                 # the browser build: panel.js, worklet.js, editor, build_web.sh -> web/dist
 ├── tools/               # build.py, fm1_install.py, gen_hub.py, gen_screens.py, docker_refresh.sh …
 ├── tests/               # host-mode tests (tests/run_host.sh)
-├── docs/                # API, building, protocols, test results; screens/ (the manual's), hub/ (this page's pictures)
+├── docs/                # first steps, API, building, protocols, test results; screens/ (the manual's), hub/ (this page's pictures)
 ├── build.sh             # build the .fwsc package (JieLi toolchain)
-├── MANUAL.md            # the full manual
+├── MANUAL.md            # the full manual (docs/FIRST-STEPS.md: the short way in)
 └── README.md
 ```
 

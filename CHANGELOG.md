@@ -3,6 +3,11 @@
 All notable changes to GL!TCH are noted here. The firmware engine follows GR!MM; this file tracks GL!TCH's own
 identity (sounds, scales, hub) and releases.
 
+## Unreleased
+
+- **First steps** (`docs/FIRST-STEPS.md`, on the hub as `guide.html`): from switching it on to a first song (a scale,
+  a pad in chords, a RANDOM lead, a GENERATE choir, the mix, a slot), then playing it live.
+
 ## [2.0.2] — 2026-11-15
 
 For the FM-1 Firmware Hub's check of 2.0.

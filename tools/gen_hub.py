@@ -222,6 +222,9 @@ def copy_docs():
         src = ROOT / f
         if src.exists():
             shutil.copy2(src, HUB / f)
+    guide = ROOT / "docs" / "FIRST-STEPS.md"     # (the first-steps guide, beside guide.html)
+    if guide.exists():
+        shutil.copy2(guide, HUB / "FIRST-STEPS.md")
     shots = HUB / "screens"                     # (the manual's screens, beside manual.html and on the landing)
     shots.mkdir(exist_ok=True)
     for f in sorted((ROOT / "docs" / "screens").glob("*.png")):

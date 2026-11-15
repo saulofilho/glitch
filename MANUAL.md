@@ -2,6 +2,8 @@
 
 Version 2.0 · for the M-VAVE FM-1
 
+New to GL!TCH? Start with [First steps](docs/FIRST-STEPS.md): from switching it on to your first song.
+
 GL!TCH is built on [GR!MM](https://github.com/GRiMMBIENT/grimm) 2.0. Where this manual says *GR!MM 1.0*, it means that
 engine's first version: its projects, sounds and backups still load.
 

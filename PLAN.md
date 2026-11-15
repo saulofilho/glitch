@@ -33,7 +33,11 @@ scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own 
 - **2.0 released and tested on a real FM-1** (docs/TEST-RESULTS-2.0.md). **2.0.2** for the hub's check: its own
   identity (`FM-1_986`), the newer flash chip, the `sounds` line in `fmhub.json`.
 
+- **2.0.2 released** (`v2.0.2`): the hub's check passes on identity (`FM-1_986`) and the flash chip. A first-steps
+  guide for new players (`docs/FIRST-STEPS.md`, `hub/guide.html`).
+
 ## Next
 
-- Tag `v2.0.2`, install that release on the FM-1 (from another firmware, leave, come back), then "Check again" on the
-  hub's status page.
+- Install the v2.0.2 release on the FM-1 (from another firmware, leave, come back), record it in
+  `docs/TEST-RESULTS-2.0.md`, and update the hub submission's "How you tested it".
+- Check on the unit what the guide promises (the song in section 3, the PERFORM tricks).
