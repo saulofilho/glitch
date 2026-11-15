@@ -93,7 +93,7 @@ def slab_px(ms):                                # T1's slab: the label's rows, t
         for y in range(y0, y1):
             for x in range(3, 59):
                 r, g, b = px[3 * (y * w + x):3 * (y * w + x) + 3]
-                n += (r < 110 and g > 150 and b > 150) if red else (r > 150 and g > 150 and b > 150)   # (GL!TCH: the accent, neon cyan)
+                n += (r > 150 and g < 110) if red else (r > 150 and g > 150 and b > 150)   # (GL!TCH: the accent, pink)
         return n
     return count(170, 178, False), count(180, 188, True)
 

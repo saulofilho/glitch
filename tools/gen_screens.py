@@ -78,6 +78,18 @@ def main():
         shots[n].resize((480, 480), Image.NEAREST).save(DST / f"{n}.png", optimize=True)
     if "boot" in shots:                          # the hub's card (fmhub.json's image): the boot screen as it is
         shots["boot"].save(ROOT / "docs" / "card.png", optimize=True)
+    if "boot" in shots and "home" in shots:      # the hub's social card (hub/og.png, 1200 x 630): the two, side by side
+        og = Image.new("RGB", (1200, 630), (8, 18, 38))
+        for x, w, c in ((0, 408, (160, 238, 160)), (408, 144, (25, 217, 146)), (552, 108, (230, 224, 138)),
+                        (660, 156, (160, 238, 160)), (816, 120, (200, 24, 160)), (936, 96, (138, 79, 216)),
+                        (1032, 84, (230, 42, 168)), (1116, 84, (18, 36, 74))):
+            og.paste(c, (x, 0, x + w, 12))
+        og.paste((200, 24, 160), (70, 87, 70 + 480, 87 + 480))          # (the split: pink behind, teal before)
+        og.paste((25, 217, 146), (50, 67, 50 + 480, 67 + 480))
+        og.paste(shots["boot"].resize((480, 480), Image.NEAREST), (60, 77))
+        og.paste((62, 138, 140), (656, 73, 656 + 488, 73 + 488))
+        og.paste(shots["home"].resize((480, 480), Image.NEAREST), (660, 77))
+        og.save(ROOT / "hub" / "og.png", optimize=True)
     cols = 5
     sheet = Image.new("RGB", (cols * 244, ((len(shots) + cols - 1) // cols) * 244), (40, 40, 40))
     for i, n in enumerate(shots):

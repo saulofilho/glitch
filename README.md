@@ -1,7 +1,7 @@
 # GL!TCH
 
 **A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
-seven sources, tape and megacity space — on a dead-stock amber tube.
+seven sources, tape and megacity space — under a glitched sky.
 
 > **Version 2.0.** Unofficial firmware, not made or endorsed by M-VAVE. Install at your own risk.
 > Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
@@ -53,7 +53,7 @@ FM-1 (`firmware/src/fm1_web.c`). No hardware needed.
 python3 -m http.server 8080
 ```
 
-- **`http://localhost:8080/hub/`** — the hub: a phosphor-CRT terminal with the sources, scales, sounds and install.
+- **`http://localhost:8080/hub/`** — the hub: the sources (with a teaser each), the unit's screens, the scales, the sounds and the install; `manual.html` is the manual.
 - **`http://localhost:8080/hub/emu/`** — the FM-1 panel. Computer keyboard or Web MIDI.
 - **`http://localhost:8080/hub/emu/editor.html`** — the editor: sounds, samples, and a backup of the unit (Chrome or Edge).
 
@@ -65,7 +65,7 @@ web/build_web.sh           # -> web/dist/ (then: python3 tools/gen_hub.py copies
 
 ## Install on the FM-1
 
-On the unit the boot screen reads **GL!TCH**; colour 1 is cyan.
+On the unit the boot screen reads **GL!TCH**; colour 1 is pink (SYSTEM has lemon, teal and violet).
 
 ```bash
 tools/get_toolchain.sh                         # the JieLi toolchain (once)
@@ -83,7 +83,7 @@ python3 tools/gen_hub.py --version 2.0
 
 - `hub/glitch-data.js` — the scales (`firmware/src/scale.c`), the factory sounds (`store.c`) and the sources.
 - `hub/emu/` — the WebAssembly emulator and the editor (from `web/dist`).
-- `hub/og.png` — the 1200×630 social card, drawn by `hub/og-card.html` (open it to re-export).
+- `hub/screens/`, `hub/manual.html` — the manual and its screens; `hub/og.png` — the social card (`tools/gen_screens.py` makes it from the boot screen and HOME).
 
 If a host build exists (`tests/run_host.sh`, Linux), `gen_hub.py` also renders a short audio teaser to
 `hub/audio/demo.{mp3,wav}` — a WAV when no encoder is around, an MP3 when `ffmpeg` is on the PATH — which the hub
@@ -112,7 +112,7 @@ glitch/
 - Based on **GR!MM** by [GRiMMBIENT](https://github.com/GRiMMBIENT/grimm), and through it on
   [Dinghy](https://github.com/zvenson/dinghy), [Felucca](https://github.com/hugelton/Felucca) and
   [SLOOP](https://github.com/isod89/sloop-fm1).
-- The hub's phosphor-CRT look is after [ardor.cloud/retro-computer](https://ardor.cloud/retro-computer); the colour
-  and the content are GL!TCH's own.
+- The look (the hub's and the FM-1's screen) is a glitched landscape: posterised bands of mint, teal and lemon torn
+  to pink and violet, drawn by the same code on the unit (`firmware/src/ui.c`) and on the page (`hub/land.js`).
 - GPL-3.0. Third-party licences in [LICENSING.md](LICENSING.md). M-VAVE and FM-1 are trademarks of their owners;
   GL!TCH is not affiliated with or endorsed by them.

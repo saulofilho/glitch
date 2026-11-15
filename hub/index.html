@@ -4,441 +4,196 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="GL!TCH: a neon-noir groovebox firmware for the M-VAVE FM-1. Seven sources, sixteen scales, forty-four factory sounds. Boot the emulator in your browser, or install it on the unit.">
-<title>GL!TCH // FM-1 FIRMWARE</title>
+<title>GL!TCH — groovebox firmware for the FM-1</title>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="GL!TCH">
 <meta property="og:title" content="GL!TCH: neon-noir groovebox firmware for the M-VAVE FM-1">
-<meta property="og:description" content="Seven sources, sixteen cyber scales, forty-four factory sounds. Boot the web emulator, flash the unit. GPL-3.0.">
+<meta property="og:description" content="Seven sources, sixteen scales, forty-four factory sounds. Boot the web emulator, flash the unit. GPL-3.0.">
 <meta property="og:image" content="https://saulofilho.github.io/glitch/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="GL!TCH: neon-noir FM-1 firmware on an amber CRT — 7 sources, 16 scales, 44 sounds">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://saulofilho.github.io/glitch/og.png">
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap">
-<style>
-/* GL!TCH HUB — a phosphor CRT terminal. Amber on black, scanlines, bloom, vignette and a slow flicker; the whole
- * page behaves like a dead-stock cyberdeck booted onto the FM-1's firmware. One look, on purpose. After the
- * reference at ardor.cloud/retro-computer; the color and the content are GL!TCH's own. */
-:root {
-  --black: #050402;            /* the tube when it is off (a warm, not pure, black) */
-  --bg: #0a0702;
-  --amber: #ffb000;            /* P3 amber phosphor */
-  --amber-hi: #ffd98a;         /* a hot pixel */
-  --amber-lo: #a66b00;         /* a cold one / dim text */
-  --amber-ghost: rgba(255,176,0,.14);
-  --glow: 0 0 2px rgba(255,176,0,.55), 0 0 10px rgba(255,140,0,.28);
-  --f: "VT323", "Share Tech Mono", ui-monospace, monospace;
-  color-scheme: dark;
-}
-/* the [C] phosphor cycle: amber (default) -> green -> cyan -> magenta. Only the phosphor colour changes; the tube,
- * the scanlines and the layout stay. */
-:root[data-phosphor="green"] { --amber: #2bff6a; --amber-hi: #b9ffce; --amber-lo: #1a9e43; --amber-ghost: rgba(43,255,106,.14);
-  --glow: 0 0 2px rgba(43,255,106,.5), 0 0 10px rgba(0,255,120,.26); }
-:root[data-phosphor="cyan"] { --amber: #14e2ff; --amber-hi: #b3f3ff; --amber-lo: #0b8aa6; --amber-ghost: rgba(20,226,255,.14);
-  --glow: 0 0 2px rgba(20,226,255,.5), 0 0 10px rgba(0,200,255,.26); }
-:root[data-phosphor="magenta"] { --amber: #ff3ac6; --amber-hi: #ffb6ec; --amber-lo: #a61f82; --amber-ghost: rgba(255,58,198,.14);
-  --glow: 0 0 2px rgba(255,58,198,.5), 0 0 10px rgba(255,0,180,.26); }
-* { box-sizing: border-box; }
-html, body { margin: 0; background: var(--black); }
-body {
-  font-family: var(--f);
-  color: var(--amber);
-  font-size: 21px;
-  line-height: 1.25;
-  letter-spacing: .02em;
-  text-shadow: var(--glow);
-  text-transform: uppercase;
-  overflow-x: hidden;
-}
-a { color: var(--amber-hi); text-decoration: none; }
-a:hover, a:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; outline: none; }
-:focus-visible { outline: 2px solid var(--amber-hi); outline-offset: 2px; }
-b, strong { color: var(--amber-hi); font-weight: normal; }
-.dim { color: var(--amber-lo); }
-.hi { color: var(--amber-hi); }
-
-/* ---- the tube: scanlines, grille, vignette, bloom, flicker ---- */
-.screen { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 22px clamp(14px, 4vw, 40px) 120px; }
-#crt { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
-#crt::before {            /* scanlines + a faint shadow mask */
-  content: ""; position: absolute; inset: 0;
-  background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.28) 2px 3px),
-    repeating-linear-gradient(90deg, rgba(255,120,0,.015) 0 2px, rgba(0,0,0,.05) 2px 4px);
-  mix-blend-mode: multiply;
-}
-#crt::after {             /* vignette + curvature darkening at the edges */
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(130% 120% at 50% 50%, rgba(0,0,0,0) 56%, rgba(0,0,0,.55) 82%, rgba(0,0,0,.9) 100%);
-}
-#flicker { position: fixed; inset: 0; z-index: 51; pointer-events: none; background: rgba(255,255,255,.018); animation: flk .14s steps(2) infinite; }
-#glowwrap { animation: breathe 5.6s ease-in-out infinite; }
-@keyframes flk { 0% { opacity: .55; } 100% { opacity: .9; } }
-@keyframes breathe { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.05); } }
-@media (prefers-reduced-motion: reduce) { #flicker { display: none; } #glowwrap { animation: none; } #boot { display: none !important; } .cursor { animation: none; } }
-
-/* ---- status bar ---- */
-.bar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 18px; color: var(--amber-lo); border-bottom: 1px solid var(--amber-ghost); padding-bottom: 6px; margin-bottom: 14px; }
-.bar b { color: var(--amber); }
-.barbtn { font: inherit; background: none; border: 1px solid var(--amber-ghost); color: var(--amber-lo); padding: 0 6px; cursor: pointer; text-shadow: var(--glow); text-transform: uppercase; }
-.barbtn:hover, .barbtn:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; outline: none; }
-.barbtn:hover b, .barbtn:focus-visible b { color: var(--black); }
-
-/* ---- header: ascii mark + pitch ---- */
-header { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 4vw, 40px); align-items: start; margin: 10px 0 8px; }
-pre.ascii { margin: 0; font-size: 12px; line-height: 1.05; color: var(--amber); text-shadow: var(--glow); white-space: pre; }
-.lede h1 { font-size: clamp(34px, 7vw, 60px); margin: 0 0 6px; line-height: .92; color: var(--amber-hi); letter-spacing: .01em; }
-.lede .tag { color: var(--amber-lo); font-size: 19px; margin: 0 0 10px; }
-.lede p { margin: 0 0 12px; max-width: 58ch; }
-.ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
-.key { border: 1px solid var(--amber); padding: 4px 12px; display: inline-block; }
-button.key { font: inherit; background: none; cursor: pointer; color: var(--amber-hi); text-shadow: var(--glow); text-transform: uppercase; }
-button.key[hidden] { display: none; }
-.key:hover, .key:focus-visible { background: var(--amber); color: var(--black); text-shadow: none; }
-.key b { color: inherit; }
-
-/* ---- rule with a label ---- */
-.rule { display: flex; align-items: center; gap: 10px; margin: 30px 0 14px; color: var(--amber-lo); }
-.rule::before { content: "::"; color: var(--amber); }
-.rule h2 { font-size: 22px; margin: 0; color: var(--amber-hi); white-space: nowrap; }
-.rule .line { flex: 1; border-top: 1px dashed var(--amber-ghost); }
-.rule .n { color: var(--amber-lo); }
-
-/* ---- menus / lists ---- */
-.menu { list-style: none; margin: 0; padding: 0; }
-.menu li { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; border-bottom: 1px dotted transparent; }
-.menu li .idx { color: var(--amber-lo); width: 2.4ch; flex: none; text-align: right; }
-.menu li .nm { color: var(--amber-hi); }
-.menu li .lead { flex: 1; border-bottom: 1px dotted var(--amber-ghost); margin: 0 6px; transform: translateY(-4px); }
-.menu li .rt { color: var(--amber-lo); flex: none; }
-.menu li p { margin: 0; color: var(--amber-lo); font-size: 18px; flex-basis: 100%; padding-left: 3.4ch; }
-
-/* sources grid */
-.sources { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px; border: 1px solid var(--amber-ghost); }
-.src { padding: 12px 14px; border: 1px solid var(--amber-ghost); }
-.src .code { color: var(--black); background: var(--amber); padding: 0 6px; }
-.src h3 { margin: 6px 0 4px; font-size: 21px; color: var(--amber-hi); }
-.src p { margin: 0; color: var(--amber-lo); font-size: 18px; }
-.srcplay { font: inherit; font-size: 18px; margin-top: 8px; background: none; border: 1px solid var(--amber-ghost); color: var(--amber); padding: 1px 10px; cursor: pointer; text-shadow: var(--glow); text-transform: uppercase; }
-.srcplay:hover, .srcplay:focus-visible, .srcplay.on { background: var(--amber); color: var(--black); text-shadow: none; outline: none; }
-
-/* scales */
-.scales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 18px; }
-.sc { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px dotted var(--amber-ghost); }
-.sc .nm { color: var(--amber-hi); }
-.sc .dots { font-size: 18px; letter-spacing: 1px; color: var(--amber-lo); }
-.sc .dots b { color: var(--amber); }
-
-/* sounds by category */
-.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px 24px; }
-.cat h3 { font-size: 20px; margin: 0 0 4px; color: var(--amber-hi); border-bottom: 1px solid var(--amber-ghost); padding-bottom: 2px; }
-.cat ul { list-style: none; margin: 0; padding: 0; }
-.cat li { display: flex; justify-content: space-between; gap: 8px; color: var(--amber); font-size: 18px; padding: 1px 0; }
-.cat li span { color: var(--amber-lo); }
-
-/* big boot panel */
-.boot-cta { border: 1px solid var(--amber); padding: 20px clamp(16px,4vw,32px); margin: 8px 0; display: grid; gap: 10px; background: linear-gradient(0deg, rgba(255,176,0,.05), transparent); }
-.boot-cta h2 { margin: 0; font-size: clamp(26px, 5vw, 40px); color: var(--amber-hi); }
-.boot-cta p { margin: 0; color: var(--amber-lo); max-width: 60ch; }
-.boot-cta .go { display: inline-flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
-.boot-cta .go a { border: 1px solid var(--amber); padding: 8px 18px; font-size: 22px; }
-
-/* install steps */
-.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 10px; }
-.steps li { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
-.steps li::before { counter-increment: s; content: "[" counter(s) "]"; color: var(--amber-lo); }
-.steps li p { margin: 0; color: var(--amber); }
-.steps code, code { background: #140d02; border: 1px solid var(--amber-ghost); color: var(--amber-hi); padding: 0 6px; font-family: var(--f); text-transform: none; font-size: .95em; overflow-wrap: anywhere; }
-
-/* play combos */
-.combos { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; align-items: baseline; }
-.combos .k { color: var(--amber-hi); white-space: nowrap; }
-.combos .d { color: var(--amber-lo); font-size: 18px; }
-
-/* ---- the command terminal ---- */
-.term { border: 1px solid var(--amber); margin-top: 18px; }
-.term .log { padding: 10px 14px; min-height: 72px; max-height: 220px; overflow-y: auto; font-size: 19px; }
-.term .log div { color: var(--amber-lo); }
-.term .log div .u { color: var(--amber-hi); }
-.term .log div .ok { color: var(--amber); }
-.term .inrow { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--amber-ghost); padding: 8px 14px; }
-.term .inrow .ps { color: var(--amber-hi); }
-.term input { flex: 1; background: transparent; border: none; color: var(--amber-hi); font: inherit; text-transform: uppercase; text-shadow: var(--glow); outline: none; }
-.term input::placeholder { color: var(--amber-lo); opacity: .7; }
-.cursor { color: var(--amber); animation: blink 1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-
-footer { margin-top: 36px; border-top: 1px solid var(--amber-ghost); padding-top: 12px; color: var(--amber-lo); font-size: 17px; }
-footer a { color: var(--amber); }
-
-/* boot overlay */
-#boot { position: fixed; inset: 0; z-index: 60; background: var(--black); color: var(--amber); padding: 40px clamp(16px,6vw,80px); font-size: 19px; overflow: hidden; }
-#boot pre { margin: 0; white-space: pre-wrap; }
-
-@media (max-width: 680px) {
-  body { font-size: 19px; }
-  header { grid-template-columns: 1fr; }
-  pre.ascii { font-size: 9px; }
-}
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="glitch.css">
 </head>
 <body>
-<div id="crt" aria-hidden="true"></div>
-<div id="flicker" aria-hidden="true"></div>
-<div id="boot" aria-hidden="true"><pre id="bootlog"></pre></div>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <nav class="nav" aria-label="GL!TCH">
+    <a class="logo" href="./"><b>GL!</b><span>GL!TCH<br>FM-1 FIRMWARE</span></a>
+    <div class="links">
+      <a href="#sources">Sources</a><a href="#unit">On the unit</a><a href="#scales">Scales</a><a href="#sounds">Sounds</a>
+      <a href="#install">Install</a><a href="manual.html">Manual</a>
+    </div>
+  </nav>
 
-<div id="glowwrap">
-<main class="screen">
-  <div class="bar">
-    <span>&#9656; GL!TCH / <b>IN COMMUNICATION</b> / FM-1 FIRMWARE TERMINAL</span>
-    <span><button type="button" id="color-btn" class="barbtn" aria-label="Cycle the phosphor colour">[C] COLOR: <b id="color-name">AMBER</b></button> &middot; <a href="https://github.com/saulofilho/glitch">GL!TCH.SRC &#8599;</a></span>
-  </div>
+  <div class="meta"><span>Groovebox firmware for the M-VAVE FM-1</span><span><i class="dot"></i>Version <b id="ver">2.0</b> · GPL-3.0</span></div>
 
-  <header>
-    <pre class="ascii" aria-hidden="true"> ___ ___ ___ ___ ___ ___
-|G .|L .|! .|T .|C .|H .|
-|___|___|___|___|___|___|
- &gt;&gt; FM-1 // v<span id="verA">2.0</span></pre>
-    <div class="lede">
-      <h1>GL!TCH</h1>
-      <p class="tag">Neon-noir groovebox firmware for the M-VAVE FM-1</p>
-      <p>Four tracks, seven sources, a 64-step sequencer, tape and megacity space. A Blade Runner factory bank and
-        six cyber scales, on a dead-stock phosphor tube.</p>
+  <main id="main">
+  <figure class="scene">
+    <div class="cap"><span>Signal / Noise / Process</span><span>The same landscape the FM-1 draws at HOME</span></div>
+    <canvas id="land" width="240" height="84" role="img" aria-label="A glitched landscape: a sky in mint and teal bands torn to pink and violet, navy hills, a striped plain"></canvas>
+    <button type="button" class="pause" id="pause" aria-pressed="false">Pause &#8545;</button>
+  </figure>
+
+  <header class="hero">
+    <h1 class="title glitch" data-text="GL!TCH."><span>GL!TCH</span><i>.</i></h1>
+    <div class="pitch">
+      <p class="label"><i class="dot"></i>Neon noir, torn at the edges.</p>
+      <p class="say">Four tracks.<br>Seven sources.<br>One small machine.</p>
+      <p>GL!TCH turns the M-VAVE FM-1 into a groovebox for dystopian sci-fi: a Blade Runner factory bank, six cyber
+        scales, a 64-step sequencer, tape and megacity space.</p>
+      <p>It runs in your browser too: the emulator is the firmware itself, compiled to WebAssembly.</p>
       <div class="ctas">
-        <a class="key" href="emu/" id="k-boot"><b>[B]</b> BOOT EMULATOR</a>
-        <button type="button" class="key" id="k-hear" hidden><b>[P]</b> <span id="hear-lbl">HEAR IT</span></button>
-        <a class="key" href="emu/editor.html"><b>[E]</b> EDITOR</a>
-        <a class="key" href="MANUAL.md"><b>[M]</b> MANUAL</a>
+        <a class="btn" href="emu/">Boot the emulator <span>&#8599;</span></a>
+        <button type="button" class="lnk" id="k-hear" hidden><span id="hear-lbl">Hear it</span> &#9656;</button>
+        <a class="lnk" href="#install">Install on the FM-1 &#8595;</a>
       </div>
+      <p class="minor"><a href="manual.html">Read the manual &#8599;</a> &nbsp; <a href="emu/editor.html">Open the editor &#8599;</a></p>
       <audio id="demo-audio" preload="none"></audio>
     </div>
   </header>
 
-  <div class="rule"><h2>THE SOURCES</h2><span class="line"></span><span class="n" id="n-src">/ 7</span></div>
-  <div class="sources" id="sources"></div>
+  <section id="sources">
+    <div class="head"><p class="num">01 / The sources</p><h2>Seven ways to make a sound.</h2><p class="note" id="n-src">7 engines, any of them on any track</p></div>
+    <div class="cards" id="src-cards"></div>
+  </section>
 
-  <div class="rule"><h2>THE SCALES</h2><span class="line"></span><span class="n" id="n-sc">/ 16</span></div>
-  <p class="dim" style="margin:0 0 10px">The keys snap to the scale. A 12-slot ring over the root: <b style="color:var(--amber)">&#9632;</b> in key, <span style="color:var(--amber-lo)">&#183;</span> out.</p>
-  <div class="scales" id="scales"></div>
-
-  <div class="rule"><h2>FACTORY SOUNDS</h2><span class="line"></span><span class="n" id="n-snd">/ 44</span></div>
-  <div class="cats" id="cats"></div>
-
-  <div class="rule"><h2>BOOT</h2><span class="line"></span></div>
-  <section class="boot-cta">
-    <h2>RUN THE REAL FIRMWARE, NO FM-1 NEEDED</h2>
-    <p>The emulator is <code>firmware/src/grimm.c</code> itself, compiled to WebAssembly and run in your browser.
-      Computer keyboard or MIDI; the editor backs up and reflashes a connected unit over USB (Chrome or Edge).</p>
-    <div class="go">
-      <a href="emu/">&#9656; BOOT EMULATOR</a>
-      <a href="emu/editor.html">&#9656; OPEN EDITOR</a>
+  <section id="unit">
+    <div class="head"><p class="num">02 / On the unit</p><h2>The screen, as the firmware draws it.</h2><p class="note">Shot from the firmware itself, pixel for pixel</p></div>
+    <div class="shots">
+      <figure><img src="screens/home.png" alt="HOME: the landscape and the four tracks" loading="lazy"><figcaption>HOME</figcaption></figure>
+      <figure><img src="screens/mixer1.png" alt="MIXER 1: six tiles" loading="lazy"><figcaption>MIXER 1</figcaption></figure>
+      <figure><img src="screens/seq.png" alt="The sequencer's grid" loading="lazy"><figcaption>SEQ / GRID</figcaption></figure>
+      <figure><img src="screens/scale.png" alt="SCALE: Insen" loading="lazy"><figcaption>SCALE</figcaption></figure>
+      <figure><img src="screens/fm-algo.png" alt="FM: the algorithm" loading="lazy"><figcaption>FM ALGO</figcaption></figure>
+      <figure><img src="screens/tape.png" alt="TAPE" loading="lazy"><figcaption>TAPE</figcaption></figure>
+      <figure><img src="screens/perform.png" alt="PERFORM: the effects under the keys" loading="lazy"><figcaption>PERFORM</figcaption></figure>
+      <figure><img src="screens/boot.png" alt="The boot screen" loading="lazy"><figcaption>BOOT</figcaption></figure>
     </div>
   </section>
 
-  <div class="rule"><h2>INSTALL IN A MINUTE</h2><span class="line"></span></div>
-  <ol class="steps">
-    <li><p>Build the package: <code>./build.sh --name glitch.fwsc</code> &rarr; <code>build/glitch.fwsc</code> (JieLi toolchain; get it with <code>tools/get_toolchain.sh</code>).</p></li>
-    <li><p>Connect the FM-1 over USB and flash it: <code>python3 tools/fm1_install.py build/glitch.fwsc</code>.</p></li>
-    <li><p>On the unit the boot screen reads <b>GL!TCH</b>, colour 1 is cyan, and the added scales are Insen, Hirajoshi, Iwato and whole tone. Unofficial firmware &mdash; install at your own risk.</p></li>
-  </ol>
-
-  <div class="rule"><h2>HOW TO PLAY</h2><span class="line"></span></div>
-  <div class="combos">
-    <div class="k">TURN <b>PRESETS</b></div><div class="d">Load a factory sound by category: DRONE, PAD, BELL, ORGAN, KEYS, BASS, TEXTURE, VOICE.</div>
-    <div class="k"><b>EDIT</b> &gt; SOURCE</div><div class="d">Pick the engine (VA, FM, SAMPLE, VOICE, WHEEL, PHYS, PHASE) and turn its four knobs.</div>
-    <div class="k"><b>SEL</b> &gt; SCALE</div><div class="d">Snap the keys to one of 16 scales; hold a key for its one-key chord.</div>
-    <div class="k">HOLD <b>FX</b> + BLACK KEY</div><div class="d">GENERATE: a track plays itself in the chosen feel.</div>
-    <div class="k"><b>FX</b> &gt; SPACE</div><div class="d">Megacity reverb: 6 combs, 3 allpass, and an infinite freeze.</div>
-    <div class="k">HOLD <b>SAVE</b> + WHITE KEYS</div><div class="d">Recall or store slots A&ndash;D (while playing: at the next bar).</div>
-  </div>
-
-  <div class="rule"><h2>TERMINAL</h2><span class="line"></span><span class="n">TYPE HELP</span></div>
-  <section class="term">
-    <div class="log" id="log"></div>
-    <div class="inrow">
-      <span class="ps">YOU &gt;</span>
-      <input id="cmd" autocomplete="off" spellcheck="false" aria-label="GL!TCH terminal command" placeholder="HELP">
-      <span class="cursor">&#9608;</span>
-    </div>
+  <section id="scales">
+    <div class="head"><p class="num">03 / The scales</p><h2>The keys snap to the scale.</h2><p class="note">Twelve semitones over the root: lit, in key</p></div>
+    <div class="scales" id="scale-list"></div>
   </section>
 
-  <footer>
-    <p>GL!TCH is <a href="LICENSE">GPL-3.0</a>. Built on <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>.
-      Credits in <a href="LICENSING.md">LICENSING.md</a>. M-VAVE and FM-1 are trademarks of their owners.
-      Not made or endorsed by M-VAVE.</p>
+  <section id="sounds">
+    <div class="head"><p class="num">04 / Factory sounds</p><h2>A bank for the megacity.</h2><p class="note" id="n-snd">44 sounds, by category</p></div>
+    <div class="cats" id="cats"></div>
+  </section>
+
+  <section id="install" class="two">
+    <div>
+      <div class="head"><p class="num">05 / Install</p><h2>On your FM-1, in a minute.</h2></div>
+      <ol class="steps">
+        <li><p>Build the package: <code>./build.sh --release 2.0</code> &rarr; <code>build/glitch-2.0.fwsc</code> (JieLi toolchain: <code>tools/get_toolchain.sh</code>).</p></li>
+        <li><p>Connect the FM-1 over USB and flash it: <code>python3 tools/fm1_install.py build/glitch-2.0.fwsc</code>.</p></li>
+        <li><p>The boot screen reads <b>GL!TCH</b>. Colour 1 is pink; SYSTEM has lemon, teal and violet. Unofficial firmware: install at your own risk.</p></li>
+      </ol>
+    </div>
+    <div>
+      <div class="head"><p class="num">06 / Play</p><h2>Six moves to start.</h2></div>
+      <dl class="moves">
+        <dt>Turn PRESETS</dt><dd>Step through the factory sounds by category.</dd>
+        <dt>EDIT &rsaquo; SOURCE</dt><dd>Pick the engine and turn its four knobs.</dd>
+        <dt>SEL &rsaquo; SCALE</dt><dd>Snap the keys to a scale; hold SEL for one-key chords.</dd>
+        <dt>Hold FX + a black key</dt><dd>GENERATE: the track plays itself, in the scale.</dd>
+        <dt>FX &rsaquo; SPACE</dt><dd>The megacity reverb, up to an endless freeze.</dd>
+        <dt>Hold SAVE + white keys</dt><dd>Recall or store slots A&ndash;D, on the bar.</dd>
+      </dl>
+      <p class="minor"><a href="manual.html">The whole manual &#8599;</a></p>
+    </div>
+  </section>
+  </main>
+
+  <footer class="foot">
+    <p>GL!TCH is <a href="LICENSE">GPL-3.0</a>, built on <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>.
+      <a href="LICENSING.md">Credits and licences</a> · <a href="https://github.com/saulofilho/glitch">Source &#8599;</a></p>
+    <p>M-VAVE and FM-1 are trademarks of their owners. Not made or endorsed by M-VAVE.</p>
   </footer>
-</main>
 </div>
 
 <script src="glitch-data.js"></script>
+<script src="land.js"></script>
 <script>
 (function () {
   "use strict";
   var D = window.GLITCH || { version: "2.0", sources: [], scales: [], cats: [], sounds: [] };
-  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $ = function (s) { return document.querySelector(s); };
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
+  $("#ver").textContent = D.version || "2.0";
 
-  /* ---- phosphor colour cycle [C] ---- */
-  var PHOS = ["amber", "green", "cyan", "magenta"];
-  var pi = 0;
-  try { var saved = localStorage.getItem("glitch-phosphor"); if (saved && PHOS.indexOf(saved) >= 0) { pi = PHOS.indexOf(saved); } } catch (e) {}
-  function setPhosphor(i, announce) {
-    pi = (i + PHOS.length) % PHOS.length;
-    var name = PHOS[pi];
-    if (name === "amber") { document.documentElement.removeAttribute("data-phosphor"); }
-    else { document.documentElement.setAttribute("data-phosphor", name); }
-    var lbl = $("#color-name"); if (lbl) { lbl.textContent = name.toUpperCase(); }
-    try { localStorage.setItem("glitch-phosphor", name); } catch (e) {}
-    if (announce && typeof say === "function") { say('PHOSPHOR: <span class="ok">' + name.toUpperCase() + '</span>'); }
+  /* the landscape (land.js: the firmware's own, cell for cell) */
+  var cv = $("#land"), pause = $("#pause"), still = matchMedia("(prefers-reduced-motion: reduce)").matches, t = 0, tear = 1, timer = 0;
+  function frame() { window.glLand(cv, t, tear); t++; tear = tear > 1 ? tear - 1 : 1; }
+  function run(on) {
+    clearInterval(timer); timer = 0;
+    if (on) timer = setInterval(frame, 180);
+    pause.setAttribute("aria-pressed", String(!on)); pause.innerHTML = on ? "Pause &#8545;" : "Play &#9656;";
   }
-  setPhosphor(pi, false);
-  var cbtn = $("#color-btn"); if (cbtn) { cbtn.addEventListener("click", function () { setPhosphor(pi + 1, false); }); }
+  frame(); run(!still);
+  pause.addEventListener("click", function () { run(!timer); });
+  cv.addEventListener("pointermove", function () { tear = 8; });   /* (touch it: it tears) */
 
-  if (D.version) { $("#verA").textContent = D.version; }
-  if (D.sources) { $("#n-src").textContent = "/ " + D.sources.length; }
-  if (D.scales) { $("#n-sc").textContent = "/ " + D.scales.length; }
-  if (D.sounds) { $("#n-snd").textContent = "/ " + D.sounds.length; }
-
-  /* sources: a card each, with its teaser when there is one (one player for them all: a second click stops it) */
-  var srcAudio = new Audio(), srcBtn = null;
-  srcAudio.preload = "none";
-  function srcReset() { if (srcBtn) { srcBtn.innerHTML = '&#9656; ' + srcBtn.dataset.snd; srcBtn.classList.remove("on"); srcBtn = null; } }
+  /* sources: a card each, with its teaser (one player for them all; a second click stops it) */
+  var srcAudio = new Audio(), srcBtn = null; srcAudio.preload = "none";
+  function srcReset() { if (srcBtn) { srcBtn.innerHTML = "&#9656; " + srcBtn.dataset.snd; srcBtn.classList.remove("on"); srcBtn = null; } }
   srcAudio.addEventListener("ended", srcReset);
   function playSrc(bt, url, snd) {
-    var same = srcBtn === bt;
-    srcAudio.pause(); srcReset();
-    if (same) { return; }
-    bt.dataset.snd = snd; srcBtn = bt;
-    srcAudio.src = url;
-    srcAudio.play().then(function () { bt.innerHTML = '&#9632; ' + snd; bt.classList.add("on"); }).catch(srcReset);
+    var same = srcBtn === bt; srcAudio.pause(); srcReset(); if (same) return;
+    bt.dataset.snd = snd; srcBtn = bt; srcAudio.src = url; tear = 8;
+    srcAudio.play().then(function () { bt.innerHTML = "&#9632; " + snd; bt.classList.add("on"); }).catch(srcReset);
   }
-  var sw = $("#sources");
   D.sources.forEach(function (s) {
-    var card = el("div", "src",
-      '<span class="code">' + s.code + '</span>' +
-      '<h3>' + s.name + '</h3><p>' + s.desc + '</p>');
-    if (s.demo && s.demo.file) {               /* the source's teaser (gen_hub: hub/audio/src-xx) */
-      var bt = el("button", "srcplay", '&#9656; ' + s.demo.sound);
-      bt.type = "button";
-      bt.setAttribute("aria-label", "Hear " + s.name + ": " + s.demo.sound);
-      bt.addEventListener("click", function () { playSrc(bt, "audio/" + s.demo.file, s.demo.sound); });
-      card.appendChild(bt);
+    var c = el("article", "card", '<p class="kind">' + s.code + ' / source</p><h3>' + s.name + '</h3><p>' + s.desc + '</p>');
+    if (s.demo && s.demo.file) {
+      var b = el("button", "play", "&#9656; " + s.demo.sound); b.type = "button";
+      b.setAttribute("aria-label", "Hear " + s.name + ": " + s.demo.sound);
+      b.addEventListener("click", function () { playSrc(b, "audio/" + s.demo.file, s.demo.sound); });
+      c.appendChild(b);
     }
-    sw.appendChild(card);
+    $("#src-cards").appendChild(c);
   });
 
-  /* scales: the mask as a 12-slot ring */
-  var scw = $("#scales");
+  /* scales: the mask as twelve cells */
   D.scales.forEach(function (s) {
-    var dots = (s.mask || "").split("").map(function (c) {
-      return c === "X" ? "<b>&#9632;</b>" : "&#183;";
-    }).join("");
-    scw.appendChild(el("div", "sc",
-      '<span class="nm">' + s.name + '</span><span class="dots">' + dots + '</span>'));
+    var cells = s.mask.split("").map(function (c) { return '<i class="' + (c === "X" ? "in" : "") + '"></i>'; }).join("");
+    $("#scale-list").appendChild(el("div", "scale", '<span>' + s.name + '</span><span class="ring" aria-hidden="true">' + cells + '</span>'));
   });
 
-  /* sounds grouped by category, in the enum's order */
-  var cw = $("#cats");
-  (D.cats || []).forEach(function (cat) {
-    var items = (D.sounds || []).filter(function (s) { return s.cat === cat; });
-    if (!items.length) { return; }
-    var box = el("div", "cat", '<h3>' + cat + ' <span style="color:var(--amber-lo);font-size:16px">(' + items.length + ')</span></h3>');
-    var ul = el("ul");
-    items.forEach(function (s) {
-      ul.appendChild(el("li", null, '<span>' + s.name + '</span><span>' + s.src + '</span>'));
-    });
-    box.appendChild(ul); cw.appendChild(box);
+  /* sounds by category */
+  $("#n-snd").textContent = D.sounds.length + " sounds, by category";
+  D.cats.forEach(function (cat) {
+    var it = D.sounds.filter(function (s) { return s.cat === cat; });
+    if (!it.length) return;
+    $("#cats").appendChild(el("div", "cat", '<h3>' + cat + ' <b>' + it.length + '</b></h3><ul>' +
+      it.map(function (s) { return '<li><span>' + s.name + '</span><em>' + s.src + '</em></li>'; }).join("") + '</ul>'));
   });
 
-  /* ---- "HEAR IT": the demo render, when gen_hub produced one (data.demo) ---- */
-  var hearBtn = $("#k-hear"), audio = $("#demo-audio"), hearLbl = $("#hear-lbl");
+  /* HEAR IT: the demo, when gen_hub made one */
+  var hear = $("#k-hear"), audio = $("#demo-audio"), lbl = $("#hear-lbl");
   function toggleHear() {
-    if (!D.demo) { return; }
-    if (audio.paused) { audio.play().then(function () { hearLbl.textContent = "PLAYING…"; }).catch(function () {}); }
-    else { audio.pause(); audio.currentTime = 0; hearLbl.textContent = "HEAR IT"; }
+    if (!D.demo) return;
+    if (audio.paused) { tear = 8; audio.play().then(function () { lbl.textContent = "Playing"; }).catch(function () {}); }
+    else { audio.pause(); audio.currentTime = 0; lbl.textContent = "Hear it"; }
   }
-  if (D.demo && hearBtn && audio) {
-    audio.src = "audio/" + D.demo;
-    hearBtn.hidden = false;
-    audio.addEventListener("ended", function () { hearLbl.textContent = "HEAR IT"; });
-    hearBtn.addEventListener("click", toggleHear);
+  if (D.demo) {
+    audio.src = "audio/" + D.demo; hear.hidden = false;
+    audio.addEventListener("ended", function () { lbl.textContent = "Hear it"; });
+    hear.addEventListener("click", toggleHear);
   }
-
-  /* ---- keyboard shortcuts ---- */
   document.addEventListener("keydown", function (e) {
-    if (e.target && e.target.tagName === "INPUT") { return; }
+    if (e.metaKey || e.ctrlKey || e.altKey || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
     var k = e.key.toLowerCase();
-    if (k === "b") { location.href = "emu/"; }
-    else if (k === "e") { location.href = "emu/editor.html"; }
-    else if (k === "m") { location.href = "MANUAL.md"; }
-    else if (k === "c") { setPhosphor(pi + 1, false); }
-    else if (k === "p" && D.demo) { toggleHear(); }
-    else if (k === "/" || k === "?") { e.preventDefault(); $("#cmd").focus(); }
+    if (k === "b") location.href = "emu/"; else if (k === "e") location.href = "emu/editor.html";
+    else if (k === "m") location.href = "manual.html"; else if (k === "p") toggleHear();
   });
-
-  /* ---- the terminal ---- */
-  var log = $("#log"), input = $("#cmd");
-  function say(h, cls) { var d = el("div", null, h); if (cls) { d.className = cls; } log.appendChild(d); log.scrollTop = log.scrollHeight; }
-  say('GL!TCH FIRMWARE TERMINAL v' + (D.version || "2.0") + ' &mdash; TYPE <span class="ok">HELP</span>.');
-
-  var CMDS = {
-    help: function () {
-      say('COMMANDS: <span class="ok">SOURCES SCALES SOUNDS SCALE &lt;NAME&gt; CAT &lt;NAME&gt; COLOR BOOT EDITOR INSTALL ABOUT CLEAR</span>');
-    },
-    color: function () { setPhosphor(pi + 1, true); },
-    sources: function () { say('7 SOURCES: ' + D.sources.map(function (s) { return s.code + ' ' + s.name; }).join('  &middot;  ')); },
-    scales: function () { say(D.scales.length + ' SCALES: ' + D.scales.map(function (s) { return s.name; }).join(', ')); },
-    sounds: function () { say(D.sounds.length + ' FACTORY SOUNDS ACROSS ' + D.cats.length + ' CATEGORIES. TRY: CAT BELL'); },
-    boot: function () { say('BOOTING EMULATOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/"; }, 500); },
-    editor: function () { say('OPENING EDITOR&hellip;', "ok"); setTimeout(function () { location.href = "emu/editor.html"; }, 500); },
-    install: function () { say('BUILD: <span class="ok">./build.sh --name glitch.fwsc</span> &middot; FLASH: <span class="ok">python3 tools/fm1_install.py build/glitch.fwsc</span>'); },
-    about: function () { say('GL!TCH v' + (D.version || "2.0") + ' &mdash; neon-noir GR!MM for the M-VAVE FM-1. GPL-3.0. IDENTITY ' + (D.identity || "FM-1_966") + '.'); },
-    clear: function () { log.innerHTML = ""; }
-  };
-  function run(raw) {
-    var line = raw.trim(); if (!line) { return; }
-    say('<span class="u">YOU &gt; ' + line.replace(/</g, "&lt;") + '</span>');
-    var parts = line.toLowerCase().split(/\s+/), c = parts[0], arg = parts.slice(1).join(" ");
-    if (c === "scale" && arg) {
-      var sc = D.scales.filter(function (s) { return s.name.toLowerCase().indexOf(arg) === 0 || s.short.toLowerCase() === arg; })[0];
-      if (sc) { var dots = sc.mask.split("").map(function (x) { return x === "X" ? "#" : "."; }).join(""); say(sc.name + ': <span class="ok">' + dots + '</span> (12 semitones over the root)'); }
-      else { say('NO SUCH SCALE: ' + arg.toUpperCase()); }
-    } else if (c === "cat" && arg) {
-      var items = D.sounds.filter(function (s) { return s.cat.toLowerCase() === arg; });
-      if (items.length) { say(arg.toUpperCase() + ': ' + items.map(function (s) { return s.name + ' [' + s.src + ']'; }).join('  &middot;  ')); }
-      else { say('NO SUCH CATEGORY: ' + arg.toUpperCase() + '. TRY: ' + D.cats.join(", ")); }
-    } else if (CMDS[c]) { CMDS[c](); }
-    else { say('UNKNOWN: ' + c.toUpperCase() + '. TYPE HELP.'); }
-  }
-  input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") { run(input.value); input.value = ""; }
-  });
-
-  /* ---- boot sequence overlay (skipped for reduced motion) ---- */
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("glitch-booted")) {
-    var ov = $("#boot"), bl = $("#bootlog");
-    var lines = [
-      "GL!TCH BIOS " + (D.version || "2.0") + "  (C) 2026",
-      "JIELI AC690N .............. OK",
-      "PHOSPHOR TUBE ............. WARMING",
-      "AUDIO CODEC 44100HZ ....... OK",
-      "7 SOURCES / 16 SCALES ..... LOADED",
-      "44 FACTORY SOUNDS ......... LOADED",
-      "SEQUENCER 64 STEPS ........ OK",
-      "",
-      "> BOOT GL!TCH FIRMWARE TERMINAL"
-    ];
-    var i = 0;
-    (function tick() {
-      if (i < lines.length) { bl.textContent += lines[i++] + "\n"; setTimeout(tick, 120 + Math.random() * 90); }
-      else { setTimeout(function () { ov.style.transition = "opacity .4s"; ov.style.opacity = "0"; setTimeout(function () { ov.style.display = "none"; }, 420); sessionStorage.setItem("glitch-booted", "1"); }, 420); }
-    })();
-  } else { var b = $("#boot"); if (b) { b.style.display = "none"; } }
 })();
 </script>
 </body>

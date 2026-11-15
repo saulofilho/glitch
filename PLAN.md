@@ -28,6 +28,10 @@ scales and hub. The engine tracks GR!MM upstream; this file tracks GL!TCH's own 
   CHROME PIANO, GLITCH LEAD), each loaded through PRESETS and checked by name on the host's probe.
 - The technical docs say GL!TCH; *GR!MM 1.0* stays where it is the engine's history.
 
+- **The glitch look** (after the picture the project is named for): the FM-1's palette, HOME and boot screen, the
+  hub (an editorial page, the landscape alive at its top), the panel, the editor, the social card; the manual as a
+  page (`hub/manual.html`). Host tests green, the browser build and the FM-1 package rebuilt.
+
 ## Next
 
 - **Install `build/glitch-2.0.fwsc` on a real FM-1 and play it** (MIXER 1 above all: it crashed before the fix), then

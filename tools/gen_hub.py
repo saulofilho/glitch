@@ -222,6 +222,10 @@ def copy_docs():
         src = ROOT / f
         if src.exists():
             shutil.copy2(src, HUB / f)
+    shots = HUB / "screens"                     # (the manual's screens, beside manual.html and on the landing)
+    shots.mkdir(exist_ok=True)
+    for f in sorted((ROOT / "docs" / "screens").glob("*.png")):
+        shutil.copy2(f, shots / f.name)
     (HUB / ".nojekyll").write_text("")
 
 

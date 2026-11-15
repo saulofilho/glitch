@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The GL!TCH manual: every page, knob and combo of the groovebox firmware for the M-VAVE FM-1.">
+<title>GL!TCH — manual</title>
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="glitch.css">
+</head>
+<body>
+<a class="skip" href="#doc">Skip to the manual</a>
+<div class="wrap">
+  <nav class="nav" aria-label="GL!TCH">
+    <a class="logo" href="./"><b>GL!</b><span>GL!TCH<br>FM-1 FIRMWARE</span></a>
+    <div class="links"><a href="./">Hub</a><a href="emu/">Emulator</a><a href="emu/editor.html">Editor</a><a href="MANUAL.md">Markdown</a></div>
+  </nav>
+  <div class="meta"><span>The manual</span><span><i class="dot"></i>Every page, knob and combo</span></div>
+  <main id="doc" class="doc"><p>Loading the manual&hellip; (or read it <a href="MANUAL.md">as text</a>)</p></main>
+  <footer class="foot"><p>GL!TCH is <a href="LICENSE">GPL-3.0</a>, built on <a href="https://github.com/GRiMMBIENT/grimm">GR!MM</a>. <a href="./">Back to the hub</a></p></footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+/* The manual is MANUAL.md itself (tools/gen_hub.py copies it and its screens beside this page), drawn here: the
+ * headings get the ids its own links point to (GitHub's way: lower case, spaces to dashes), the screens' paths follow. */
+(function () {
+  "use strict";
+  var doc = document.getElementById("doc");
+  function slug(s) { return s.toLowerCase().replace(/[^\w\- ]+/g, "").trim().replace(/ /g, "-"); }
+  fetch("MANUAL.md").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (md) {
+    if (!window.marked) throw new Error("no renderer");
+    doc.innerHTML = marked.parse(md.replace(/\]\(docs\/screens\//g, "](screens/"));
+    doc.querySelectorAll("h1, h2, h3").forEach(function (h) { h.id = slug(h.textContent); });
+    doc.querySelectorAll("img").forEach(function (i) { i.loading = "lazy"; });
+    doc.querySelectorAll('a[href$="LICENSING.md"]').forEach(function (a) { a.href = "LICENSING.md"; });
+    if (location.hash) { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  }).catch(function () {
+    doc.innerHTML = '<p>The manual did not load here. Read it <a href="MANUAL.md">as text</a>, or on <a href="https://github.com/saulofilho/glitch/blob/main/MANUAL.md">GitHub</a>.</p>';
+  });
+})();
+</script>
+</body>
+</html>

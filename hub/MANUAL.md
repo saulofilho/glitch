@@ -19,8 +19,8 @@ engine's first version: its projects, sounds and backups still load.
 - **VOICE choirs from real singers:** the VOICE source has a **TYPE** (SOURCE page, KNOB 3): SOLO (one voice, as in 1.0), or a choir of six singers on every note, made from recordings of real singers: ANDROID, GHOST or MEGACITY. Four choir sounds use them: ANDROID (set to FIFTH chords: switch chord mode on to hear parallel fifths), GHOST LINE, MEGACITY CHOIR and CHOIR GHOST. See [Sounds](#3-sounds-edit).
 - **GENERATE:** hold FX and tap a black key to let a track play random notes of the scale by itself, in three moods (DRIFT, PULSE, STORM), each track with its own mode, octave and range, shown on the PERFORM screen. See [Performance](#10-performance-hold-fx).
 - **MIXER 1 as six tiles:** LEVEL with a live meter, the DELAY, REVERB and GRAIN sends, and two new per-track sends, **TAPE** and **DRIVE**. TAPE now works per track: only the tracks whose TAPE tile is up go through the tape (0 = untouched), and its **WOW** is random tape slips instead of a steady wobble. See [HOME](#2-home).
-- **Warnings:** HOME shows a **CUT** in the accent colour (neon cyan by default) under a track whose filter is closed and **DRY** under a track whose FX is at 0; SYSTEM 2 counts **USB REC DROPS**; the header says **CPU FULL: NOTE DROPPED** when the FM-1 has too much to play. See [HOME](#2-home) and [System](#11-system-hold-home).
-- **Cyber screens:** matrix rain and a pulsing CRT hub on HOME, a glitching logo and a startled eye on the boot grid, and a live level meter on MIXER 1.
+- **Warnings:** HOME shows a **CUT** in the accent colour (pink by default) under a track whose filter is closed and **DRY** under a track whose FX is at 0; SYSTEM 2 counts **USB REC DROPS**; the header says **CPU FULL: NOTE DROPPED** when the FM-1 has too much to play. See [HOME](#2-home) and [System](#11-system-hold-home).
+- **Glitch screens:** HOME and the boot screen are a glitched landscape (a sky in mint and teal bands torn to pink and violet, navy hills, a striped plain) whose rows tear with the sound; a live level meter on MIXER 1.
 - **The editor:** new FX and SETTINGS sections, backups now hold the four samples too, and a NORMALISE switch for samples. See [The editor](#15-the-editor).
 - **Cleaner and lighter:** samples uploaded with the editor no longer crackle, PHYS uses much less of the processor (at most four PHYS notes at once), and long backups, DAW loops, latched PHYS notes and the `SAVES WHEN SILENT` message all behave as they should.
 - **Headroom:** every sound plays clean at LEVEL 100, chords and four tracks included. The output has 6 dB of headroom, MASTER's top quarter brings the old loudness back, and a limiter at the very end catches any peak, so nothing ever clips. SPACE and DELAY take their sends 6 dB lower (and give them back), so loud chords no longer grind inside the reverb or the echoes. Up to three quarters of MASTER everything is 6 dB quieter than before: turn MASTER further, or your amp, for the old level.
@@ -60,7 +60,7 @@ GL!TCH has **four tracks (T1–T4)**. Each track plays one sound, has its own se
 
 ## 2. HOME
 
-The main screen: a matrix-rain backdrop in cyber green, a CRT hub in the middle whose scanlines pulse with the sound, and the four tracks as columns along the bottom (each column's level follows its track's volume and what it's playing). The header shows the selected track and its sound (the factory or saved sound you loaded, by name), with the tempo and the battery level on the right.
+The main screen: a glitched landscape, its sky in bands that drift and its rows torn sideways the louder it plays, and the four tracks as columns standing on its plain (each column's level follows its track's volume and what it's playing). The header shows the selected track and its sound (the factory or saved sound you loaded, by name), with the tempo and the battery level on the right.
 
 ![HOME](docs/screens/home.png)
 
@@ -418,7 +418,7 @@ A track can play by itself: random notes of the **SCALE** (with chord mode on: r
 
 | Page | KNOB 1 | KNOB 2 | KNOB 3 | KNOB 4 |
 |---|---|---|---|---|
-| SYSTEM | COLOUR (red, amber, teal, violet) | MIDI CHANNEL | TUNE (±50 cents) | SCREEN OFF |
+| SYSTEM | COLOUR (pink, lemon, teal, violet) | MIDI CHANNEL | TUNE (±50 cents) | SCREEN OFF |
 | SYSTEM 2 | MIDI LEARN | SEQ MIDI OUT | SAMPLES | CLOCK |
 | SYSTEM 3 | LATCH | VELOCITY | – | – |
 

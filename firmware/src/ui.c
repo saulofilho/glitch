@@ -15,18 +15,23 @@
 
 #include "grimm_pixfont.h"
 
-#define UI_K RGB(0x0b, 0x0b, 0x0a)              /* the palette: black (the background), */
-#define UI_D RGB(0x26, 0x25, 0x1f)              /* dark */
-#define UI_M RGB(0x5e, 0x5b, 0x54)              /* mid */
-#define UI_L RGB(0xb8, 0xb4, 0xa9)              /* light */
-#define UI_W RGB(0xe8, 0xe4, 0xd8)              /* white */
-static const uint16_t UI_ACCENTS[4] = {RGB(0x14, 0xe2, 0xff), RGB(0xd0, 0x8a, 0x1c), RGB(0x2f, 0x8f, 0x8a),
-                                       RGB(0x7a, 0x4f, 0xb0)};   /* neon cyan (the default), amber, teal, violet */
-static uint16_t ui_acc = RGB(0x14, 0xe2, 0xff); /* the accent */
-#define UI_MX_D RGB(0x0c, 0x2e, 0x1c)           /* matrix rain: dark green */
-#define UI_MX_M RGB(0x18, 0xe8, 0x60)           /* mid */
-#define UI_MX_L RGB(0x9a, 0xff, 0xb8)           /* bright */
-#define UI_MX_W RGB(0xe0, 0xff, 0xec)             /* head glyph */
+#define UI_K RGB(0x08, 0x12, 0x26)              /* the palette, off a glitched landscape: night navy (the background), */
+#define UI_D RGB(0x1a, 0x33, 0x5c)              /* navy */
+#define UI_M RGB(0x3e, 0x8a, 0x8c)              /* sea */
+#define UI_L RGB(0xa0, 0xee, 0xa0)              /* mint */
+#define UI_W RGB(0xec, 0xff, 0xdc)              /* pale */
+static const uint16_t UI_ACCENTS[4] = {RGB(0xe6, 0x2a, 0xa8), RGB(0xe6, 0xe0, 0x8a), RGB(0x19, 0xd9, 0x92),
+                                       RGB(0x8a, 0x4f, 0xd8)};   /* pink (the default), lemon, teal, violet */
+static uint16_t ui_acc = RGB(0xe6, 0x2a, 0xa8); /* the accent */
+#define GL_MINT RGB(0x8f, 0xe5, 0x8c)           /* the landscape's own (HOME, the boot screen): the sky, */
+#define GL_TEAL RGB(0x19, 0xd9, 0x92)           /* its bands, */
+#define GL_YEL RGB(0xe6, 0xe0, 0x8a)
+#define GL_MAG RGB(0xc8, 0x18, 0xa0)            /* its torn corner, */
+#define GL_PUR RGB(0x5a, 0x1f, 0x9a)
+#define GL_PINK RGB(0xe8, 0x7a, 0x96)
+#define GL_NAVY RGB(0x25, 0x49, 0x7a)           /* the hills and the plain, */
+#define GL_DEEP RGB(0x12, 0x24, 0x4a)
+#define GL_BRICK RGB(0xa8, 0x48, 0x5a)          /* and their grain */
 #define UI_PIC_MS 40u                           /* the picture redrawn at most this often */
 #define UI_BAT_W 16                             /* the header's battery (and its tip) */
 #define UI_BOOT_MS 5600u                        /* the boot screen this long (V2: 3 s before; its pictures at half
@@ -535,121 +540,100 @@ static void ui_eye(int32_t x, int32_t y, int32_t k, int32_t dx, int32_t dy)
     }
 }
 
-/* ---- Matrix rain + CRT (HOME and boot), cyberpunk green on black */
-#define RAIN_N 20u                             /* (the rain's columns; not MX_N: that is MIXER 1's six tiles, grimm.c) */
+/* ---- the glitch landscape (HOME and the boot screen): a posterised sky in wavy bands, its corner torn to pink and
+ * violet, dithered hills, a striped plain; in cells, a row drawn in runs of one colour. t moves the bands, g (0..8)
+ * tears rows sideways (the louder, the more). Whole numbers only: the same on the FM-1, the host and the browser */
 #define CN_ROWS 10
 #define MX_BAR_Y 132
 #define MX_BAR_H 28
-static uint8_t mx_y[RAIN_N], mx_l[RAIN_N], mx_s[RAIN_N], mx_ok;
-static uint8_t cn_h[NT], cn_s[NT];
-static uint32_t an_rng = 0x2545F491u, an_e[NT], an_avg, an_n;
+static uint8_t cn_h[NT];
+static uint32_t an_e[NT], an_avg, an_n, gl_t, gl_g;   /* (gl_t, gl_g: HOME's, as its last whole frame had them) */
 
-static uint32_t an_rnd(uint32_t n)
+static uint32_t gl_h(uint32_t x, uint32_t y)
 {
-    an_rng ^= an_rng << 13, an_rng ^= an_rng >> 17, an_rng ^= an_rng << 5;
-    return an_rng % n;
+    uint32_t h = x * 374761393u + y * 668265263u;
+    h = (h ^ h >> 13) * 1274126177u;
+    return h ^ h >> 16;
 }
-
-static void mx_seed(void)
+static int32_t gl_tri(int32_t v, int32_t p) { v %= p; if (v < 0) v += p; return v < p / 2 ? v : p - v; }
+static uint16_t gl_cell(int32_t x, int32_t y, int32_t cols, int32_t rows, uint32_t t)
 {
-    uint32_t i, s;
-    if (mx_ok) return;
-    s = ui_rnd_s, ui_rnd_s = 42u;
-    for (i = 0; i < RAIN_N; i++) {
-        mx_y[i] = (uint8_t)ui_rnd(120);
-        mx_l[i] = (uint8_t)(4u + ui_rnd(9u));
-        mx_s[i] = (uint8_t)(1u + ui_rnd(2u));
+    static const uint16_t COOL[8] = {GL_MINT, GL_TEAL, GL_MINT, GL_YEL, GL_MINT, GL_TEAL, GL_YEL, GL_MINT};
+    static const uint16_t HOT[8] = {GL_MAG, GL_PUR, GL_TEAL, GL_DEEP, GL_PINK, GL_MAG, GL_MINT, GL_PUR};
+    int32_t hz = rows * 2 / 3, a, b, c, top, d, band, corner;
+    uint32_t h = gl_h((uint32_t)x, (uint32_t)y);
+    if (x < 0) x = 0;
+    if (x >= cols) x = cols - 1;
+    a = rows * 8 / 30 - (x > cols * 27 / 100 ? x - cols * 27 / 100 : cols * 27 / 100 - x) * rows * 8 / 30 / (cols * 30 / 100);
+    b = rows * 5 / 30 - (x > cols * 64 / 100 ? x - cols * 64 / 100 : cols * 64 / 100 - x) * rows * 5 / 30 / (cols * 18 / 100);
+    c = rows * 3 / 30 - (x > cols * 88 / 100 ? x - cols * 88 / 100 : cols * 88 / 100 - x) * rows * 3 / 30 / (cols * 14 / 100);
+    top = hz - (a > b ? a > c ? a : c : b > c ? b : c);
+    if (y >= hz) {                              /* the plain: mint stripes near the hills, navy by the bottom */
+        int32_t g = y - hz, k = g * 9 / (rows - hz) + ((g & 1) ? 3 : 0);
+        if ((gl_h((uint32_t)x, (uint32_t)y + 99u) & 31u) == 0u) return GL_BRICK;
+        return (int32_t)(h & 7u) < k ? (h & 24u) ? GL_NAVY : GL_DEEP : GL_MINT;
     }
-    ui_rnd_s = s;
-    mx_ok = 1;
+    if (y >= top) {                             /* the hills: a brick rim, navy under it, grain in both */
+        d = y - top;
+        if (d < 2) return (h & 3u) ? GL_BRICK : GL_NAVY;
+        return (h & 7u) == 0u ? GL_BRICK : (h & 7u) == 1u ? GL_DEEP : GL_NAVY;
+    }
+    band = ((x + 3 * y + 2 * gl_tri(x + y + (int32_t)t, 36)) / 5) & 7;   /* the sky: wide bands, bent */
+    corner = x - 2 * y - cols * 52 / 100;
+    if (corner > 0 || (corner > -3 && (h & 1u))) return HOT[band];
+    if (gl_tri(x + 2 * gl_tri(y, 14), 46) + gl_tri(y * 3 + x / 4, 30) / 2 < 9 && y > rows / 8) return GL_MINT;   /* (a cloud) */
+    return COOL[band];
 }
-
-static void mx_tick(uint32_t boost)
+static void gl_scene(int32_t x0, int32_t y0, int32_t cell, int32_t cols, int32_t rows, uint32_t t, uint32_t g)
 {
-    uint32_t i;
-    for (i = 0; i < RAIN_N; i++)
-        mx_y[i] = (uint8_t)((mx_y[i] + mx_s[i] + boost) % 130u);
-}
-
-static void mx_rain(int32_t y0, int32_t h, uint32_t tick, int32_t hole_x, int32_t hole_y, int32_t hole_w, int32_t hole_h)
-{
-    uint32_t i;
-    for (i = 0; i < RAIN_N; i++) {
-        int32_t x = 14 + (int32_t)i * 11;
-        int32_t head = ((int32_t)mx_y[i] + (int32_t)(tick / 4u) + (int32_t)i * 7) % (h + 16);
-        int32_t k, len = mx_l[i];
-        if (x + 2 > hole_x && x < hole_x + hole_w && y0 + head > hole_y - 8 && y0 < hole_y + hole_h)
-            continue;
-        for (k = 0; k < len; k++) {
-            int32_t y = y0 + head - k * 4;
-            uint16_t c = k == 0 ? UI_MX_W : k == 1 ? UI_MX_L : k < 4 ? UI_MX_M : UI_MX_D;
-            if (y >= y0 && y < y0 + h - 2) ui_rect(x, y, 3, 3, c);
+    int32_t x, y, xs;
+    for (y = 0; y < rows; y++) {
+        uint32_t r = gl_h((uint32_t)y, t / 3u + 7u);
+        int32_t sh = g && (r & 15u) < g ? (int32_t)(r >> 8 & 7u) - 3 : 0;   /* (a torn row: up to 3 cells aside) */
+        uint16_t c, n;
+        if (!ui_in(x0, y0 + y * cell, cols * cell, cell)) continue;
+        for (x = 0; x < cols; x = xs) {
+            c = gl_cell(x + sh, y, cols, rows, t);
+            for (xs = x + 1; xs < cols && (n = gl_cell(xs + sh, y, cols, rows, t)) == c; xs++)
+                ;
+            ui_rect(x0 + x * cell, y0 + y * cell, (xs - x) * cell, cell, c);
         }
     }
 }
 
-static void ui_matrix_grid(int32_t y0, int32_t h)
-{
-    int32_t x, y;
-    for (y = y0; y < y0 + h; y += 12)
-        ui_rect(12, y, 216, 1, UI_MX_D);
-    for (x = 12; x < 228; x += 12)
-        ui_rect(x, y0, 1, h, UI_MX_D);
-}
-
-static void ui_matrix_crt(int32_t x, int32_t y, int32_t pulse)
-{
-    int32_t r = 16 + pulse / 48;
-    ui_rect(x, y, 96, 72, UI_MX_M);
-    ui_rect(x + 2, y + 2, 92, 68, UI_K);
-    ui_rect(x, y, 14, 2, UI_MX_L);
-    ui_rect(x, y, 2, 14, UI_MX_L);
-    ui_rect(x + 94, y, 2, 14, UI_MX_L);
-    ui_rect(x + 82, y, 14, 2, UI_MX_L);
-    ui_rect(x, y + 70, 14, 2, UI_MX_L);
-    ui_rect(x, y + 58, 2, 14, UI_MX_L);
-    ui_rect(x + 48 - r, y + 36 - 2, r * 2, 4, UI_MX_M);
-    ui_rect(x + 48 - 2, y + 36 - r, 4, r * 2, UI_MX_M);
-    ui_text(x + 40, y + 28, "!", 2, UI_MX_L);
-}
-
-static void pic_home(void)                      /* Main: matrix rain, CRT hub, four track columns */
+static void pic_home(void)                      /* Main: the landscape, the four tracks' levels standing on its plain */
 {
     int32_t t;
-    mx_seed();
-    ui_matrix_grid(PY0, 120);
-    mx_rain(PY0, 120, an_n, 72, 48, 96, 72);
-    ui_matrix_crt(72, 48, (int32_t)an_avg);
-    ui_text(PX0, 31, "> GL!TCH", 1, UI_MX_M);
+    gl_scene(PX0, PY0, 4, 54, 30, gl_t, gl_g);
+    ui_text(PX0, 31, "> " APP_NAME, 1, UI_L);
     for (t = 0; t < (int32_t)NT; t++) {
-        int32_t x = 43 + t * 45, h = cn_h[t], bh = h * 3;
+        int32_t x = 43 + t * 45, bh = cn_h[t] * 3;
         char lab[2] = {(char)('1' + t), 0};
-        if (!ui_in(x, MX_BAR_Y - 4, 14, MX_BAR_H + 20)) continue;
-        ui_rect(x + 3, MX_BAR_Y, 8, MX_BAR_H, UI_MX_D);
+        if (!ui_in(x, MX_BAR_Y - 12, 14, MX_BAR_H + 12)) continue;
+        ui_rect(x + 2, MX_BAR_Y - 1, 10, MX_BAR_H + 1, GL_DEEP);
+        if (bh > MX_BAR_H) bh = MX_BAR_H;
         if (bh > 0) {
-            if (bh > MX_BAR_H) bh = MX_BAR_H;
-            ui_rect(x + 3, MX_BAR_Y + MX_BAR_H - bh, 8, bh, UI_MX_L);
+            ui_rect(x + 3, MX_BAR_Y + MX_BAR_H - bh, 8, bh, ui_acc);
+            ui_rect(x + 3, MX_BAR_Y + MX_BAR_H - bh, 8, 2, UI_W);
         }
-        ui_text(x + 4, MX_BAR_Y + MX_BAR_H + 4, lab, 1, UI_MX_M);
+        ui_rect(x + 2, MX_BAR_Y - 11, 10, 10, GL_DEEP);
+        ui_text(x + 3, MX_BAR_Y - 10, lab, 1, t == (int32_t)sel ? UI_W : UI_L);
     }
 }
 static void ui_pic_draw(void);
 static void ui_home_part(int32_t x, int32_t y, int32_t w, int32_t h) { ui_region(x, y, w, h, UI_K, ui_pic_draw); }
 static void ui_home_frame(int draw)             /* a frame of HOME's picture (draw: what changed, drawn) */
 {
-    static uint32_t prev_avg;
     uint32_t pk[NT], l = vis_lr[0], r = vis_lr[1], loud, t, h;
     an_n++;
     for (t = 0; t < NT; t++) pk[t] = vis_pk[t], vis_pk[t] = 0;
     vis_lr[0] = vis_lr[1] = 0;
     loud = (l > r ? l : r) >> 7;
     loud = loud > 256u ? 256u : loud;
-    mx_seed();
-    mx_tick(loud > 40u ? 1u : 0u);
 
     for (t = 0; t < NT; t++) {
         static const uint8_t ROW[CN_ROWS] = {3, 5, 8, 12, 18, 27, 40, 60, 90, 135};
-        uint32_t e = pk[t] / 96u, s = cn_s[t];
+        uint32_t e = pk[t] / 96u;
         e = e > 256u ? 256u : e;
         e = trk_quiet >> t & 1u ? 0u : e * (uint32_t)clamp(trk[t].level, 0, 127) / 127u;
         an_e[t] = e >= an_e[t] ? e : an_e[t] - (an_e[t] * 67u + 255u) / 256u;
@@ -657,16 +641,16 @@ static void ui_home_frame(int draw)             /* a frame of HOME's picture (dr
             ;
         if (h != cn_h[t]) {
             cn_h[t] = (uint8_t)h;
-            if (draw) ui_home_part(43 + (int32_t)t * 45, MX_BAR_Y - 4, 14, MX_BAR_H + 16);
+            if (draw) ui_home_part(43 + (int32_t)t * 45, MX_BAR_Y - 12, 14, MX_BAR_H + 12);
         }
-        cn_s[t] = (uint8_t)s;
     }
 
     an_avg = (an_avg * 7u + loud) / 8u;
-    if (draw) {
-        if ((an_n & 1u) == 0u) ui_home_part(PX0, PY0, 216, 120);
-        if ((an_avg / 16u) != (prev_avg / 16u)) ui_home_part(72, 48, 96, 72);
-        prev_avg = an_avg;
+    if ((an_n & 3u) == 0u) {                    /* the whole picture every fourth frame (~4.5 a second): the bands a step
+                                                 * on, the rows torn by how loud it is */
+        gl_t = an_n / 4u;
+        gl_g = an_avg / 20u > 8u ? 8u : an_avg / 20u;
+        if (draw) ui_home_part(PX0, PY0, 216, 120);
     }
 }
 static int32_t ui_oct;                          /* (the octave: SEL's keys) */
@@ -1877,64 +1861,49 @@ static uint32_t ui_pic_key(void)
 }
 
 /* ---- the screen: the boot, then the page, only what changed */
-/* Boot, UI_BOOT_MS at power-on: GL!TCH grid — scan lines, four track meters, logo glitch, progress bar. */
+/* Boot, UI_BOOT_MS at power-on: the landscape over the whole screen, its rows tearing; the name comes in split in
+ * pink and teal, then whole; a bar fills along the bottom, the version under it. */
 #define BOOT_LINE "FM-1 / NEON NOIR / V" APP_VER
 static const char *bt_note;                     /* the boot screen's last line, if not BOOT_LINE ("INSTALLING SAMPLES") */
 static uint32_t ui_boot_t, bt_e;                /* from when; elapsed ms for ui_boot_draw */
 
-static int32_t bt_bar_h(uint32_t e, uint32_t t, int32_t hmax)
-{
-    uint32_t start = 800u + t * 110u, end = start + 850u;
-    if (e < start) return 0;
-    if (e >= end) return hmax;
-    return (int32_t)((e - start) * (uint32_t)hmax / (end - start));
-}
-
 static void ui_boot_draw(void)
 {
-    uint32_t e = bt_e;
-    int32_t i, lx;
-    const int32_t bar_x[4] = {54, 90, 126, 162};
-    const int32_t bar_hmax[4] = {72, 96, 56, 88};
+    uint32_t e = bt_e, tear = e < 1200u ? 8u : e >= 1800u && e < 2500u ? 6u : 1u;
+    int32_t lx = 120 - 12 * ui_len(APP_NAME);
     const char *foot = bt_note ? bt_note : BOOT_LINE;
 
-    ui_matrix_grid(20, 200);
-    mx_rain(20, 200, e, e >= 900u ? 72 : -999, e >= 900u ? 44 : -999, e >= 900u ? 96 : 0, e >= 900u ? 76 : 0);
-    if (e >= 900u) ui_matrix_crt(72, 44, (int32_t)(e / 25u));
-
-    if (e >= 700u)
-        for (i = 0; i < 4; i++) {
-            int32_t h = bt_bar_h(e, (uint32_t)i, bar_hmax[i]);
-            if (h > 0) ui_rect(bar_x[i], 200 - h, 10, h, i & 1u ? UI_MX_M : UI_MX_L);
-        }
-
-    if (e >= 1800u) {
-        int32_t gx = 0;
-        lx = 120 - 12 * ui_len(APP_NAME);
-        if (e >= 2000u && e < 2300u && (e / UI_ANIM_MS) & 1u)
-            gx = ((e / UI_ANIM_MS) & 2u) ? 3 : -3;
-        if (gx) {
-            ui_text(lx + gx, 124, APP_NAME, 3, UI_MX_M);
-            ui_text(lx - gx, 126, APP_NAME, 3, UI_MX_D);
-        }
-        ui_text(lx, 124, APP_NAME, 3, e >= 2200u ? UI_MX_W : UI_MX_L);
-    } else if (e >= 1200u)
-        ui_text(48, 124, "> BOOT", 2, UI_MX_M);
-
-    ui_rect(60, 196, 120, 3, UI_MX_D);
-    if (e >= 3500u) {
-        uint32_t prog = e >= UI_BOOT_MS ? 120u : (e - 3500u) * 120u / (UI_BOOT_MS - 3500u);
-        ui_rect(60, 196, (int32_t)prog, 3, UI_MX_L);
+    gl_scene(0, 0, 4, 60, 60, e / 160u, tear);
+    if (ui_in(0, 36, 240, 48)) {
+        ui_rect(0, 36, 240, 48, GL_DEEP);
+        ui_rect(0, 36, 240, 2, GL_MAG);
+        ui_rect(0, 82, 240, 2, GL_TEAL);
+        if (e >= 1800u) {
+            int32_t gx = e < 2500u ? ((e / UI_ANIM_MS) & 1u ? 5 : 2) : 0;
+            if (gx) {
+                ui_text(lx + gx, 48, APP_NAME, 3, GL_MAG);
+                ui_text(lx - gx, 50, APP_NAME, 3, GL_TEAL);
+            }
+            ui_text(lx, 49, APP_NAME, 3, UI_W);
+        } else if (e >= 1200u)
+            ui_text(120 - 8 * 6, 52, "> BOOT", 2, GL_MINT);
     }
-    if (e >= 3200u)
-        ui_text(120 - 4 * ui_len(foot), 210, foot, 1, bt_note ? UI_MX_L : UI_MX_M);
+    if (ui_in(0, 192, 240, 30)) {
+        ui_rect(0, 192, 240, 30, GL_DEEP);
+        ui_rect(60, 197, 120, 3, GL_NAVY);
+        if (e >= 3500u) {
+            uint32_t prog = e >= UI_BOOT_MS ? 120u : (e - 3500u) * 120u / (UI_BOOT_MS - 3500u);
+            ui_rect(60, 197, (int32_t)prog, 3, GL_MAG);
+        }
+        if (e >= 3200u)
+            ui_text(120 - 4 * ui_len(foot), 208, foot, 1, bt_note ? UI_W : GL_MINT);
+    }
 }
 
 static void ui_boot(void)
 {
     ui_boot_t = fm1_ms;
     bt_e = 0;
-    mx_seed();
     ui_region(0, 0, 240, 240, UI_K, ui_boot_draw);
 }
 
@@ -1944,7 +1913,6 @@ static void ui_boot_frame(void)
     uint32_t e = fm1_ms - ui_boot_t;
     if (fm1_ms - t < UI_ANIM_MS) return;
     t = fm1_ms;
-    mx_tick(1u);
     bt_e = e;
     if (e != shown) {
         shown = e;

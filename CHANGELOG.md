@@ -6,6 +6,11 @@ identity (sounds, scales, hub) and releases.
 ## [2.0] — unreleased
 
 ### Hub and web
+- **A new look, off a glitched landscape**: night navy, mint ink, pink for what is lit, the sky's teal and lemon. The
+  hub is an editorial page (the landscape itself, alive, at its top: `hub/land.js`, the firmware's own drawing), the
+  emulator's panel and the editor follow. It replaces the amber phosphor-CRT look and its colour cycle.
+- **The manual is a page**: `hub/manual.html` draws `MANUAL.md` with its screens (the hub's link to the bare `.md` did
+  not open on GitHub Pages).
 - **New hub (`hub/`)**, published to GitHub Pages: a phosphor-CRT terminal landing in amber, with the seven sources,
   the sixteen scales (each as a 12-slot interval ring), the forty-four factory sounds by category, the install steps,
   and an interactive command terminal — all generated from the firmware source.
@@ -29,10 +34,13 @@ identity (sounds, scales, hub) and releases.
   is now the hub plus the WebAssembly emulator, as in the COQUI reference project.
 
 ### Firmware (GL!TCH identity on GR!MM 2.0)
+- **The screen redrawn**: a new palette (night navy, sea, mint, pale; accents PINK, LEMON, TEAL, VIOLET), and HOME and
+  the boot screen as a glitched landscape whose bands drift and whose rows tear with the sound (in place of the
+  matrix rain).
 - **Fixed:** MIXER 1 crashed the unit: the matrix rain's column count was a macro named `MX_N`, shadowing the
   mixer's six tiles (a null label drawn, SELECT ran past DRIVE). Found by the host tests once they ran on Linux.
 - 44 factory sounds across 9 categories (DRONE, PAD, BELL, ORGAN, KEYS, BASS, TEXTURE, VOICE, OTHER).
 - 16 scales including Cyber Dorian, Phrygian Dominant, Iwato, Whole Tone, Noir Pentatonic, Insen, Hirajoshi.
 - Seven sources: Cyber-Analog (VA), Neon-FM, Cyber Lo-Fi sampler, Android Choir (formant), Grid Wheel, Metallic
   Resonator (PHYS), Phase.
-- Boot screen reads GL!TCH; colour 1 is cyan on the unit.
+- Boot screen reads GL!TCH; colour 1 is pink on the unit.
