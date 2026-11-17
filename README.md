@@ -3,12 +3,13 @@
 **A neon-noir groovebox firmware for the M-VAVE FM-1.** Blade Runner factory sounds, six cyber scales, four tracks and
 seven sources, tape and megacity space — under a glitched sky.
 
-> **Version 2.0.2.** Its own identity on the hub (`FM-1_986`) and the newer FM-1s' flash chip. 2.0 was tested on a
+> **Version 2.0.2, [on the FM-1 Firmware Hub](https://thefirmwarehub.com/firmware/glitch/).** Its own identity (`FM-1_986`) and the newer FM-1s' flash chip. 2.0 was tested on a
 > real FM-1: the release installed from another firmware, left again, and installed back
 > ([the results](docs/TEST-RESULTS-2.0.md), and what they do not cover); 2.0.2 is not yet tested on a unit. Unofficial firmware, not made or endorsed by
 > M-VAVE: install at your own risk.
 > Based on [GR!MM](https://github.com/GRiMMBIENT/grimm) (see [Credits](#credits)).
 
+**[Install it from the FM-1 Firmware Hub](https://thefirmwarehub.com/firmware/glitch/)** (in the browser, over USB) ·
 **[The GL!TCH hub](https://saulofilho.github.io/glitch/)**: the sources, scales and sounds, and how to install ·
 **[Boot it in your browser](https://saulofilho.github.io/glitch/emu/)** (the real firmware, no FM-1 needed) ·
 **[The editor](https://saulofilho.github.io/glitch/emu/editor.html)** (sounds, samples, backup over USB)
@@ -92,6 +93,9 @@ Or by hand, with Emscripten: `web/build_web.sh` (-> `web/dist/`), then `python3 
 
 On the unit the boot screen reads **GL!TCH**; colour 1 is pink (SYSTEM has lemon, teal and violet).
 
+The easy way: open [GL!TCH on the FM-1 Firmware Hub](https://thefirmwarehub.com/firmware/glitch/) in Chrome or Edge, connect the
+FM-1 over USB and install from the page. From the source:
+
 ```bash
 tools/get_toolchain.sh                             # the JieLi toolchain (once; the AC79 SDK too: docs/BUILDING.md)
 ./build.sh --release 2.0.2                           # -> build/glitch-2.0.2.fwsc
@@ -138,6 +142,10 @@ card) — WAV when no encoder is around, MP3 when `ffmpeg` is on the PATH. Pass 
 
 `.github/workflows/pages.yml` publishes `hub/` to GitHub Pages; `release.yml` builds and attests
 `build/glitch-X.Y.fwsc` when you push a `v*` tag.
+
+## Presentation
+
+A short deck about the project, in English: [docs/GLITCH-deck.pdf](docs/GLITCH-deck.pdf) (its source: `docs/deck/`).
 
 ## Project structure
 

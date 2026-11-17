@@ -5,6 +5,8 @@ identity (sounds, scales, hub) and releases.
 
 ## Unreleased
 
+- **On the FM-1 Firmware Hub**: https://thefirmwarehub.com/firmware/glitch/ (2.0.2, published 2026-11-15).
+- **A presentation deck** (`docs/GLITCH-deck.pdf`, made from `docs/deck/`).
 - **First steps** (`docs/FIRST-STEPS.md`, on the hub as `guide.html`): from switching it on to a first song (a scale,
   a pad in chords, a RANDOM lead, a GENERATE choir, the mix, a slot), then playing it live.
 

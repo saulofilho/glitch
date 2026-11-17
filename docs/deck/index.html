@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GL!TCH — presentation</title>
+<!-- The GL!TCH deck: 10 slides at 1280 x 720, one page each when printed. docs/deck/build.sh prints it to
+     docs/GLITCH-deck.pdf with headless Chrome. The landscape is hub/land.js, the firmware's own drawing. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+@page { size: 1280px 720px; margin: 0; }
+:root { --night: #081226; --navy: #1a335c; --deep: #12244a; --sea: #3e8a8c; --mint: #a0eea0; --pale: #ecffdc;
+        --pink: #e62aa8; --mag: #c818a0; --teal: #19d992; --lemon: #e6e08a; --violet: #8a4fd8; --line: rgba(160,238,160,.22);
+        --big: "Archivo", "Helvetica Neue", Arial, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+* { box-sizing: border-box; margin: 0; }
+html, body { background: #222; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font: 500 22px/1.45 var(--big); color: var(--mint); }
+.slide { width: 1280px; height: 720px; background: var(--night); position: relative; overflow: hidden; margin: 0 auto 24px;
+         padding: 62px 76px 56px; display: flex; flex-direction: column; page-break-after: always; break-after: page; }
+@media print { body { background: none; } .slide { margin: 0; } }
+.slide::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 8px;
+  background: linear-gradient(90deg, var(--mint) 0 34%, var(--teal) 34% 46%, var(--lemon) 46% 55%, var(--mint) 55% 68%, var(--mag) 68% 78%, var(--violet) 78% 86%, var(--pink) 86% 93%, var(--deep) 93% 100%); }
+.top { display: flex; justify-content: space-between; font: 400 13px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--sea); margin-bottom: 30px; }
+.top b { color: var(--pink); font-weight: 400; }
+h1 { font: 800 210px/.8 var(--big); letter-spacing: -.055em; color: var(--pale); }
+h1 i, h2 i { font-style: normal; color: var(--pink); }
+h2 { font: 500 54px/1.04 var(--big); letter-spacing: -.03em; color: var(--pale); max-width: 22ch; margin-bottom: 26px; }
+h3 { font: 800 26px/1.1 var(--big); color: var(--pale); margin-bottom: 6px; }
+p { max-width: 60ch; }
+.mono, .k { font: 400 14px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.k { color: var(--teal); margin-bottom: 10px; }
+.dim { color: var(--sea); }
+.pale { color: var(--pale); }
+.split { text-shadow: 4px 0 var(--pink), -4px 0 var(--teal); }
+.grid { display: grid; gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.grid > div { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 18px 20px; }
+.g4 { grid-template-columns: repeat(4, 1fr); } .g3 { grid-template-columns: repeat(3, 1fr); } .g2 { grid-template-columns: 1fr 1fr; }
+.grid p { font-size: 17px; line-height: 1.4; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; flex: 1; }
+.shot { width: 100%; image-rendering: pixelated; border: 1px solid var(--line); display: block; }
+.cap { font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sea); margin-top: 8px; }
+.big-n { font: 800 92px/.9 var(--big); letter-spacing: -.04em; color: var(--pale); }
+.big-n small { font-size: 30px; color: var(--pink); }
+ul.l { list-style: none; padding: 0; }
+ul.l li { padding: 10px 0 10px 26px; border-bottom: 1px solid var(--line); position: relative; font-size: 20px; }
+ul.l li::before { content: ""; position: absolute; left: 0; top: 21px; width: 9px; height: 9px; background: var(--pink); }
+.foot { margin-top: auto; display: flex; justify-content: space-between; font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sea); padding-top: 18px; border-top: 1px solid var(--line); }
+canvas.land { display: block; image-rendering: pixelated; width: 100%; }
+.flow { display: grid; grid-template-columns: 1.15fr .25fr 1fr; gap: 0; align-items: center; }
+.box { border: 1px solid var(--line); padding: 16px 18px; background: var(--deep); }
+.box + .box { margin-top: 12px; }
+.arrow { text-align: center; color: var(--pink); font: 800 40px var(--big); }
+code { font: 400 17px var(--mono); color: var(--lemon); }
+</style>
+</head>
+<body>
+
+<!-- 1 title -->
+<section class="slide" style="padding: 0;">
+  <canvas class="land" id="land1" width="160" height="72" style="height: 520px;"></canvas>
+  <div style="padding: 0 76px; margin-top: -132px; position: relative;">
+    <h1 class="split">GL!TCH<i>.</i></h1>
+    <div style="display:flex; justify-content: space-between; align-items: end; margin-top: 26px;">
+      <p class="pale" style="font-size: 30px; line-height: 1.2;">A neon-noir groovebox firmware<br>for the M-VAVE FM-1.</p>
+      <p class="mono dim" style="text-align: right;">Version 2.0.2 · GPL-3.0<br>saulofilho · 2026</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 what -->
+<section class="slide">
+  <div class="top"><span><b>01</b> / What it is</span><span>GL!TCH</span></div>
+  <h2>A new life for a small synth: <i>dystopian sci-fi</i> in four tracks.</h2>
+  <div class="two">
+    <div>
+      <p style="margin-bottom: 18px;">The M-VAVE FM-1 is a pocket FM synth with 27 keys, 8 knobs, 14 buttons and a 240 × 240 screen. Its firmware
+        can be replaced. GL!TCH turns it into a groovebox for neon-noir and darksynth: Blade Runner pads, android choirs,
+        glitching leads, under a screen that tears with the sound.</p>
+      <p class="dim" style="font-size: 18px;">Free and open source, installed from the browser, and you can always go back to the stock firmware.</p>
+    </div>
+    <div class="grid g2">
+      <div><div class="big-n">4</div><p>tracks, each with its own 64-step sequence</p></div>
+      <div><div class="big-n">7</div><p>sound sources, any of them on any track</p></div>
+      <div><div class="big-n">16</div><p>scales, the keys snapping to them</p></div>
+      <div><div class="big-n">44</div><p>factory sounds in nine categories</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>M-VAVE FM-1 · unofficial firmware</span><span>thefirmwarehub.com/firmware/glitch</span></div>
+</section>
+
+<!-- 3 sources -->
+<section class="slide">
+  <div class="top"><span><b>02</b> / The sources</span><span>Seven engines</span></div>
+  <h2>Seven ways to make a sound.</h2>
+  <div class="grid g4" style="flex: 1;">
+    <div><p class="k">VA</p><h3>Cyber-Analog</h3><p>Detuned saw and pulse, a sub-oscillator, a resonant lowpass.</p></div>
+    <div><p class="k">FM</p><h3>Neon-FM</h3><p>Six operators, algorithms, metallic feedback: bells and glass.</p></div>
+    <div><p class="k">SA</p><h3>Cyber Lo-Fi</h3><p>Four sample slots; your own WAV over USB.</p></div>
+    <div><p class="k">VO</p><h3>Android Choir</h3><p>Vowel formants, and choirs made from real singers' cycles.</p></div>
+    <div><p class="k">WH</p><h3>Grid Wheel</h3><p>Tonewheel organ drones, from noir chapel to grid hum.</p></div>
+    <div><p class="k">PH</p><h3>Metallic Resonator</h3><p>Physical models: plucked and bowed pipes, cables, membranes.</p></div>
+    <div><p class="k">PD</p><h3>Phase</h3><p>Phase distortion, as on a Casio CZ: plates and glitch leads.</p></div>
+    <div style="background: var(--deep);"><p class="k" style="color: var(--pink);">Then</p><h3>Tape · Grain · Delay · Space · Drive</h3><p>Shared effects with a send each per track, and a master filter.</p></div>
+  </div>
+</section>
+
+<!-- 4 music -->
+<section class="slide">
+  <div class="top"><span><b>03</b> / Making music</span><span>Sequencer · scales · generate</span></div>
+  <h2>Write it, let it <i>play itself</i>, then play it live.</h2>
+  <div class="two">
+    <ul class="l">
+      <li><span class="pale">64 steps a track</span>, with chance, ratchets, swing and per-step sound locks.</li>
+      <li><span class="pale">16 scales</span>: Insen, Hirajoshi, Iwato, Cyber Dorian, Noir Pentatonic, Whole Tone… One key, one chord.</li>
+      <li><span class="pale">GENERATE</span>: a track plays random notes of the scale by itself, in three moods: DRIFT, PULSE, STORM.</li>
+      <li><span class="pale">Perform</span>: freeze, tape stop, reverse, echo throws, stutter, under one hand.</li>
+      <li><span class="pale">Slots and songs</span>: four scenes, switched on the bar, chained into a song.</li>
+    </ul>
+    <div><img class="shot" src="../screens/seq.png" alt="The sequencer's grid"><p class="cap">SEQ / GRID — shot from the firmware</p></div>
+  </div>
+</section>
+
+<!-- 5 screen -->
+<section class="slide">
+  <div class="top"><span><b>04</b> / The look</span><span>On the unit's screen</span></div>
+  <h2>A glitched landscape that <i>tears with the sound</i>.</h2>
+  <div class="grid g4" style="border: 0;">
+    <div style="border: 0; padding: 0 12px 0 0;"><img class="shot" src="../screens/boot.png" alt="Boot"><p class="cap">Boot</p></div>
+    <div style="border: 0; padding: 0 12px 0 0;"><img class="shot" src="../screens/home.png" alt="HOME"><p class="cap">HOME</p></div>
+    <div style="border: 0; padding: 0 12px 0 0;"><img class="shot" src="../screens/mixer1.png" alt="MIXER 1"><p class="cap">MIXER 1</p></div>
+    <div style="border: 0; padding: 0;"><img class="shot" src="../screens/perform.png" alt="PERFORM"><p class="cap">PERFORM</p></div>
+  </div>
+  <p class="dim" style="margin-top: 22px; font-size: 18px; max-width: 80ch;">A sky in mint, teal and lemon bands torn to pink and violet, navy hills, a striped plain. Its bands drift, and its rows shift sideways the louder it plays. Whole-number code, so the unit, the tests and the browser draw the same pixels.</p>
+</section>
+
+<!-- 6 everywhere -->
+<section class="slide">
+  <div class="top"><span><b>05</b> / One program, three places</span><span>Architecture</span></div>
+  <h2>The same C code runs on the unit, in the tests and in the browser.</h2>
+  <div class="flow" style="flex: 1;">
+    <div class="box" style="padding: 26px;"><p class="k">firmware/src/grimm.c</p><h3>One C program</h3>
+      <p style="font-size: 18px;">Engines, sequencer, effects, screens. Built on GR!MM, on the FM-1 platform of Felucca, SLOOP and Dinghy.</p></div>
+    <div class="arrow">&rarr;</div>
+    <div>
+      <div class="box"><p class="k">JieLi toolchain</p><h3>The FM-1</h3><p style="font-size: 17px;"><code>glitch-2.0.2.fwsc</code>, with Felucca's update loader</p></div>
+      <div class="box"><p class="k">Host mode, Linux</p><h3>The tests</h3><p style="font-size: 17px;">Sound as WAV, screens as PNG: 302 checks</p></div>
+      <div class="box"><p class="k">Emscripten</p><h3>The browser</h3><p style="font-size: 17px;">WebAssembly in an AudioWorklet: the emulator and the editor</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 hub -->
+<section class="slide">
+  <div class="top"><span><b>06</b> / On the web</span><span>saulofilho.github.io/glitch</span></div>
+  <h2 style="margin-bottom: 18px;">Try it without an FM-1.</h2>
+  <div class="grid g3" style="border: 0; flex: 1; align-items: center; margin: 0 -40px;">
+    <div style="border: 0; padding: 0 14px 0 0;"><img class="shot" src="../hub/landing.jpg" alt="The hub"><p class="cap">The hub: hear each source</p></div>
+    <div style="border: 0; padding: 0 14px 0 0;"><img class="shot" src="../hub/emulator.jpg" alt="The emulator"><p class="cap">The emulator: the real firmware</p></div>
+    <div style="border: 0; padding: 0;"><img class="shot" src="../hub/manual.jpg" alt="The manual"><p class="cap">The manual and a first-steps guide</p></div>
+  </div>
+  <p class="dim" style="font-size: 18px;">The hub's data, screens and audio are generated from the firmware source, not written by hand.</p>
+</section>
+
+<!-- 8 built -->
+<section class="slide">
+  <div class="top"><span><b>07</b> / Built and checked</span><span>Engineering</span></div>
+  <h2>Reproducible, tested, <i>on real hardware</i>.</h2>
+  <div class="two">
+    <ul class="l">
+      <li><span class="pale">302 host checks</span> green: effects, levels, GENERATE, saves across versions, the sequencer.</li>
+      <li><span class="pale">Everything in Docker</span>: <code>tools/docker_refresh.sh</code> rebuilds the browser build, the tests, the screens and the hub on any computer.</li>
+      <li><span class="pale">Attested releases</span>: GitHub Actions builds each <code>.fwsc</code> from source and signs it.</li>
+      <li><span class="pale">On a real FM-1</span>: 2.0 installed from another firmware, left, and installed back.</li>
+    </ul>
+    <div class="box" style="padding: 26px;">
+      <p class="k" style="color: var(--pink);">Found by the tests</p>
+      <h3 style="margin-bottom: 12px;">MIXER 1 crashed the unit</h3>
+      <p style="font-size: 18px;">A macro for the matrix rain, <code>MX_N 20</code>, shadowed the mixer's six tiles: a null label was drawn. It surfaced as soon as the host tests ran on Linux, and was fixed before release.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 lineage -->
+<section class="slide">
+  <div class="top"><span><b>08</b> / Lineage</span><span>Open source</span></div>
+  <h2>Built on the work of others, and open for the next.</h2>
+  <div class="grid g4">
+    <div><p class="k">Platform</p><h3>Felucca · SLOOP · Dinghy</h3><p>The FM-1's open platform: drivers, update loader, the first apps.</p></div>
+    <div><p class="k">Engine</p><h3>GR!MM 2.0</h3><p>By GRiMMBIENT: the tracks, sources, sequencer and effects.</p></div>
+    <div><p class="k">Reference</p><h3>COQUÍ</h3><p>The author's earlier firmware: its hub, tests and release flow.</p></div>
+    <div style="background: var(--deep);"><p class="k" style="color: var(--pink);">This</p><h3>GL!TCH</h3><p>Its sounds, scales, screen, hub and docs.</p></div>
+  </div>
+  <p class="dim" style="margin-top: 24px; font-size: 18px; max-width: 80ch;">GPL-3.0-only. The factory samples are CC0; the choir wavetables come from VocalSet (CC BY 4.0). M-VAVE and FM-1 are trademarks of their owners; GL!TCH is not affiliated with them.</p>
+</section>
+
+<!-- 10 try -->
+<section class="slide" style="padding: 0;">
+  <canvas class="land" id="land2" width="160" height="40" style="height: 288px;"></canvas>
+  <div style="padding: 40px 76px 56px; display: flex; flex-direction: column; flex: 1;">
+    <h2 style="max-width: none;">Try it.</h2>
+    <div class="grid g3">
+      <div><p class="k">Install</p><p class="pale">thefirmwarehub.com/firmware/glitch</p><p class="dim" style="font-size: 16px;">In Chrome or Edge, over USB</p></div>
+      <div><p class="k">Play in the browser</p><p class="pale">saulofilho.github.io/glitch</p><p class="dim" style="font-size: 16px;">The emulator, the guide, the manual</p></div>
+      <div><p class="k">Source</p><p class="pale">github.com/saulofilho/glitch</p><p class="dim" style="font-size: 16px;">GPL-3.0</p></div>
+    </div>
+    <div class="foot"><span>GL!TCH 2.0.2</span><span>Neon noir, torn at the edges.</span></div>
+  </div>
+</section>
+
+<script src="../../hub/land.js"></script>
+<script>
+if (window.glLand) { glLand(document.getElementById("land1"), 9, 5); glLand(document.getElementById("land2"), 31, 2); }
+document.title = "GL!TCH — presentation";
+document.fonts && document.fonts.ready.then(function () { document.body.dataset.ready = "1"; });
+</script>
+</body>
+</html>
